@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder v2.0 (Clean Layout)</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;700&family=Inconsolata:wght@400;700&display=swap');
+
+        :root {
+            /* Customizable Variables */
+            --header-color: #16213e;
+            --accent-color: #0f7b6c;
+            --text-color: #1a1a2e;
+            --bg-color: #e8e8ee;
+            --resume-bg: #ffffff;
+            --summary-bg: #f5f6fa;
+            --base-font-size: 10px;
+            --header-font-size: 22px;
+            --line-height: 1.35;
+
+            /* New Customization Vars */
+            --font-family: 'Inter', sans-serif;
+            --section-spacing: 20px;
+            --item-spacing: 7px;
+            --page-padding: 28px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-family);
+            color: var(--text-color);
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            padding: 16px;
+            padding-left: 320px; /* Space for controls */
+            line-height: var(--line-height);
+        }
+
+        /* --- CONTROL PANEL --- */
+        .controls {
+            position: fixed; top: 0; left: 0; bottom: 0;
+            width: 300px;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            z-index: 1000;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 13px;
+        }
+        .controls h2 { margin: 0 0 15px 0; font-size: 18px; color: #333; }
+        .controls h3 { margin: 15px 0 8px 0; font-size: 14px; color: #666; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+        .control-group { margin-bottom: 12px; }
+        .control-group label { display: block; margin-bottom: 4px; color: #555; font-weight: 500; }
+        .control-group input[type="color"] { width: 100%; height: 36px; border: 1px solid #ddd; padding: 2px; border-radius: 4px; cursor: pointer; }
+        .control-group input[type="range"] { width: 100%; }
+        .control-group input[type="text"], .control-group select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .btn { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; margin-top: 5px; }
+        .btn:hover { background: #0056b3; }
+        .btn-print { background: #28a745; margin-top: 20px; }
+        .btn-print:hover { background: #218838; }
+
+        /* --- RICH TEXT TOOLBAR --- */
+        .fmt-bar { display: flex; gap: 4px; margin-bottom: 15px; padding: 8px; background: #f8f9fa; border-radius: 6px; border: 1px solid #eee; flex-wrap: wrap; }
+        .fmt-btn { width: 28px; height: 28px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; font-weight: bold; color: #444; display: flex; align-items: center; justify-content: center; }
+        .fmt-btn:hover { background: #eee; }
+        .fmt-color-wrap { width: 28px; height: 28px; position: relative; border-radius: 4px; overflow: hidden; border: 1px solid #ddd; }
+        .fmt-color-wrap input { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; cursor: pointer; border: none; padding: 0; }
+
+        /* --- RESUME --- */
+        .resume {
+            width: 210mm; /* A4 */
+            min-height: 297mm;
+            background: var(--resume-bg);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+            padding: var(--page-padding); /* Use var */
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .page-break-line {
+            position: absolute;
+            top: 297mm;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            border-bottom: 2px dashed #ff9999;
+            pointer-events: none;
+            z-index: 50;
+        }
+        .page-break-line::after {
+            content: 'End of A4 Page';
+            position: absolute;
+            right: 0;
+            top: -15px;
+            font-size: 10px;
+            color: #ff9999;
+            background: white;
+            padding: 0 4px;
+        }
+
+        /* ---- HEADER ---- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid var(--header-color);
+            padding-bottom: 10px;
+            margin-bottom: var(--section-spacing);
+        }
+
+        .header-left h1 {
+            font-size: var(--header-font-size);
+            font-weight: 700;
+            color: var(--header-color);
+            letter-spacing: 0.3px;
+        }
+
+        .header-left .title {
+            font-size: 11px;
+            color: #5a5a7a;
+            font-weight: 500;
+            margin-top: 1px;
+        }
+
+        .header-right {
+            text-align: right;
+            font-size: 10px;
+            color: #444;
+            line-height: 1.6;
+        }
+
+        .header-right a {
+            color: var(--header-color);
+            text-decoration: none;
+        }
+
+        /* ---- SUMMARY ---- */
+        .summary {
+            font-size: var(--base-font-size);
+            color: #3a3a5c;
+            line-height: 1.55;
+            margin-bottom: 9px;
+            padding: 7px 10px;
+            background: var(--summary-bg);
+            border-left: 2.5px solid var(--header-color);
+        }
+
+        .summary strong { color: var(--header-color); }
+
+        /* ---- SECTIONS ---- */
+        .section { margin-bottom: var(--section-spacing); position: relative; } /* Added relative for reorder */
+        .section-title {
+            font-size: var(--section-title-size, var(--base-font-size));
+            font-weight: 700;
+            color: var(--header-color);
+            text-transform: uppercase;
+            letter-spacing: 1.8px;
+            border-bottom: 1.5px solid var(--header-color);
+            padding-bottom: 2px;
+            margin-bottom: 7px;
+            margin-top: 8px;
+        }
+
+        /* ---- JOBS ---- */
+        .job { margin-bottom: var(--item-spacing); }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .job-company {
+            font-size: var(--company-font-size, 11.5px);
+            font-weight: 700;
+            color: var(--header-color);
+        }
+
+        .job-dates {
+            font-size: 9.5px;
+            color: var(--accent-color);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .job-title-line {
+            font-size: 10px;
+            color: #555;
+            font-style: italic;
+            margin-bottom: 4px;
+        }
+
+        .job ul {
+            padding-left: 14px;
+            margin: 0;
+        }
+
+        .job li {
+            font-size: 9.8px;
+            color: #2e2e4a;
+            margin-bottom: 2.5px;
+            line-height: 1.45;
+        }
+
+        .job li strong { color: var(--header-color); }
+
+        .m { color: var(--accent-color); font-weight: 600; }
+
+        .tag {
+            font-size: 7.5px;
+            font-weight: 700;
+            color: #fff;
+            padding: 1px 5px;
+            border-radius: 2px;
+            margin-left: 4px;
+            vertical-align: middle;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .tag.comms { background: var(--accent-color); }
+        .tag.vendor { background: #8b5e3c; } /* Should we var this? Keep unique for now */
+        .tag.ai { background: #5c3d8f; }
+
+        /* ---- BOTTOM GRID ---- */
+        .bottom {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-top: auto;
+            border-top: 1.5px solid var(--header-color);
+            padding-top: 8px;
+        }
+
+        .bottom-section h3 {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--header-color);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .bottom-section p,
+        .bottom-section li {
+            font-size: 9.2px;
+            color: #3a3a5c;
+            line-height: 1.45;
+        }
+
+        .bottom-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bottom-section li { margin-bottom: 1px; }
+
+        .skills-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+        }
+
+        .sk {
+            font-size: 8.5px;
+            background: #f0f1f6;
+            color: #2e2e4a;
+            padding: 2px 6px;
+            border-radius: 2px;
+        }
+
+        .sk.hl {
+            background: var(--header-color);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        @media print {
+            body { padding: 0; background: white; }
+            .controls { display: none; }
+            .page-break-line { display: none; }
+            .resume { box-shadow: none; margin: 0; width: 100%; height: auto; }
+            @page { margin: 0; size: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CONTROL PANEL -->
+    <aside class="controls">
+        <h2>Resume Builder v2.0</h2>
+
+        <div style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+            <button class="btn" onclick="resumeCustomizer.saveSettings()" style="background: #6610f2;">Apply to All & Save</button>
+            <button class="btn" onclick="resumeCustomizer.loadSettings()" style="background: #6c757d; margin-top: 5px;">Load Settings</button>
+        </div>
+
+        <h3>Typography</h3>
+        <div class="control-group">
+            <label>Font Family</label>
+            <select id="inp-font-family">
+                <option value="'Inter', sans-serif">Inter (Default)</option>
+                <option value="'Roboto', sans-serif">Roboto</option>
+                <option value="'Open Sans', sans-serif">Open Sans</option>
+                <option value="'Merriweather', serif">Merriweather (Serif)</option>
+                <option value="'Playfair Display', serif">Playfair Display</option>
+                <option value="'Inconsolata', monospace">Inconsolata (Code)</option>
+            </select>
+        </div>
+
+        <h3>Formatting</h3>
+        <p style="font-size:10px; color:#666; margin-bottom:4px;">Select text inside resume to format</p>
+        <div class="fmt-bar">
+            <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('bold')" title="Bold">B</button>
+            <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('italic')" title="Italic">I</button>
+            <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('underline')" title="Underline">U</button>
+            <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('removeFormat')" title="Clear">✕</button>
+            <div class="fmt-color-wrap" title="Text Color">
+                <input type="color" onchange="restoreAndFmt('foreColor', this.value)">
+            </div>
+            <div class="fmt-color-wrap" title="Highlight Color">
+                <input type="color" onchange="restoreAndFmt('hiliteColor', this.value)">
+            </div>
+        </div>
+        <div class="control-group">
+            <label>Selected Text Size: <span id="val-selection-size">--</span></label>
+            <input type="range" id="inp-selection-size" min="8" max="32" value="10" step="0.5">
+        </div>
+
+        <h3>Layout & Spacing</h3>
+        <div class="control-group">
+            <label>Page Padding: <span id="val-page-padding">28px</span></label>
+            <input type="range" id="inp-page-padding" min="10" max="80" step="4" value="28">
+        </div>
+        <div class="control-group">
+            <label>Section Spacing: <span id="val-section-spacing">20px</span></label>
+            <input type="range" id="inp-section-spacing" min="5" max="50" step="5" value="20">
+        </div>
+        <div class="control-group">
+            <label>Item Spacing: <span id="val-item-spacing">7px</span></label>
+            <input type="range" id="inp-item-spacing" min="2" max="30" step="1" value="7">
+        </div>
+
+        <h3>Colors</h3>
+        <div class="control-group">
+            <label>Header Color</label>
+            <input type="color" id="inp-header-color" value="#16213e">
+        </div>
+        <div class="control-group">
+            <label>Accent Color</label>
+            <input type="color" id="inp-accent-color" value="#0f7b6c">
+        </div>
+        <div class="control-group">
+            <label>Background</label>
+            <input type="color" id="inp-bg-color" value="#e8e8ee">
+        </div>
+
+        <h3>Sizing</h3>
+        <div class="control-group">
+            <label>Header Size: <span id="val-hsize">22</span>px</label>
+            <input type="range" id="inp-hsize" min="14" max="40" step="1" value="22">
+        </div>
+        <div class="control-group">
+            <label>Section Title: <span id="val-section-title-size">10px</span></label>
+            <input type="range" id="inp-section-title-size" min="8" max="16" value="10" step="0.5">
+        </div>
+        <div class="control-group">
+            <label>Company/School: <span id="val-company-size">11.5px</span></label>
+            <input type="range" id="inp-company-size" min="9" max="18" value="11.5" step="0.5">
+        </div>
+        <div class="control-group">
+            <label>Base Font: <span id="val-font">10</span>px</label>
+            <input type="range" id="inp-font" min="8" max="14" step="0.1" value="10">
+        </div>
+        <div class="control-group">
+            <label>Line Height: <span id="val-lh">1.35</span></label>
+            <input type="range" id="inp-lh" min="1.0" max="1.8" step="0.05" value="1.35">
+        </div>
+
+        <h3>Add Content</h3>
+        <div class="control-group">
+            <label>Section Title</label>
+            <input type="text" id="new-sec-title" placeholder="New Section">
+        </div>
+        <div class="control-group">
+            <select id="new-sec-type">
+                <option value="job">Experience Block</option>
+                <option value="simple">Simple Text</option>
+                <option value="list">List</option>
+            </select>
+        </div>
+        <button class="btn" onclick="addSection()">Add Section</button>
+
+        <button class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
+    </aside>
+
+    <div class="resume" id="resume">
+        <div class="page-break-line"></div>
+
+        <!-- HEADER -->
+        <div class="header" contenteditable="true">
+            <div class="header-left">
+                <h1>Your Name</h1>
+                <div class="title">Current Role · X+ Years · Specialization</div>
+            </div>
+            <div class="header-right">
+                +1 234-567-8900 · <a href="mailto:email@example.com">email@example.com</a><br>
+                <a href="https://linkedin.com/in/yourprofile">linkedin.com/in/yourprofile</a>
+            </div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="summary" contenteditable="true">
+            Professional summary goes here. Highlight your <strong>key achievements</strong> and expertise. This section is editable.
+        </div>
+
+        <!-- EXPERIENCE CONTAINER for adding new jobs easily -->
+        <div id="experience-container">
+            <!-- EXPERIENCE -->
+            <div class="section" id="exp-section">
+                <div class="section-title" contenteditable="true">Professional Experience</div>
+
+                <div class="job">
+                    <div class="job-header">
+                        <span class="job-company" contenteditable="true">Company Name</span>
+                        <span class="job-dates" contenteditable="true">Date Range</span>
+                    </div>
+                    <div class="job-title-line" contenteditable="true">Role / Title · Location</div>
+                    <ul contenteditable="true">
+                        <li><strong>Key Achievement</strong> <span class="tag comms">Tag</span> — Description of your impact. Use metrics.</li>
+                        <li><strong>Another Project</strong> <span class="tag comms">Tag</span> — Description of the project.</li>
+                    </ul>
+                </div>
+
+                <div class="job">
+                    <div class="job-header">
+                        <span class="job-company" contenteditable="true">Another Company</span>
+                        <span class="job-dates" contenteditable="true">Date Range</span>
+                    </div>
+                    <div class="job-title-line" contenteditable="true">Role / Title · Location</div>
+                    <ul contenteditable="true">
+                        <li><strong>Contribution</strong> <span class="tag vendor">Tag</span> — Description of your work.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM SECTION -->
+        <div class="bottom" id="bottom-grid">
+            <div class="bottom-section section" contenteditable="true">
+                <h3>Education</h3>
+                <ul>
+                    <li><strong>Degree</strong> — University (Year)</li>
+                    <li><strong>Degree</strong> — University (Year)</li>
+                </ul>
+            </div>
+            <div class="bottom-section section" contenteditable="true">
+                <h3>Skills</h3>
+                <div class="skills-wrap">
+                    <span class="sk hl">Key Skill</span>
+                    <span class="sk hl">Another Skill</span>
+                    <span class="sk">Skill 3</span>
+                    <span class="sk">Skill 4</span>
+                    <span class="sk">Skill 5</span>
+                </div>
+            </div>
+            <div class="bottom-section section" contenteditable="true">
+                <h3>Languages & Training</h3>
+                <ul>
+                    <li><strong>Language:</strong> Native · <strong>Language:</strong> Fluent</li>
+                    <li style="margin-top:3px;">Course Name — Platform, Year</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="shared.js"></script>
+    <script>
+        // --- RICH TEXT ---
+        let savedRange = null;
+        document.addEventListener('selectionchange', () => {
+            const sel = window.getSelection();
+            if (sel.rangeCount > 0) {
+                const range = sel.getRangeAt(0);
+                if (document.getElementById('resume').contains(range.commonAncestorContainer)) {
+                    savedRange = range.cloneRange();
+                }
+            }
+        });
+
+        function fmt(command, value = null) {
+            document.execCommand('styleWithCSS', false, true);
+            document.execCommand(cmd, false, value);
+        }
+
+        function restoreAndFmt(command, value) {
+            if (savedRange) {
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(savedRange);
+                document.execCommand('styleWithCSS', false, true);
+                document.execCommand(command, false, value);
+            }
+        }
+
+        // --- ADD SECTION ---
+        function addSection() {
+            const titleInput = document.getElementById('new-sec-title');
+            const title = titleInput.value || 'New Section';
+            const type = document.getElementById('new-sec-type').value;
+            const container = document.getElementById('exp-section') || document.getElementById('experience-container');
+
+            const div = document.createElement('div');
+            // Ensure new sections have the class 'section' so reordering works
+            div.className = 'section';
+
+            // Create elements manually to avoid innerHTML
+            if(type === 'job') {
+                div.classList.add('job');
+
+                const jobHeader = document.createElement('div');
+                jobHeader.className = 'job-header';
+
+                const company = document.createElement('span');
+                company.className = 'job-company';
+                company.contentEditable = "true";
+                company.textContent = title;
+
+                const dates = document.createElement('span');
+                dates.className = 'job-dates';
+                dates.contentEditable = "true";
+                dates.textContent = "Dates";
+
+                jobHeader.appendChild(company);
+                jobHeader.appendChild(dates);
+
+                const titleLine = document.createElement('div');
+                titleLine.className = 'job-title-line';
+                titleLine.contentEditable = "true";
+                titleLine.textContent = "Role · Location";
+
+                const ul = document.createElement('ul');
+                ul.contentEditable = "true";
+                const li = document.createElement('li');
+                li.textContent = "Description...";
+                ul.appendChild(li);
+
+                div.appendChild(jobHeader);
+                div.appendChild(titleLine);
+                div.appendChild(ul);
+            } else if (type === 'list') {
+                const secTitle = document.createElement('div');
+                secTitle.className = 'section-title';
+                secTitle.contentEditable = "true";
+                secTitle.textContent = title;
+
+                const ul = document.createElement('ul');
+                ul.contentEditable = "true";
+                ul.style.paddingLeft = "14px";
+                const li1 = document.createElement('li');
+                li1.textContent = "Item 1";
+                const li2 = document.createElement('li');
+                li2.textContent = "Item 2";
+                ul.appendChild(li1);
+                ul.appendChild(li2);
+
+                div.appendChild(secTitle);
+                div.appendChild(ul);
+            } else {
+                const secTitle = document.createElement('div');
+                secTitle.className = 'section-title';
+                secTitle.contentEditable = "true";
+                secTitle.textContent = title;
+
+                const contentDiv = document.createElement('div');
+                contentDiv.contentEditable = "true";
+                contentDiv.textContent = "Content...";
+
+                div.appendChild(secTitle);
+                div.appendChild(contentDiv);
+            }
+
+            container.appendChild(div);
+
+            // Clear input
+            titleInput.value = '';
+        }
+
+        // --- PASTE PLAIN TEXT ---
+        document.addEventListener('paste', (e) => {
+            if (e.target.isContentEditable) {
+                e.preventDefault();
+                const text = e.clipboardData.getData('text/plain');
+                document.execCommand('insertText', false, text);
+            }
+        });
+    </script>
+</body>
+</html>

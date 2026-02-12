@@ -1,0 +1,6 @@
+.worktrees/
+# Personal Data
+headshot.png
+*_backup.html
+.DS_Store
+backups/
