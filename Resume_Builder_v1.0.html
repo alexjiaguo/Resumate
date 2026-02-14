@@ -1,357 +1,621 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Builder v1.0 (Refined)</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume Builder v1.0 (Professional Layout)</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;700&family=Inconsolata:wght@400;700&display=swap');
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;700&display=swap");
 
-        :root {
-            /* Customizable Variables - Standardized Names */
-            --header-color: #2c3e50;
-            --accent-color: #2980b9;
-            --text-color: #333333;
-            --bg-color: #f5f5f5;
-            --resume-bg: #ffffff;
-            --line-height: 1.5;
-            --header-font-size: 24px;
-            --base-font-size: 14px;
+      :root {
+        --header-color: #2c3e50;
+        --accent-color: #2980b9;
+        --text-color: #2c3e50;
+        --bg-color: #f5f5f5;
+        --resume-bg: #ffffff;
+        --base-font-size: 11px;
+        --section-title-size: 12px;
+        --header-font-size: 26px;
+        --line-height: 1.4;
+        --font-family: "Inter", sans-serif;
+        --company-font-size: 11px;
+        --page-padding: 40px;
+      }
 
-            /* New Customization Vars */
-            --font-family: 'Roboto', sans-serif;
-            --section-spacing: 20px;
-            --item-spacing: 10px;
-            --page-padding: 40px;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: var(--font-family);
+        color: var(--text-color);
+        background: var(--bg-color);
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+        padding-left: 320px;
+      }
 
-        body {
-            font-family: var(--font-family);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            min-height: 100vh;
-        }
+      /* --- CONTROLS --- */
+      .controls {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 300px;
+        background: #2c3e50;
+        color: white;
+        padding: 20px;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+        overflow-y: auto;
+        z-index: 1000;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+      .controls h2 { margin: 0 0 15px 0; font-size: 18px; color: #ecf0f1; }
+      .controls h3 { margin: 15px 0 8px 0; font-size: 14px; color: #bdc3c7; text-transform: uppercase; border-bottom: 1px solid #444; padding-bottom: 4px; }
+      .control-group { margin-bottom: 12px; }
+      .control-group label { display: block; margin-bottom: 6px; color: #ecf0f1; font-size: 12px; }
+      
+      /* STEPPER UI */
+      .stepper {
+        display: flex;
+        align-items: center;
+        border: 1px solid #444;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #34495e;
+      }
+      .stepper button {
+        width: 32px;
+        height: 32px;
+        background: #444;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        color: #ecf0f1;
+      }
+      .stepper button:hover { background: #555; }
+      .stepper input {
+        flex: 1;
+        width: 100%;
+        border: none;
+        background: #34495e;
+        color: #ecf0f1;
+        text-align: center;
+        outline: none;
+        appearance: textfield;
+        -moz-appearance: textfield;
+        font-size: 13px;
+      }
+      .stepper input::-webkit-outer-spin-button,
+      .stepper input::-webkit-inner-spin-button {
+        appearance: none;
+        -webkit-appearance: none;
+        margin: 0;
+      }
 
-        /* --- CONTROLS PANEL --- */
-        .controls {
-            width: 300px;
-            background-color: #2c3e50;
-            color: white;
-            padding: 20px;
-            position: fixed;
-            height: 100%;
-            overflow-y: auto;
-            left: 0; top: 0;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
+      .control-group input[type="color"] { width: 100%; height: 36px; border: 1px solid #444; border-radius: 4px; background: transparent; cursor: pointer; }
+      .control-group select { width: 100%; padding: 8px; border: 1px solid #444; background: #34495e; color: white; border-radius: 4px; }
+      .btn { width: 100%; padding: 6px 8px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px; margin-top: 5px; white-space: nowrap; }
+      .btn:hover { background: #2980b9; }
+      .btn-sec { background: #6c757d; }
+      .btn-sec:hover { background: #5a6268; }
+      .btn-danger { background: #e74c3c; }
+      .btn-danger:hover { background: #c0392b; }
+      .btn-print { background: #27ae60; margin-top: 20px; }
 
-        .controls h2 { margin-bottom: 20px; font-size: 1.5rem; text-align: center; border-bottom: 1px solid #34495e; padding-bottom: 10px; }
-        .controls h3 { margin: 15px 0 10px 0; font-size: 1rem; color: #bdc3c7; border-bottom: 1px solid #34495e; padding-bottom: 5px; }
+      /* --- RESUME --- */
+      .resume {
+        width: 210mm;
+        min-height: 297mm;
+        background: var(--resume-bg);
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        padding: var(--page-padding);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
 
-        .control-group { margin-bottom: 15px; }
-        .control-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; }
-        .control-group input[type="color"] { width: 100%; height: 40px; border: none; cursor: pointer; }
-        .control-group input[type="range"] { width: 100%; cursor: pointer; }
-        .control-group input[type="text"], .control-group select { width: 100%; padding: 8px; border-radius: 4px; border: none; margin-top: 5px; }
+      .header { text-align: center; border-bottom: 2px solid var(--header-color); padding-bottom: 15px; margin-bottom: 20px; }
+      .header h1 { font-size: var(--header-font-size); color: var(--header-color); text-transform: uppercase; letter-spacing: 2px; }
+      .header .info { font-size: 11px; margin-top: 8px; color: #7f8c8d; font-weight: 500; }
+      .header .info a { color: var(--accent-color); text-decoration: none; }
 
-        .btn {
-            display: block; width: 100%; padding: 10px;
-            background-color: var(--accent-color); color: white;
-            border: none; cursor: pointer; margin-top: 10px;
-            font-size: 1rem; border-radius: 4px; transition: background 0.3s;
-        }
-        .btn:hover { filter: brightness(1.1); }
-        .btn-apply { background-color: #27ae60; }
-        .btn-print { background-color: #e67e22; margin-top: 20px; }
+      .section { margin-bottom: 15px; position: relative; }
+      .section-title {
+        font-size: var(--section-title-size);
+        font-weight: 700;
+        color: var(--accent-color);
+        text-transform: uppercase;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 4px;
+        margin-bottom: 8px;
+        letter-spacing: 1px;
+      }
 
-        .btn-small { display: inline-block; width: auto; padding: 5px 10px; margin-top: 0; font-size: 0.9rem; }
+      .job { margin-bottom: 10px; font-size: 11px; }
+      .job-header { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; color: var(--header-color); font-size: var(--company-font-size); }
+      .job-header .dates { color: var(--accent-color); font-size: 11px; }
+      .job-title { font-style: italic; color: #7f8c8d; margin-bottom: 3px; font-size: 11px; }
+      .job ul { padding-left: 18px; margin: 0; }
+      .job li { margin-bottom: 2px; font-size: 11px; line-height: 1.4; color: #34495e; }
 
-        /* --- MAIN CONTENT --- */
-        .main-content {
-            flex: 1;
-            margin-left: 300px;
-            padding: 40px;
-            display: flex;
-            justify-content: center;
-        }
+      .skills-wrap { display: flex; flex-wrap: wrap; gap: 6px; font-size: 11px; }
+      .sk { padding: 2px 8px; border-radius: 3px; background: #f0f3f6; color: #2c3e50; }
+      .sk.hl { background: var(--header-color); color: #fff; font-weight: 600; }
 
-        .page {
-            width: 210mm;
-            min-height: 297mm;
-            padding: var(--page-padding); /* Use var */
-            background-color: var(--resume-bg);
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            position: relative;
-            /* Use CSS vars for typography */
-            font-size: var(--base-font-size);
-            line-height: var(--line-height);
-        }
+      .edu-item { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 11px; }
+      .edu-item strong { color: var(--header-color); }
+      
+      /* REORDER */
+      .reorder-btns { position: absolute; right: -30px; top: 0; display: none; flex-direction: column; gap: 2px; }
+      .section:hover .reorder-btns { display: flex; }
+      .reorder-btn { background: #eee; border: 1px solid #ddd; padding: 2px 4px; font-size: 10px; cursor: pointer; border-radius: 3px; }
+      .reorder-btn:hover { background: #ddd; }
 
-        /* Page Break Indicator (A4 approx height) */
-        .page-break-line {
-            position: absolute;
-            top: 297mm;
-            left: 0; width: 100%;
-            border-bottom: 2px dashed #e74c3c;
-            opacity: 0.6; pointer-events: none;
-        }
-        .page-break-marker {
-            position: absolute; right: 0; top: -20px;
-            color: #e74c3c; font-size: 12px; font-weight: bold;
-            background: rgba(255,255,255,0.8); padding: 2px 5px;
-        }
+      /* --- FORMAT TOOLBAR --- */
+      .fmt-bar { display: flex; gap: 4px; margin-bottom: 15px; padding: 8px; background: #34495e; border-radius: 6px; border: 1px solid #444; flex-wrap: wrap; }
+      .fmt-btn { width: 28px; height: 28px; border: 1px solid #444; background: #2c3e50; border-radius: 4px; cursor: pointer; font-weight: bold; color: #ecf0f1; display: flex; align-items: center; justify-content: center; }
+      .fmt-btn:hover { background: #444; }
+      .fmt-color-wrap { width: 28px; height: 28px; position: relative; border-radius: 4px; overflow: hidden; border: 1px solid #444; }
+      .fmt-color-wrap input { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; cursor: pointer; border: none; padding: 0; }
 
-        /* --- RESUME STYLING --- */
-        header { text-align: center; margin-bottom: var(--section-spacing); border-bottom: 2px solid var(--accent-color); padding-bottom: 10px; }
+      .control-row { display: flex; gap: 6px; }
+      .control-row .btn { flex: 1; margin-top: 0; }
+      .page-break-marker { position: absolute; left: 0; right: 0; border-top: 2px dashed #e74c3c; pointer-events: none; opacity: 0.5; z-index: 100; display: none; }
+      .page-break-marker::after { content: "Page Break"; position: absolute; right: 10px; top: -20px; color: #e74c3c; font-size: 11px; font-weight: bold; }
 
-        h1 {
-            color: var(--header-color);
-            font-size: var(--header-font-size);
-            margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;
-        }
-
-        .contact-info { font-size: 0.9em; color: #666; margin-bottom: 10px; }
-
-        .section { margin-bottom: var(--section-spacing); position: relative; } /* Added relative for reorder buttons */
-        .section-title {
-            color: var(--accent-color);
-            font-size: var(--section-title-size, 1.1em); text-transform: uppercase;
-            border-bottom: 1px solid #ddd; margin-bottom: 10px;
-            padding-bottom: 2px; font-weight: bold;
-        }
-
-        .job, .education-item { margin-bottom: var(--item-spacing); }
-        .job-header, .edu-header { display: flex; justify-content: space-between; margin-bottom: 2px; }
-        .company, .school { font-weight: bold; color: var(--header-color); font-size: var(--company-font-size, 1em); }
-        .date { font-style: italic; font-size: 0.9em; }
-        .role { font-weight: 500; margin-bottom: 2px; }
-
-        ul { padding-left: 18px; margin-top: 4px; }
-        li { margin-bottom: 2px; }
-
-        /* Edit Highlight */
-        [contenteditable]:hover { outline: 1px dashed #ccc; background-color: rgba(255,255,0,0.05); cursor: text; }
-        [contenteditable]:focus { outline: 2px solid var(--accent-color); background-color: #fff; }
-
-        /* Reorder Buttons (Placeholder for future feature) */
-        /* .section:hover::after { content: "↕"; position: absolute; right: 0; top: 0; cursor: move; color: #ccc; } */
-
-        @media print {
-            body { background: none; display: block; }
-            .controls, .page-break-line { display: none !important; }
-            .main-content { margin: 0; padding: 0; }
-            .page { box-shadow: none; margin: 0; width: 100%; height: auto; }
-        }
+      @media print {
+        body { padding: 0; background: white; }
+        .controls { display: none; }
+        .resume { box-shadow: none; margin: 0; width: 100%; padding: var(--page-padding); }
+        .reorder-btns, .fmt-bar, .page-break-marker { display: none !important; }
+        @page { margin: 0; }
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <aside class="controls">
-        <h2>Settings</h2>
+      <h2>Professional v1.0</h2>
 
-        <button class="btn btn-apply" onclick="resumeCustomizer.saveSettings()">Apply to All & Save</button>
-        <button class="btn" onclick="resumeCustomizer.loadSettings()">Load Settings</button>
-        <button class="btn btn-print" onclick="window.print()">Print to PDF</button>
+      <div class="control-row">
+        <button class="btn" onclick="resumeCustomizer.saveSettings()">💾 Save</button>
+        <button class="btn btn-sec" onclick="resumeCustomizer.loadSettings()">📂 Load</button>
+        <button class="btn btn-danger" onclick="resumeCustomizer.resetSettings()">↺ Reset</button>
+      </div>
 
-        <hr style="margin: 20px 0; border-color: #444;">
+      <h3>Color Schemes</h3>
+      <div class="control-group">
+        <label>Presets</label>
+        <select id="inp-color-scheme" onchange="resumeCustomizer.applyScheme(this.value)">
+          <option value="none">Custom Colors</option>
+          <option value="coastal">Coastal Morning (New)</option>
+          <option value="spring">Soft Spring (New)</option>
+          <option value="winter">Winter Chill (New)</option>
+          <option value="slate">Slate & Cream</option>
+          <option value="ocean">Ocean Professional</option>
+          <option value="noir">Noir & Taupe</option>
+          <option value="elegant">Elegant Teal</option>
+          <option value="sand">Sand & Gold</option>
+          <option value="industrial">Industrial Blue</option>
+        </select>
+      </div>
 
-        <h3>Typography</h3>
-        <div class="control-group">
-            <label>Font Family</label>
-            <select id="inp-font-family">
-                <option value="'Roboto', sans-serif">Roboto (Default)</option>
+      <h3>Colors</h3>
+      <div class="control-row">
+          <div class="control-group" style="flex:1">
+            <label>Header Col</label>
+            <input type="color" id="inp-header-color" value="#2c3e50" />
+          </div>
+          <div class="control-group" style="flex:1">
+            <label>Accent Col</label>
+            <input type="color" id="inp-accent-color" value="#2980b9" />
+          </div>
+      </div>
+      <div class="control-group">
+        <label>Background</label>
+        <input type="color" id="inp-bg-color" value="#ffffff" />
+      </div>
+
+      <h3>Text Formatting</h3>
+      <div class="fmt-bar">
+        <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('bold')">B</button>
+        <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('italic')">I</button>
+        <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('underline')">U</button>
+        <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('removeFormat')">✕</button>
+        <div class="fmt-color-wrap"><input type="color" onchange="restoreAndFmt('foreColor', this.value)"></div>
+        <div class="fmt-color-wrap"><input type="color" onchange="restoreAndFmt('hiliteColor', this.value)"></div>
+      </div>
+      <div class="control-group">
+        <label>Selected Text Size</label>
+        <div class="stepper">
+          <button onclick="stepper(this, -0.5)">-</button>
+          <input type="number" id="inp-selection-size" value="11" step="0.5">
+          <button onclick="stepper(this, 0.5)">+</button>
+        </div>
+      </div>
+
+      <h3>Layout & Sizes</h3>
+      <div class="control-row">
+          <div class="control-group" style="flex:1">
+            <label>Page Padding</label>
+            <div class="stepper">
+              <button onclick="stepper(this, -2)">-</button>
+              <input type="number" id="inp-page-padding" value="40">
+              <button onclick="stepper(this, 2)">+</button>
+            </div>
+          </div>
+          <div class="control-group" style="flex:1">
+              <label>Font Family</label>
+              <select id="inp-font-family" style="padding: 6.5px;">
+                <option value="'Inter', sans-serif">Inter</option>
+                <option value="'Roboto', sans-serif">Roboto</option>
                 <option value="'Open Sans', sans-serif">Open Sans</option>
-                <option value="'Merriweather', serif">Merriweather (Serif)</option>
-                <option value="'Playfair Display', serif">Playfair Display</option>
-                <option value="'Inconsolata', monospace">Inconsolata (Code)</option>
-            </select>
-        </div>
-        <div class="control-group">
-            <label>Header Size: <span id="val-hsize">24px</span></label>
-            <input type="range" id="inp-hsize" min="18" max="48" step="1" value="24">
-        </div>
-        <div class="control-group">
-            <label>Body Size: <span id="val-font">14px</span></label>
-            <input type="range" id="inp-font" min="10" max="18" step="0.5" value="14">
-        </div>
-        <div class="control-group">
-            <label>Line Height: <span id="val-lh">1.5</span></label>
-            <input type="range" id="inp-lh" min="1.0" max="2.0" step="0.1" value="1.5">
-        </div>
-        <div class="control-group">
-            <label>Section Title: <span id="val-section-title-size">1.1em</span></label>
-            <input type="range" id="inp-section-title-size" min="0.8" max="2.0" value="1.1" step="0.1">
-        </div>
-        <div class="control-group">
-            <label>Company/School: <span id="val-company-size">1em</span></label>
-            <input type="range" id="inp-company-size" min="0.8" max="2.0" value="1.0" step="0.1">
-        </div>
+                <option value="'Merriweather', serif">Merriweather</option>
+              </select>
+          </div>
+      </div>
 
-        <div class="control-group">
-            <label>Selected Text Size: <span id="val-selection-size">--</span></label>
-            <input type="range" id="inp-selection-size" min="8" max="32" value="14" step="0.5">
-            <small style="color:#aaa; display:block; margin-top:5px;">Select text in resume first</small>
-        </div>
+      <div class="control-group">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+              <input type="checkbox" id="chk-page-break" onchange="togglePageBreak(this)">
+              Show Page Break Marker
+          </label>
+      </div>
 
-        <hr style="margin: 20px 0; border-color: #444;">
+      <h3>Typography Sizes</h3>
+      <div class="control-row">
+          <div class="control-group" style="flex:1">
+            <label>Base Font</label>
+            <div class="stepper">
+              <button onclick="stepper(this, -0.5)">-</button>
+              <input type="number" id="inp-font" value="11" step="0.5">
+              <button onclick="stepper(this, 0.5)">+</button>
+            </div>
+          </div>
+          <div class="control-group" style="flex:1">
+            <label>Name Size</label>
+            <div class="stepper">
+              <button onclick="stepper(this, -1)">-</button>
+              <input type="number" id="inp-hsize" value="24">
+              <button onclick="stepper(this, 1)">+</button>
+            </div>
+          </div>
+      </div>
+      <div class="control-row">
+          <div class="control-group" style="flex:1">
+            <label>Section Title</label>
+            <div class="stepper">
+              <button onclick="stepper(this, -0.5)">-</button>
+              <input type="number" id="inp-section-title-size" value="12" step="0.5">
+              <button onclick="stepper(this, 0.5)">+</button>
+            </div>
+          </div>
+          <div class="control-group" style="flex:1">
+            <label>Company/Edu</label>
+            <div class="stepper">
+              <button onclick="stepper(this, -0.5)">-</button>
+              <input type="number" id="inp-company-size" value="11" step="0.5">
+              <button onclick="stepper(this, 0.5)">+</button>
+            </div>
+          </div>
+      </div>
 
-        <div class="control-group">
-            <label>Add Section</label>
-            <input type="text" id="new-section-title" placeholder="Title (e.g. Skills)">
-            <select id="new-section-type">
-                <option value="text">Simple Text</option>
-                <option value="list">Bullet List</option>
-                <option value="job">Job/Project</option>
-            </select>
-            <button class="btn" onclick="addSection()">Add Section</button>
-        </div>
+      <h3>Add Content</h3>
+      <div class="control-group">
+        <input type="text" id="new-sec-title" placeholder="Section Name" />
+      </div>
+      <button class="btn" onclick="addSection()">Add Section</button>
+
+      <button class="btn btn-print" onclick="window.print()">Print PDF</button>
     </aside>
 
-    <div class="main-content">
-        <div class="page" id="resume">
-            <!-- Page Break Indicator -->
-            <div class="page-break-line"><span class="page-break-marker">Page Break (A4)</span></div>
-
-            <header>
-                <h1 contenteditable="true">Your Name</h1>
-                <div class="contact-info" contenteditable="true">
-                    email@example.com | (123) 456-7890 | linkedin.com/in/yourname | City, State
-                </div>
-            </header>
-
-            <div class="section">
-                <div class="section-title" contenteditable="true">Professional Summary</div>
-                <p contenteditable="true">
-                    Experienced professional with a demonstrated history of working in the industry. Strong skills in [Skill 1], [Skill 2], and [Skill 3].
-                </p>
-            </div>
-
-            <div class="section" id="experience-section">
-                <div class="section-title" contenteditable="true">Experience</div>
-
-                <div class="job">
-                    <div class="job-header">
-                        <div class="company" contenteditable="true">Company Name</div>
-                        <div class="date" contenteditable="true">Jan 2020 - Present</div>
-                    </div>
-                    <div class="role" contenteditable="true">Job Title</div>
-                    <ul contenteditable="true">
-                        <li>Accomplished X by implementing Y.</li>
-                        <li>Led a team of Z people to achieve K.</li>
-                        <li>Reduced costs by N% through optimization.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title" contenteditable="true">Education</div>
-                <div class="education-item">
-                    <div class="edu-header">
-                        <div class="school" contenteditable="true">University Name</div>
-                        <div class="date" contenteditable="true">2014 - 2018</div>
-                    </div>
-                    <div class="degree" contenteditable="true">Bachelor of Science in Computer Science</div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-title" contenteditable="true">Skills</div>
-                <p contenteditable="true">
-                    JavaScript, HTML, CSS, React, Node.js, Python, SQL, Git, Agile Methodologies
-                </p>
-            </div>
+    <div class="resume" id="resume" contenteditable="true">
+      <div id="page-break-line" class="page-break-marker" style="top: 1122px;"></div>
+      <div class="header">
+        <h1>Your Name</h1>
+        <div class="info">
+          +1 234-567-8900 · <a href="mailto:email@example.com">email@example.com</a> ·
+          <a href="#">linkedin.com/in/user</a>
         </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Summary</div>
+        <p style="font-size:11px; color:#34495e;">Professional high-level overview. Keep it concise (11px).</p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Experience</div>
+        <div class="job">
+          <div class="job-header"><span>Company Name</span> <span class="dates">Date Range</span></div>
+          <div class="job-title">Job Title · Location</div>
+          <ul>
+            <li>Detailed bullet point about impact and results (11px).</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Education</div>
+        <div class="edu-item"><span><strong>Degree</strong> at University</span> <span>2015-2019</span></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Skills</div>
+        <div class="skills-wrap">
+          <span class="sk hl">Skill 1</span>
+          <span class="sk">Skill 2</span>
+        </div>
+      </div>
     </div>
 
-    <!-- Link to Shared Logic -->
-    <script src="shared.js"></script>
-
     <script>
-        // Keep template-specific UI logic (like adding sections) here for now,
-        // as consolidating DOM manipulation across different templates is complex.
+      function stepper(btn, amount) {
+        const input = btn.parentNode.querySelector('input');
+        input.value = (parseFloat(input.value) || 0) + amount;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      }
 
-        // --- Add Section Logic ---
-        function addSection() {
-            const titleInput = document.getElementById('new-section-title');
-            const title = titleInput.value;
-            const type = document.getElementById('new-section-type').value;
-            const resume = document.getElementById('resume');
+      class Customizer {
+        constructor() {
+          this.STORAGE_KEY = "resume_builder_v1_settings";
+          this.settingsMap = {
+            "inp-font-family": "--font-family",
+            "inp-font": "--base-font-size",
+            "inp-hsize": "--header-font-size",
+            "inp-section-title-size": "--section-title-size",
+            "inp-company-size": "--company-font-size",
+            "inp-header-color": "--header-color",
+            "inp-accent-color": "--accent-color",
+            "inp-bg-color": "--resume-bg",
+            "inp-page-padding": "--page-padding",
+            "inp-selection-size": null,
+          };
+          this.init();
+        }
+        init() {
+          this.currentSelectionRange = null;
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", () => {
+              this.loadSettings();
+              this.initTextSizing();
+            });
+          } else { 
+            this.loadSettings();
+            this.initTextSizing();
+          }
+          this.initListeners();
+          this.attachReorderButtons();
+        }
+        initListeners() {
+          const root = document.documentElement;
+          Object.keys(this.settingsMap).forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.addEventListener('input', (e) => {
+              const varName = this.settingsMap[id];
+              const val = e.target.value;
+              if (["inp-font", "inp-hsize", "inp-section-title-size", "inp-company-size", "inp-page-padding"].includes(id)) {
+                root.style.setProperty(varName, val + "px");
+              } else { root.style.setProperty(varName, val); }
+              this.saveSettings();
+            });
+          });
+          document.getElementById('resume').addEventListener('input', () => this.saveSettings());
+          const pbChk = document.getElementById('chk-page-break');
+          if(pbChk) pbChk.addEventListener('change', () => this.saveSettings());
+        }
 
-            if (!title) return alert('Please enter a section title');
+        initTextSizing() {
+          this.isAdjustingSize = false;
+          const slider = document.getElementById("inp-selection-size");
+          if (!slider) return;
 
-            const section = document.createElement('div');
-            section.className = 'section';
+          document.addEventListener("selectionchange", () => {
+            if (this.isAdjustingSize) return;
+            const sel = window.getSelection();
+            if (sel.rangeCount > 0) {
+              const range = sel.getRangeAt(0);
+              const node = range.commonAncestorContainer;
+              const el = node.nodeType === 1 ? node : node.parentElement;
 
-            // Title
-            const sectionTitle = document.createElement('div');
-            sectionTitle.className = 'section-title';
-            sectionTitle.contentEditable = "true";
-            sectionTitle.textContent = title;
-            section.appendChild(sectionTitle);
+              if (el && el.closest("#resume") && !sel.isCollapsed) {
+                const size = window.getComputedStyle(el).fontSize;
+                const px = parseFloat(size);
+                
+                this.currentSelectionRange = range.cloneRange();
+                if (!isNaN(px)) slider.value = Math.round(px * 2) / 2;
+              }
+            }
+          });
 
-            // Content based on type
-            if (type === 'text') {
+          slider.addEventListener("input", (e) => {
+            this.isAdjustingSize = true;
+            const size = e.target.value + "px";
+            if (this.currentSelectionRange) {
+              const sel = window.getSelection();
+              sel.removeAllRanges();
+              sel.addRange(this.currentSelectionRange);
+              this.applyStyleToSelection("fontSize", size);
+            }
+            setTimeout(() => { this.isAdjustingSize = false; }, 100);
+          });
+        }
+
+        applyStyleToSelection(property, value) {
+          const sel = window.getSelection();
+          if (!sel.rangeCount || sel.isCollapsed) return;
+
+          if (property === "fontSize") {
+            const magicHex = "#abcdef";
+            const helper = document.createElement("div");
+            helper.style.backgroundColor = magicHex;
+            const magicColor = helper.style.backgroundColor;
+
+            document.execCommand("styleWithCSS", false, true);
+            document.execCommand("hiliteColor", false, magicHex);
+
+            const resumeEl = document.getElementById("resume");
+            const newNodes = [];
+
+            resumeEl.querySelectorAll("span").forEach(span => {
+              if (span.style.backgroundColor === magicColor) {
+                span.style.backgroundColor = "";
+                span.style.fontSize = value;
+                if (span.getAttribute("style") === "") span.removeAttribute("style");
+                newNodes.push(span);
+              }
+            });
+
+            if (newNodes.length > 0) {
+              const newRange = document.createRange();
+              newRange.setStartBefore(newNodes[0]);
+              newRange.setEndAfter(newNodes[newNodes.length - 1]);
+              sel.removeAllRanges();
+              sel.addRange(newRange);
+              this.currentSelectionRange = newRange.cloneRange();
+            }
+          }
+        }
+        applyScheme(name) {
+          const root = document.documentElement;
+          const schemes = {
+            coastal: { "inp-header-color": "#93C572", "inp-accent-color": "#82C8E5", "inp-bg-color": "#F5F5DC" },
+            spring: { "inp-header-color": "#6395EE", "inp-accent-color": "#88CFA8", "inp-bg-color": "#ffffff" },
+            winter: { "inp-header-color": "#0B2E33", "inp-accent-color": "#4F7C82", "inp-bg-color": "#B8E3E9" },
+            slate: { "inp-header-color": "#4A4A4A", "inp-accent-color": "#6D8196", "inp-bg-color": "#FFFFE3" },
+            ocean: { "inp-header-color": "#0047AB", "inp-accent-color": "#0047AB", "inp-bg-color": "#ffffff" },
+            noir: { "inp-header-color": "#000000", "inp-accent-color": "#5C4E4E", "inp-bg-color": "#ffffff" },
+            elegant: { "inp-header-color": "#245F73", "inp-accent-color": "#733E24", "inp-bg-color": "#F2F0EF" },
+            sand: { "inp-header-color": "#AD9C8E", "inp-accent-color": "#E8D59E", "inp-bg-color": "#ffffff" },
+            industrial: { "inp-header-color": "#736F60", "inp-accent-color": "#5C8DC5", "inp-bg-color": "#ffffff" }
+          };
+          const s = schemes[name];
+          if(!s) return;
+          Object.keys(s).forEach(id => {
+            const el = document.getElementById(id);
+            if(el) { el.value = s[id]; root.style.setProperty(this.settingsMap[id], s[id]); }
+          });
+          this.saveSettings();
+        }
+        attachReorderButtons() {
+          document.querySelectorAll('.section').forEach(sec => {
+            const existing = sec.querySelector('.reorder-btns');
+            if (existing) existing.remove();
+            
+            const cnt = document.createElement('div');
+            cnt.className = 'reorder-btns';
+            cnt.contentEditable = "false";
+            cnt.innerHTML = `<button class="reorder-btn" title="Add Item" onclick="resumeCustomizer.addItem(this.closest('.section'))">+</button>
+                             <button class="reorder-btn" onclick="resumeCustomizer.move(this.closest('.section'),-1)">▲</button>
+                             <button class="reorder-btn" onclick="resumeCustomizer.move(this.closest('.section'),1)">▼</button>
+                             <button class="reorder-btn del" onclick="this.closest('.section').remove()">×</button>`;
+            sec.appendChild(cnt);
+          });
+        }
+        addItem(section) {
+            if (section.querySelector('.job') || section.querySelector('.job-header')) {
+                const job = document.createElement('div');
+                job.className = 'job';
+                job.innerHTML = `
+                    <div class="job-header">
+                        <span class="job-company" contenteditable="true">Company Name</span>
+                        <span class="job-dates" contenteditable="true">Date - Present</span>
+                    </div>
+                    <div class="job-role" contenteditable="true">Job Title · Location</div>
+                    <ul><li contenteditable="true">Key achievement or responsibility</li></ul>
+                `;
+                section.appendChild(job);
+            } else if (section.querySelector('ul')) {
+                const li = document.createElement('li');
+                li.contentEditable = "true";
+                li.textContent = "New list item...";
+                section.querySelector('ul').appendChild(li);
+            } else {
                 const p = document.createElement('p');
                 p.contentEditable = "true";
-                p.textContent = "Write your content here...";
+                p.style.fontSize = "11px";
+                p.style.marginTop = "4px";
+                p.textContent = "New experience block or content...";
                 section.appendChild(p);
-            } else if (type === 'list') {
-                const ul = document.createElement('ul');
-                ul.contentEditable = "true";
-                const li1 = document.createElement('li');
-                li1.textContent = "List item 1";
-                const li2 = document.createElement('li');
-                li2.textContent = "List item 2";
-                ul.appendChild(li1);
-                ul.appendChild(li2);
-                section.appendChild(ul);
-            } else if (type === 'job') {
-                const jobDiv = document.createElement('div');
-                jobDiv.className = 'job';
-
-                const jobHeader = document.createElement('div');
-                jobHeader.className = 'job-header';
-
-                const company = document.createElement('div');
-                company.className = 'company';
-                company.contentEditable = "true";
-                company.textContent = "Organization";
-
-                const date = document.createElement('div');
-                date.className = 'date';
-                date.contentEditable = "true";
-                date.textContent = "Date Range";
-
-                jobHeader.appendChild(company);
-                jobHeader.appendChild(date);
-
-                const role = document.createElement('div');
-                role.className = 'role';
-                role.contentEditable = "true";
-                role.textContent = "Role / Title";
-
-                const ul = document.createElement('ul');
-                ul.contentEditable = "true";
-                const li = document.createElement('li');
-                li.textContent = "Description...";
-                ul.appendChild(li);
-
-                jobDiv.appendChild(jobHeader);
-                jobDiv.appendChild(role);
-                jobDiv.appendChild(ul);
-
-                section.appendChild(jobDiv);
             }
-
-            resume.appendChild(section);
-
-            // Clear input
-            titleInput.value = '';
+            this.saveSettings();
         }
+        move(el, dir) {
+          if(dir === -1 && el.previousElementSibling) el.parentNode.insertBefore(el, el.previousElementSibling);
+          else if(dir === 1 && el.nextElementSibling) el.parentNode.insertBefore(el.nextElementSibling, el);
+          this.saveSettings();
+        }
+        resetSettings() {
+          localStorage.removeItem(this.STORAGE_KEY);
+          location.reload();
+        }
+        saveSettings() {
+          const s = {};
+          Object.keys(this.settingsMap).forEach(id => { const el = document.getElementById(id); if(el) s[id] = el.value; });
+          
+          const clone = document.getElementById('resume').cloneNode(true);
+          clone.querySelectorAll('.reorder-btns').forEach(el => el.remove());
+          s.content = clone.innerHTML;
+
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(s));
+        }
+        loadSettings() {
+          const raw = localStorage.getItem(this.STORAGE_KEY);
+          if(!raw) return;
+          try {
+            const s = JSON.parse(raw);
+            const root = document.documentElement;
+            Object.keys(this.settingsMap).forEach(id => {
+              if(s[id] !== undefined) {
+                const el = document.getElementById(id); if(el) el.value = s[id];
+                if (id.includes('font') || id.includes('size') || id.includes('padding')) root.style.setProperty(this.settingsMap[id], s[id] + "px");
+                else root.style.setProperty(this.settingsMap[id], s[id]);
+              }
+            });
+            const pbChk = document.getElementById('chk-page-break');
+            if(pbChk && s["chk-page-break"] !== undefined) {
+                pbChk.checked = s["chk-page-break"];
+                togglePageBreak(pbChk);
+            }
+            if(s.content) document.getElementById('resume').innerHTML = s.content;
+            this.attachReorderButtons();
+          } catch(e) {}
+        }
+      }
+      const resumeCustomizer = new Customizer();
+
+      function fmt(command, value = null) {
+        document.execCommand("styleWithCSS", false, true);
+        document.execCommand(command, false, value);
+      }
+
+      function restoreAndFmt(command, value) {
+          if (resumeCustomizer.currentSelectionRange) {
+              const sel = window.getSelection();
+              sel.removeAllRanges();
+              sel.addRange(resumeCustomizer.currentSelectionRange);
+              fmt(command, value);
+          }
+      }
+
+      function togglePageBreak(chk) {
+          const marker = document.getElementById('page-break-line');
+          if(marker) marker.style.display = chk.checked ? 'block' : 'none';
+      }
+      function addSection() {
+        const t = document.getElementById('new-sec-title').value || "New Section";
+        const div = document.createElement('div');
+        div.className = "section";
+        div.innerHTML = `<div class="section-title">${t}</div><p>Content...</p>`;
+        document.getElementById('resume').appendChild(div);
+        resumeCustomizer.attachReorderButtons();
+      }
+      document.addEventListener('paste', (e) => {
+        if (e.target.isContentEditable) { e.preventDefault(); const text = e.clipboardData.getData('text/plain'); document.execCommand('insertText', false, text); }
+      });
     </script>
-</body>
+  </body>
 </html>
