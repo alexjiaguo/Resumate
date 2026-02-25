@@ -23,6 +23,7 @@
             --section-spacing: 12px;
             --item-spacing: 6px;
             --page-padding: 24px;
+            --tag-size: 7px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -41,12 +42,9 @@
         /* --- CONTROL PANEL --- */
         .controls {
             position: fixed; top: 0; left: 0; bottom: 0;
-            width: 300px;
-            background: #fff;
-            padding: 20px;
+            width: 300px; background: #fff; padding: 20px;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            overflow-y: auto;
-            z-index: 1000;
+            overflow-y: auto; z-index: 1000;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             font-size: 13px;
         }
@@ -54,47 +52,14 @@
         .controls h3 { margin: 15px 0 8px 0; font-size: 14px; color: #666; border-bottom: 1px solid #eee; padding-bottom: 4px; }
         .control-group { margin-bottom: 12px; }
         .control-group label { display: block; margin-bottom: 4px; color: #555; font-weight: 500; }
-        
-        /* STEPPER UI */
-        .stepper {
-            display: flex;
-            align-items: center;
-            border: 1px solid #d9d9d9;
-            border-radius: 4px;
-            width: 100%;
-            overflow: hidden;
-            background: #fff;
-        }
-        .stepper button {
-            width: 32px;
-            height: 32px;
-            background: #f5f5f5;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            color: #595959;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+
+        /* STEPPER */
+        .stepper { display: flex; align-items: center; border: 1px solid #d9d9d9; border-radius: 4px; width: 100%; overflow: hidden; background: #fff; }
+        .stepper button { width: 32px; height: 32px; background: #f5f5f5; border: none; cursor: pointer; font-size: 16px; color: #595959; display: flex; align-items: center; justify-content: center; }
         .stepper button:hover { background: #e6e6e6; color: #1890ff; }
-        .stepper input {
-            flex: 1;
-            width: 100%;
-            border: none;
-            text-align: center;
-            padding: 4px 8px;
-            font-size: 13px;
-            outline: none;
-            appearance: textfield;
-            -moz-appearance: textfield;
-        }
+        .stepper input { flex: 1; width: 100%; border: none; text-align: center; padding: 4px 8px; font-size: 13px; outline: none; -moz-appearance: textfield; }
         .stepper input::-webkit-outer-spin-button,
-        .stepper input::-webkit-inner-spin-button {
-            appearance: none;
-            -webkit-appearance: none;
-            margin: 0;
-        }
+        .stepper input::-webkit-inner-spin-button { appearance: none; -webkit-appearance: none; margin: 0; }
 
         .control-group input[type="color"] { width: 100%; height: 36px; border: 1px solid #ddd; padding: 2px; border-radius: 4px; cursor: pointer; }
         .control-group input[type="text"], .control-group select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
@@ -105,39 +70,29 @@
         .btn-danger { background: #e74c3c; }
         .btn-danger:hover { background: #c0392b; }
         .btn-print { background: #28a745; margin-top: 20px; }
+        .control-row { display: flex; gap: 6px; align-items: flex-end; }
+        .control-row .btn { flex: 1; margin-top: 0; }
 
-        /* --- FORMAT TOOLBAR --- */
+        /* FORMAT TOOLBAR */
         .fmt-bar { display: flex; gap: 4px; margin-bottom: 15px; padding: 8px; background: #f8f9fa; border-radius: 6px; border: 1px solid #eee; flex-wrap: wrap; }
         .fmt-btn { width: 28px; height: 28px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; font-weight: bold; color: #444; display: flex; align-items: center; justify-content: center; }
         .fmt-btn:hover { background: #eee; }
-
-        /* --- RESUME --- */
-        .resume {
-            width: 210mm;
-            min-height: 297mm;
-            background: var(--resume-bg);
-            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-            padding: var(--page-padding);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
         .fmt-color-wrap { width: 28px; height: 28px; position: relative; border-radius: 4px; overflow: hidden; border: 1px solid #ddd; }
         .fmt-color-wrap input { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; cursor: pointer; border: none; padding: 0; }
-        .control-row { display: flex; gap: 6px; }
-        .control-row .btn { flex: 1; margin-top: 0; }
+
         .page-break-marker { position: absolute; left: 0; right: 0; border-top: 2px dashed #ff4757; pointer-events: none; opacity: 0.5; z-index: 100; display: none; }
         .page-break-marker::after { content: "Page Break"; position: absolute; right: 10px; top: -20px; color: #ff4757; font-size: 11px; font-weight: bold; }
 
+        /* --- RESUME --- */
+        .resume {
+            width: 210mm; min-height: 297mm; background: var(--resume-bg);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08); padding: var(--page-padding);
+            display: flex; flex-direction: column; position: relative;
+        }
+
         .header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            border-bottom: 2px solid var(--header-color);
-            padding-bottom: 12px;
-            margin-bottom: var(--section-spacing);
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            border-bottom: 2px solid var(--header-color); padding-bottom: 12px; margin-bottom: var(--section-spacing);
         }
         .header-left h1 { font-size: var(--header-font-size); font-weight: 700; color: var(--header-color); letter-spacing: 0.3px; margin-bottom: 2px; }
         .header-left .title { font-size: 11px; color: #5a5a7a; font-weight: 500; margin-bottom: 6px; }
@@ -147,16 +102,7 @@
         .summary { font-size: 11px; color: #3a3a5c; line-height: 1.5; margin-bottom: 9px; padding: 7px 10px; background: var(--summary-bg); border-left: 2.5px solid var(--header-color); }
 
         .section { margin-bottom: var(--section-spacing); position: relative; }
-        .section-title {
-            font-size: var(--section-title-size);
-            font-weight: 700;
-            color: var(--header-color);
-            text-transform: uppercase;
-            letter-spacing: 1.8px;
-            border-bottom: 1.5px solid var(--header-color);
-            padding-bottom: 2px;
-            margin-bottom: 7px;
-        }
+        .section-title { font-size: var(--section-title-size); font-weight: 700; color: var(--header-color); text-transform: uppercase; letter-spacing: 1.8px; border-bottom: 1.5px solid var(--header-color); padding-bottom: 2px; margin-bottom: 7px; }
 
         .job { margin-bottom: var(--item-spacing); font-size: 11px; }
         .job-header { display: flex; justify-content: space-between; align-items: baseline; }
@@ -164,14 +110,12 @@
         .job-dates { font-size: 11px; color: var(--accent-color); font-weight: 600; }
         .job-title-line { font-size: 11px; color: #555; font-style: italic; margin-bottom: 3px; }
         .job ul { padding-left: 14px; margin: 0; }
-        .job li { font-size: 11px; color: #2e2e4a; margin-bottom: 2.5px; line-height: 1.45; }
+        .job li { font-size: 11px; color: #2e2e4a; margin-bottom: 2.5px; line-height: var(--line-height); }
 
-        .tag { font-size: 11px; font-weight: 700; color: #fff; padding: 1px 5px; border-radius: 2px; margin-left: 4px; vertical-align: middle; text-transform: uppercase; }
+        .tag { font-size: var(--tag-size); font-weight: 700; color: #fff; padding: 1px 5px; border-radius: 2px; margin-left: 4px; vertical-align: middle; text-transform: uppercase; }
         .tag.c { background: var(--accent-color); }
 
-        .bottom {
-            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: auto; border-top: 1.5px solid var(--header-color); padding-top: 8px;
-        }
+        .bottom { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: auto; border-top: 1.5px solid var(--header-color); padding-top: 8px; }
         .bottom-section h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--header-color); font-weight: 700; margin-bottom: 4px; }
         .bottom-section p, .bottom-section li { font-size: 11px; color: #3a3a5c; }
         .bottom-section ul { list-style: none; padding: 0; }
@@ -182,13 +126,15 @@
         .reorder-btns { position: absolute; right: -30px; top: 0; display: none; flex-direction: column; gap: 2px; }
         .section:hover .reorder-btns { display: flex; }
         .reorder-btn { background: #fff; border: 1px solid #ddd; padding: 2px 4px; font-size: 10px; cursor: pointer; border-radius: 3px; }
+        .reorder-btn:hover { background: #eee; }
+        .reorder-btn.del { background: #fdd; color: #c00; }
 
         @media print {
             body { padding: 0; background: white; }
             .controls { display: none; }
             .resume { box-shadow: none; margin: 0; width: 100%; height: auto; }
             @page { margin: 0; size: auto; }
-            .reorder-btns { display: none !important; }
+            .reorder-btns, .fmt-bar, .page-break-marker { display: none !important; }
         }
     </style>
 </head>
@@ -196,7 +142,7 @@
 
     <aside class="controls">
         <h2>Clean Layout v2.0</h2>
-        
+
         <div class="control-row" style="margin-bottom:15px;">
            <button class="btn" onclick="resumeCustomizer.saveSettings()">💾 Save</button>
            <button class="btn btn-sec" onclick="resumeCustomizer.loadSettings()">📂 Load</button>
@@ -208,15 +154,33 @@
           <label>Presets</label>
           <select id="inp-color-scheme" onchange="resumeCustomizer.applyScheme(this.value)">
             <option value="none">Custom Colors</option>
-            <option value="coastal">Coastal Morning (New)</option>
-            <option value="spring">Soft Spring (New)</option>
-            <option value="winter">Winter Chill (New)</option>
-            <option value="slate">Slate & Cream</option>
-            <option value="ocean">Ocean Professional</option>
-            <option value="noir">Noir & Taupe</option>
-            <option value="elegant">Elegant Teal</option>
-            <option value="sand">Sand & Gold</option>
-            <option value="industrial">Industrial Blue</option>
+            <optgroup label="Professional">
+              <option value="california">California Beaches</option>
+              <option value="cobalt">Cobalt Sky</option>
+              <option value="salt">Salt &amp; Pepper</option>
+              <option value="gothic">Gothic</option>
+              <option value="harbor">Harbor Haze</option>
+            </optgroup>
+            <optgroup label="Classic">
+              <option value="winter">Winter Chill</option>
+              <option value="slate">Slate &amp; Cream</option>
+              <option value="noir">Noir &amp; Taupe</option>
+              <option value="elegant">Elegant Teal</option>
+              <option value="sand">Sand &amp; Gold</option>
+              <option value="industrial">Industrial Blue</option>
+            </optgroup>
+            <optgroup label="Vibrant">
+              <option value="stone">Stone Path</option>
+              <option value="urban">Urban Loft</option>
+              <option value="calm">Calm Blue</option>
+              <option value="moonlight">Under the Moonlight</option>
+              <option value="emerald">Emerald Odyssey</option>
+              <option value="ocean">Ocean Tide</option>
+              <option value="peach">Peach Skyline</option>
+              <option value="rainforest">Tropical Rainforest</option>
+              <option value="meadow">Wildflower Meadow</option>
+              <option value="breeze">Summer Breeze</option>
+            </optgroup>
           </select>
         </div>
 
@@ -240,22 +204,12 @@
 
         <h3>Layout Sizes</h3>
         <div class="control-row">
-            <div class="control-group" style="flex:1">
-              <label>Page Padding</label>
-              <div class="stepper">
-                <button onclick="stepper(this, -4)">-</button>
-                <input type="number" id="inp-page-padding" value="24" step="4">
-                <button onclick="stepper(this, 4)">+</button>
-              </div>
-            </div>
-            <div class="control-group" style="flex:1">
-              <label>Section Space</label>
-              <div class="stepper">
-                <button onclick="stepper(this, -2)">-</button>
-                <input type="number" id="inp-section-spacing" value="12" step="2">
-                <button onclick="stepper(this, 2)">+</button>
-              </div>
-            </div>
+            <div class="control-group" style="flex:1"><label>Page Padding</label><div class="stepper"><button onclick="stepper(this, -4)">-</button><input type="number" id="inp-page-padding" value="24" step="4"><button onclick="stepper(this, 4)">+</button></div></div>
+            <div class="control-group" style="flex:1"><label>Section Space</label><div class="stepper"><button onclick="stepper(this, -2)">-</button><input type="number" id="inp-section-spacing" value="12" step="2"><button onclick="stepper(this, 2)">+</button></div></div>
+        </div>
+        <div class="control-row">
+            <div class="control-group" style="flex:1"><label>Line Height</label><div class="stepper"><button onclick="stepper(this, -0.1)">-</button><input type="number" id="inp-line-height" value="1.35" step="0.1" min="1.0" max="2.5"><button onclick="stepper(this, 0.1)">+</button></div></div>
+            <div class="control-group" style="flex:1"><label>Item Space</label><div class="stepper"><button onclick="stepper(this, -1)">-</button><input type="number" id="inp-item-spacing" value="6"><button onclick="stepper(this, 1)">+</button></div></div>
         </div>
 
         <div class="control-group">
@@ -265,46 +219,23 @@
             </label>
         </div>
 
-        <h3>Add Content</h3>
-        <div class="control-row">
-            <button class="btn btn-sec" onclick="resumeCustomizer.addSection()">+ Section</button>
-            <button class="btn btn-sec" onclick="resumeCustomizer.addJob()">+ Job Item</button>
-        </div>
-
         <h3>Typography Sizes</h3>
         <div class="control-row">
-            <div class="control-group" style="flex:1">
-                <label>Base Font</label>
-                <div class="stepper">
-                    <button onclick="stepper(this, -0.5)">-</button>
-                    <input type="number" id="inp-font" value="11" step="0.5">
-                    <button onclick="stepper(this, 0.5)">+</button>
-                </div>
-            </div>
-            <div class="control-group" style="flex:1">
-                <label>Name Size</label>
-                <div class="stepper">
-                    <button onclick="stepper(this, -1)">-</button>
-                    <input type="number" id="inp-hsize" value="24">
-                    <button onclick="stepper(this, 1)">+</button>
-                </div>
-            </div>
+            <div class="control-group" style="flex:1"><label>Base Font</label><div class="stepper"><button onclick="stepper(this, -0.5)">-</button><input type="number" id="inp-font" value="11" step="0.5"><button onclick="stepper(this, 0.5)">+</button></div></div>
+            <div class="control-group" style="flex:1"><label>Name Size</label><div class="stepper"><button onclick="stepper(this, -1)">-</button><input type="number" id="inp-hsize" value="24"><button onclick="stepper(this, 1)">+</button></div></div>
         </div>
         <div class="control-row">
-            <div class="control-group" style="flex:1">
-                <label>Section Title</label>
-                <div class="stepper">
-                    <button onclick="stepper(this, -0.5)">-</button>
-                    <input type="number" id="inp-section-title-size" value="12" step="0.5">
-                    <button onclick="stepper(this, 0.5)">+</button>
-                </div>
-            </div>
+            <div class="control-group" style="flex:1"><label>Section Title</label><div class="stepper"><button onclick="stepper(this, -0.5)">-</button><input type="number" id="inp-section-title-size" value="12" step="0.5"><button onclick="stepper(this, 0.5)">+</button></div></div>
+            <div class="control-group" style="flex:1"><label>Company/Edu</label><div class="stepper"><button onclick="stepper(this, -0.5)">-</button><input type="number" id="inp-company-size" value="11" step="0.5"><button onclick="stepper(this, 0.5)">+</button></div></div>
+        </div>
+        <div class="control-row">
             <div class="control-group" style="flex:1">
                 <label>Font Family</label>
                 <select id="inp-font-family" style="padding: 6.5px;">
                     <option value="'Inter', sans-serif">Inter</option>
                     <option value="'Roboto', sans-serif">Roboto</option>
                     <option value="'Open Sans', sans-serif">Open Sans</option>
+                    <option value="'Merriweather', serif">Merriweather</option>
                 </select>
             </div>
         </div>
@@ -315,6 +246,13 @@
             <div class="control-group" style="flex:1"><label>Accent Col</label><input type="color" id="inp-accent-color" value="#0f7b6c"></div>
         </div>
         <div class="control-group"><label>Background</label><input type="color" id="inp-bg-color" value="#ffffff"></div>
+
+        <h3>Add Content</h3>
+        <div class="control-row">
+            <button class="btn btn-sec" onclick="resumeCustomizer.addSection()">+ Section</button>
+            <button class="btn btn-sec" onclick="resumeCustomizer.addJob()">+ Job Item</button>
+            <button class="btn btn-sec" onclick="resumeCustomizer.addTag()">+ Tag</button>
+        </div>
 
         <button class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
     </aside>
@@ -357,7 +295,18 @@
     <script>
         function stepper(btn, amount) {
             const input = btn.parentNode.querySelector('input');
-            input.value = (parseFloat(input.value) || 0) + amount;
+            const min = parseFloat(input.min) || 0;
+            const max = parseFloat(input.max) || 1000;
+            const step = parseFloat(input.step) || 1;
+            let val = (parseFloat(input.value) || 0) + amount;
+            const precision = Math.max(
+                (amount.toString().split('.')[1] || '').length,
+                (step.toString().split('.')[1] || '').length
+            );
+            val = parseFloat(val.toFixed(precision));
+            if (val < min) val = min;
+            if (val > max) val = max;
+            input.value = val;
             input.dispatchEvent(new Event('input', { bubbles: true }));
         }
 
@@ -375,24 +324,23 @@
                     'inp-company-size': '--company-font-size',
                     'inp-page-padding': '--page-padding',
                     'inp-section-spacing': '--section-spacing',
+                    'inp-item-spacing': '--item-spacing',
+                    'inp-line-height': '--line-height',
                     'inp-selection-size': null,
                 };
+                this.pxFields = ['inp-font', 'inp-hsize', 'inp-section-title-size', 'inp-company-size', 'inp-page-padding', 'inp-section-spacing', 'inp-item-spacing'];
                 this.init();
             }
+
             init() {
                 this.currentSelectionRange = null;
-                if (document.readyState === 'loading') { 
-                    document.addEventListener('DOMContentLoaded', () => {
-                        this.loadSettings();
-                        this.initTextSizing();
-                    }); 
-                } 
-                else { 
-                    this.loadSettings();
-                    this.initTextSizing();
-                }
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => { this.loadSettings(); this.initTextSizing(); });
+                } else { this.loadSettings(); this.initTextSizing(); }
                 this.initListeners();
+                this.attachReorderButtons();
             }
+
             initListeners() {
                 const root = document.documentElement;
                 Object.keys(this.settingsMap).forEach(id => {
@@ -400,217 +348,257 @@
                     if (el) el.addEventListener('input', (e) => {
                         const varName = this.settingsMap[id];
                         const val = e.target.value;
-                        if (id.includes('font') || id.includes('size') || id.includes('padding') || id.includes('spacing')) {
-                            root.style.setProperty(varName, val + 'px');
-                        } else { root.style.setProperty(varName, val); }
+                        if (varName) {
+                            if (this.pxFields.includes(id)) root.style.setProperty(varName, val + 'px');
+                            else root.style.setProperty(varName, val);
+                        }
                         this.saveSettings();
                     });
                 });
                 document.getElementById('resume').addEventListener('input', () => this.saveSettings());
                 const pbChk = document.getElementById('chk-page-break');
-                if(pbChk) pbChk.addEventListener('change', () => this.saveSettings());
+                if (pbChk) pbChk.addEventListener('change', () => this.saveSettings());
             }
 
             initTextSizing() {
-              this.isAdjustingSize = false;
-              const slider = document.getElementById("inp-selection-size");
-              if (!slider) return;
+                this.isAdjustingSize = false;
+                const slider = document.getElementById("inp-selection-size");
+                if (!slider) return;
 
-              document.addEventListener("selectionchange", () => {
-                if (this.isAdjustingSize) return;
-                const sel = window.getSelection();
-                if (sel.rangeCount > 0) {
-                  const range = sel.getRangeAt(0);
-                  const node = range.commonAncestorContainer;
-                  const el = node.nodeType === 1 ? node : node.parentElement;
+                document.addEventListener("selectionchange", () => {
+                    if (this.isAdjustingSize) return;
+                    const sel = window.getSelection();
+                    if (sel.rangeCount > 0 && !sel.isCollapsed) {
+                        const range = sel.getRangeAt(0);
+                        let node = range.commonAncestorContainer;
+                        if (node.nodeType === 3) node = node.parentElement;
+                        if (node && node.closest("#resume")) {
+                            this.currentSelectionRange = range.cloneRange();
+                            const px = parseFloat(window.getComputedStyle(node).fontSize);
+                            if (!isNaN(px)) slider.value = Math.round(px * 10) / 10;
+                        }
+                    }
+                });
 
-                  if (el && el.closest("#resume") && !sel.isCollapsed) {
-                    const size = window.getComputedStyle(el).fontSize;
-                    const px = parseFloat(size);
-                    
-                    this.currentSelectionRange = range.cloneRange();
-                    if (!isNaN(px)) slider.value = Math.round(px * 2) / 2;
-                  }
-                }
-              });
+                slider.addEventListener("mousedown", () => { this.isAdjustingSize = true; });
+                slider.addEventListener("mouseup", () => { setTimeout(() => { this.isAdjustingSize = false; }, 50); });
 
-              slider.addEventListener("input", (e) => {
-                this.isAdjustingSize = true;
-                const size = e.target.value + "px";
-                if (this.currentSelectionRange) {
-                  const sel = window.getSelection();
-                  sel.removeAllRanges();
-                  sel.addRange(this.currentSelectionRange);
-                  this.applyStyleToSelection("fontSize", size);
-                }
-                setTimeout(() => { this.isAdjustingSize = false; }, 100);
-              });
+                slider.addEventListener("input", (e) => {
+                    const size = e.target.value + "px";
+                    if (this.currentSelectionRange) {
+                        const sel = window.getSelection();
+                        sel.removeAllRanges();
+                        sel.addRange(this.currentSelectionRange);
+                        this.applyStyleToSelection("fontSize", size);
+                    }
+                });
             }
 
             applyStyleToSelection(property, value) {
-              const sel = window.getSelection();
-              if (!sel.rangeCount || sel.isCollapsed) return;
-
-              if (property === "fontSize") {
-                const magicHex = "#abcdef";
-                const helper = document.createElement("div");
-                helper.style.backgroundColor = magicHex;
-                const magicColor = helper.style.backgroundColor;
-
-                document.execCommand("styleWithCSS", false, true);
-                document.execCommand("hiliteColor", false, magicHex);
-
+                const sel = window.getSelection();
+                if (!sel.rangeCount || sel.isCollapsed) return;
                 const resumeEl = document.getElementById("resume");
-                const newNodes = [];
 
-                resumeEl.querySelectorAll("span").forEach(span => {
-                  if (span.style.backgroundColor === magicColor) {
-                    span.style.backgroundColor = "";
-                    span.style.fontSize = value;
-                    if (span.getAttribute("style") === "") span.removeAttribute("style");
-                    newNodes.push(span);
-                  }
-                });
+                if (property === "fontSize") {
+                    document.execCommand("styleWithCSS", false, true);
+                    const magicHex = "#ABCDEF";
+                    const helper = document.createElement("div");
+                    helper.style.backgroundColor = magicHex;
+                    const magicColor = helper.style.backgroundColor;
+                    document.execCommand("hiliteColor", false, magicHex);
 
-                if (newNodes.length > 0) {
-                  const newRange = document.createRange();
-                  newRange.setStartBefore(newNodes[0]);
-                  newRange.setEndAfter(newNodes[newNodes.length - 1]);
-                  sel.removeAllRanges();
-                  sel.addRange(newRange);
-                  this.currentSelectionRange = newRange.cloneRange();
+                    resumeEl.querySelectorAll('span[style*="background-color"]').forEach(span => {
+                        if (span.style.backgroundColor === magicColor) {
+                            span.style.backgroundColor = "";
+                            span.style.fontSize = value;
+                            if (!span.getAttribute("style") || span.style.length === 0) {
+                                const parent = span.parentNode;
+                                while (span.firstChild) parent.insertBefore(span.firstChild, span);
+                                parent.removeChild(span);
+                            }
+                        }
+                    });
+                    this.flattenSpans(resumeEl);
+                    if (this.currentSelectionRange) { sel.removeAllRanges(); sel.addRange(this.currentSelectionRange); }
+                } else {
+                    document.execCommand(property, false, value);
                 }
-              }
+                this.saveSettings();
             }
+
+            flattenSpans(root) {
+                root.querySelectorAll("span span").forEach(inner => {
+                    const outer = inner.parentElement;
+                    if (outer.tagName === "SPAN" && inner.style.fontSize) {
+                        outer.style.fontSize = inner.style.fontSize;
+                        while (inner.firstChild) outer.insertBefore(inner.firstChild, inner);
+                        outer.removeChild(inner);
+                    }
+                });
+            }
+
+            addTag() {
+                const sel = window.getSelection();
+                const resume = document.getElementById('resume');
+                if (sel.rangeCount > 0) {
+                    const range = sel.getRangeAt(0);
+                    let node = range.commonAncestorContainer;
+                    if (node.nodeType === 3) node = node.parentNode;
+                    if (resume.contains(node)) {
+                        const tag = document.createElement("span");
+                        tag.className = "tag c";
+                        tag.textContent = "TAG";
+                        tag.contentEditable = "true";
+                        range.deleteContents();
+                        range.insertNode(tag);
+                        const space = document.createTextNode("\u00A0");
+                        tag.after(space);
+                        range.setStartAfter(space);
+                        range.setEndAfter(space);
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                        this.saveSettings();
+                        return;
+                    }
+                }
+                alert("Click inside the resume where you want to insert the tag.");
+            }
+
             addSection() {
                 const container = document.getElementById('experience-container');
-                const sec = document.createElement('div');
-                sec.className = 'section';
+                const sec = document.createElement('div'); sec.className = 'section';
                 sec.innerHTML = `<div class="section-title">New Section</div><div class="job">New detail...</div>`;
                 container.appendChild(sec);
                 this.attachReorderButtons();
                 this.saveSettings();
             }
+
             addJob() {
                 let sec = document.querySelector('.section');
-                if(!sec) { this.addSection(); sec = document.querySelector('.section'); }
-                const job = document.createElement('div');
-                job.className = 'job';
+                if (!sec) { this.addSection(); sec = document.querySelector('.section'); }
+                const job = document.createElement('div'); job.className = 'job';
                 job.innerHTML = `<div class="job-header"><span class="job-company">Company</span><span class="job-dates">Dates</span></div>
                                  <div class="job-title-line">Title · Location</div>
                                  <ul><li>Key achievement.</li></ul>`;
                 sec.appendChild(job);
                 this.saveSettings();
             }
-            resetSettings() {
-                localStorage.removeItem(this.STORAGE_KEY);
-                location.reload();
-            }
+
             applyScheme(name) {
                 const root = document.documentElement;
                 const schemes = {
-                    coastal: { 'inp-header-color': '#93C572', 'inp-accent-color': '#82C8E5', 'inp-bg-color': '#F5F5DC' },
-                    spring: { 'inp-header-color': '#6395EE', 'inp-accent-color': '#88CFA8', 'inp-bg-color': '#ffffff' },
-                    winter: { 'inp-header-color': '#0B2E33', 'inp-accent-color': '#4F7C82', 'inp-bg-color': '#B8E3E9' },
+                    california: { 'inp-header-color': '#7D99AA', 'inp-accent-color': '#FFC067', 'inp-bg-color': '#ffffff' },
+                    cobalt: { 'inp-header-color': '#000080', 'inp-accent-color': '#6D8196', 'inp-bg-color': '#ffffff' },
+                    salt: { 'inp-header-color': '#2B2B2B', 'inp-accent-color': '#B3B3B3', 'inp-bg-color': '#ffffff' },
+                    gothic: { 'inp-header-color': '#000000', 'inp-accent-color': '#988686', 'inp-bg-color': '#ffffff' },
+                    harbor: { 'inp-header-color': '#5C8DC5', 'inp-accent-color': '#AD9E90', 'inp-bg-color': '#ffffff' },
+                    winter: { 'inp-header-color': '#0B2E33', 'inp-accent-color': '#4F7C82', 'inp-bg-color': '#ffffff' },
                     slate: { 'inp-header-color': '#4A4A4A', 'inp-accent-color': '#6D8196', 'inp-bg-color': '#FFFFE3' },
-                    ocean: { 'inp-header-color': '#000080', 'inp-accent-color': '#0047AB', 'inp-bg-color': '#ffffff' },
                     noir: { 'inp-header-color': '#000000', 'inp-accent-color': '#5C4E4E', 'inp-bg-color': '#ffffff' },
-                    elegant: { 'inp-header-color': '#245F73', 'inp-accent-color': '#733E24', 'inp-bg-color': '#F2F0EF' }
+                    elegant: { 'inp-header-color': '#245F73', 'inp-accent-color': '#733E24', 'inp-bg-color': '#F2F0EF' },
+                    sand: { 'inp-header-color': '#AD9C8E', 'inp-accent-color': '#E8D59E', 'inp-bg-color': '#ffffff' },
+                    industrial: { 'inp-header-color': '#736F60', 'inp-accent-color': '#5C8DC5', 'inp-bg-color': '#ffffff' },
+                    stone: { 'inp-header-color': '#968F83', 'inp-accent-color': '#A49A87', 'inp-bg-color': '#E8E5DF' },
+                    urban: { 'inp-header-color': '#464646', 'inp-accent-color': '#A35E47', 'inp-bg-color': '#ffffff' },
+                    calm: { 'inp-header-color': '#517891', 'inp-accent-color': '#57B9FF', 'inp-bg-color': '#ffffff' },
+                    moonlight: { 'inp-header-color': '#292966', 'inp-accent-color': '#5C5C99', 'inp-bg-color': '#ffffff' },
+                    emerald: { 'inp-header-color': '#00674F', 'inp-accent-color': '#3EBB9E', 'inp-bg-color': '#ffffff' },
+                    ocean: { 'inp-header-color': '#4052D6', 'inp-accent-color': '#005C5C', 'inp-bg-color': '#ffffff' },
+                    peach: { 'inp-header-color': '#496580', 'inp-accent-color': '#BADDFF', 'inp-bg-color': '#ffffff' },
+                    rainforest: { 'inp-header-color': '#4F7942', 'inp-accent-color': '#71AA34', 'inp-bg-color': '#ffffff' },
+                    meadow: { 'inp-header-color': '#82C8E5', 'inp-accent-color': '#7CFC00', 'inp-bg-color': '#ffffff' },
+                    breeze: { 'inp-header-color': '#82C8E5', 'inp-accent-color': '#E6D8C4', 'inp-bg-color': '#ffffff' },
                 };
                 const s = schemes[name];
-                if(!s) return;
+                if (!s) return;
                 Object.keys(s).forEach(id => {
-                   const el = document.getElementById(id);
-                   if(el) { el.value = s[id]; root.style.setProperty(this.settingsMap[id], s[id]); }
+                    const el = document.getElementById(id);
+                    if (el) { el.value = s[id]; const v = this.settingsMap[id]; if (v) root.style.setProperty(v, s[id]); }
                 });
                 this.saveSettings();
             }
+
             attachReorderButtons() {
                 document.querySelectorAll('.section').forEach(sec => {
                     const existing = sec.querySelector('.reorder-btns');
                     if (existing) existing.remove();
-
                     const cnt = document.createElement('div');
                     cnt.className = 'reorder-btns'; cnt.contentEditable = "false";
                     cnt.innerHTML = `<button class="reorder-btn" title="Add Item" onclick="resumeCustomizer.addItem(this.closest('.section'))">+</button>
                                      <button class="reorder-btn" onclick="resumeCustomizer.move(this.closest('.section'),-1)">▲</button>
                                      <button class="reorder-btn" onclick="resumeCustomizer.move(this.closest('.section'),1)">▼</button>
-                                     <button class="reorder-btn del" onclick="this.closest('.section').remove()">×</button>`;
+                                     <button class="reorder-btn del" onclick="this.closest('.section').remove(); resumeCustomizer.saveSettings()">×</button>`;
                     sec.appendChild(cnt);
                 });
             }
+
             addItem(section) {
                 if (section.querySelector('.job') || section.querySelector('.job-header')) {
-                    const job = document.createElement('div');
-                    job.className = 'job';
-                    job.innerHTML = `
-                        <div class="job-header">
-                            <span class="job-company" contenteditable="true">Company Name</span>
-                            <span class="job-dates" contenteditable="true">Date - Present</span>
-                        </div>
-                        <div class="job-role" contenteditable="true">Job Title · Location</div>
-                        <ul><li contenteditable="true">Key achievement or responsibility</li></ul>
-                    `;
+                    const job = document.createElement('div'); job.className = 'job';
+                    job.innerHTML = `<div class="job-header"><span class="job-company" contenteditable="true">Company Name</span><span class="job-dates" contenteditable="true">Date - Present</span></div>
+                                     <div class="job-title-line" contenteditable="true">Job Title · Location</div>
+                                     <ul><li contenteditable="true">Key achievement or responsibility</li></ul>`;
                     section.appendChild(job);
                 } else if (section.querySelector('ul')) {
-                    const li = document.createElement('li');
-                    li.contentEditable = "true";
-                    li.textContent = "New list item...";
+                    const li = document.createElement('li'); li.contentEditable = "true"; li.textContent = "New list item...";
                     section.querySelector('ul').appendChild(li);
                 } else {
-                    const p = document.createElement('p');
-                    p.contentEditable = "true";
-                    p.style.fontSize = "11px";
-                    p.style.marginTop = "4px";
-                    p.textContent = "New experience block or content...";
+                    const p = document.createElement('p'); p.contentEditable = "true"; p.style.fontSize = "11px"; p.style.marginTop = "4px"; p.textContent = "New content block...";
                     section.appendChild(p);
                 }
+                this.attachReorderButtons();
                 this.saveSettings();
             }
+
             move(el, dir) {
-                if(dir === -1 && el.previousElementSibling) el.parentNode.insertBefore(el, el.previousElementSibling);
+                if (dir === -1 && el.previousElementSibling) el.parentNode.insertBefore(el, el.previousElementSibling);
+                else if (dir === 1 && el.nextElementSibling) el.parentNode.insertBefore(el.nextElementSibling, el);
                 this.saveSettings();
             }
+
+            resetSettings() { localStorage.removeItem(this.STORAGE_KEY); location.reload(); }
+
             saveSettings() {
                 const s = {};
-                Object.keys(this.settingsMap).forEach(id => { const el = document.getElementById(id); if(el) s[id] = el.value; });
+                Object.keys(this.settingsMap).forEach(id => { const el = document.getElementById(id); if (el) s[id] = el.value; });
                 const pbChk = document.getElementById('chk-page-break');
-                if(pbChk) s["chk-page-break"] = pbChk.checked;
-                
+                if (pbChk) s["chk-page-break"] = pbChk.checked;
                 const clone = document.getElementById('resume').cloneNode(true);
                 clone.querySelectorAll('.reorder-btns').forEach(el => el.remove());
                 s.content = clone.innerHTML;
-
                 localStorage.setItem(this.STORAGE_KEY, JSON.stringify(s));
             }
+
             loadSettings() {
                 const raw = localStorage.getItem(this.STORAGE_KEY);
-                if(!raw) { this.attachReorderButtons(); return; }
+                if (!raw) { this.attachReorderButtons(); return; }
                 try {
                     const s = JSON.parse(raw);
                     const root = document.documentElement;
                     Object.keys(this.settingsMap).forEach(id => {
-                        if(s[id] !== undefined) {
-                            const el = document.getElementById(id); if(el) el.value = s[id];
-                            if (id.includes('font') || id.includes('size') || id.includes('padding')) root.style.setProperty(this.settingsMap[id], s[id] + "px");
-                            else root.style.setProperty(this.settingsMap[id], s[id]);
+                        if (s[id] !== undefined) {
+                            const el = document.getElementById(id); if (el) el.value = s[id];
+                            const varName = this.settingsMap[id];
+                            if (varName) {
+                                if (this.pxFields.includes(id)) root.style.setProperty(varName, s[id] + 'px');
+                                else root.style.setProperty(varName, s[id]);
+                            }
                         }
                     });
                     const pbChk = document.getElementById('chk-page-break');
-                    if(pbChk && s["chk-page-break"] !== undefined) {
-                        pbChk.checked = s["chk-page-break"];
-                        togglePageBreak(pbChk);
-                    }
-                    if(s.content) document.getElementById('resume').innerHTML = s.content;
+                    if (pbChk && s["chk-page-break"] !== undefined) { pbChk.checked = s["chk-page-break"]; togglePageBreak(pbChk); }
+                    if (s.content) document.getElementById('resume').innerHTML = s.content;
                     this.attachReorderButtons();
-                } catch(e) {}
+                } catch (e) { console.error(e); }
             }
         }
+
         const resumeCustomizer = new Customizer();
 
         function fmt(command, value = null) {
-          document.execCommand("styleWithCSS", false, true);
-          document.execCommand(command, false, value);
+            document.execCommand("styleWithCSS", false, true);
+            document.execCommand(command, false, value);
+            resumeCustomizer.saveSettings();
         }
 
         function restoreAndFmt(command, value) {
@@ -619,13 +607,15 @@
                 sel.removeAllRanges();
                 sel.addRange(resumeCustomizer.currentSelectionRange);
                 fmt(command, value);
+                if (sel.rangeCount > 0) resumeCustomizer.currentSelectionRange = sel.getRangeAt(0).cloneRange();
             }
         }
 
         function togglePageBreak(chk) {
             const marker = document.getElementById('page-break-line');
-            if(marker) marker.style.display = chk.checked ? 'block' : 'none';
+            if (marker) marker.style.display = chk.checked ? 'block' : 'none';
         }
+
         document.addEventListener('paste', (e) => {
             if (e.target.isContentEditable) { e.preventDefault(); const text = e.clipboardData.getData('text/plain'); document.execCommand('insertText', false, text); }
         });
