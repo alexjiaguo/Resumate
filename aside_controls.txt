@@ -1,0 +1,1511 @@
+
+================ ATS_Executive.html ================
+
+<aside class="controls">
+ <h2>
+  Executive PM v4.0
+ </h2>
+ <div class="control-row" style="margin-bottom:10px;">
+  <button class="btn" onclick="resumeCustomizer.saveSettings()">
+   💾 Save
+  </button>
+  <button class="btn btn-sec" onclick="resumeCustomizer.loadSettings()">
+   📂 Load
+  </button>
+  <button class="btn btn-danger" onclick="resumeCustomizer.resetSettings()">
+   ↺ Reset
+  </button>
+ </div>
+ <h3>
+  Color Schemes
+ </h3>
+ <div class="control-group">
+  <label>
+   Presets
+  </label>
+  <select id="inp-color-scheme" onchange="resumeCustomizer.applyScheme(this.value)">
+   <option value="none">
+    Custom Colors
+   </option>
+   <optgroup label="Professional">
+    <option value="california">
+     California Beaches
+    </option>
+    <option value="cobalt">
+     Cobalt Sky
+    </option>
+    <option value="salt">
+     Salt &amp; Pepper
+    </option>
+    <option value="gothic">
+     Gothic
+    </option>
+    <option value="harbor">
+     Harbor Haze
+    </option>
+   </optgroup>
+   <optgroup label="Classic">
+    <option value="winter">
+     Winter Chill
+    </option>
+    <option value="slate">
+     Slate &amp; Cream
+    </option>
+    <option value="noir">
+     Noir &amp; Taupe
+    </option>
+    <option value="elegant">
+     Elegant Teal
+    </option>
+    <option value="sand">
+     Sand &amp; Gold
+    </option>
+    <option value="industrial">
+     Industrial Blue
+    </option>
+   </optgroup>
+   <optgroup label="Vibrant">
+    <option value="stone">
+     Stone Path
+    </option>
+    <option value="urban">
+     Urban Loft
+    </option>
+    <option value="calm">
+     Calm Blue
+    </option>
+    <option value="moonlight">
+     Under the Moonlight
+    </option>
+    <option value="emerald">
+     Emerald Odyssey
+    </option>
+    <option value="ocean">
+     Ocean Tide
+    </option>
+    <option value="peach">
+     Peach Skyline
+    </option>
+    <option value="rainforest">
+     Tropical Rainforest
+    </option>
+    <option value="meadow">
+     Wildflower Meadow
+    </option>
+    <option value="breeze">
+     Summer Breeze
+    </option>
+   </optgroup>
+  </select>
+ </div>
+ <h3>
+  Colors
+ </h3>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Header
+   </label>
+   <input id="inp-header-color" type="color" value="#1a1a2e"/>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Accent
+   </label>
+   <input id="inp-accent-color" type="color" value="#0066cc"/>
+  </div>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Background
+   </label>
+   <input id="inp-bg-color" type="color" value="#ffffff"/>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Divider
+   </label>
+   <input id="inp-divider-color" type="color" value="#d0d5dd"/>
+  </div>
+ </div>
+ <h3>
+  Text Formatting
+ </h3>
+ <div class="fmt-bar">
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('bold')">
+   B
+  </button>
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('italic')">
+   <i>
+    I
+   </i>
+  </button>
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('underline')">
+   <u>
+    U
+   </u>
+  </button>
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('removeFormat')">
+   ✕
+  </button>
+  <div class="fmt-color-wrap">
+   <input onchange="restoreAndFmt('foreColor', this.value)" type="color"/>
+  </div>
+  <div class="fmt-color-wrap">
+   <input onchange="restoreAndFmt('hiliteColor', this.value)" type="color"/>
+  </div>
+ </div>
+ <div class="control-group">
+  <label>
+   Selected Text Size
+  </label>
+  <div class="stepper">
+   <button onclick="stepper(this, -0.5)">
+    -
+   </button>
+   <input id="inp-selection-size" step="0.5" type="number" value="11"/>
+   <button onclick="stepper(this, 0.5)">
+    +
+   </button>
+  </div>
+ </div>
+ <h3>
+  Typography
+ </h3>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Base Font
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.5)">
+     -
+    </button>
+    <input id="inp-font" step="0.5" type="number" value="11"/>
+    <button onclick="stepper(this, 0.5)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Name Size
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -1)">
+     -
+    </button>
+    <input id="inp-hsize" type="number" value="22"/>
+    <button onclick="stepper(this, 1)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Section Title
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.5)">
+     -
+    </button>
+    <input id="inp-section-title-size" step="0.5" type="number" value="11"/>
+    <button onclick="stepper(this, 0.5)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Company Size
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.5)">
+     -
+    </button>
+    <input id="inp-company-size" step="0.5" type="number" value="11"/>
+    <button onclick="stepper(this, 0.5)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Font Family
+   </label>
+   <select id="inp-font-family" style="padding:5px;">
+    <option value="'Inter', sans-serif">
+     Inter
+    </option>
+    <option value="'Roboto', sans-serif">
+     Roboto
+    </option>
+    <option value="'Open Sans', sans-serif">
+     Open Sans
+    </option>
+    <option value="'Lato', sans-serif">
+     Lato
+    </option>
+   </select>
+  </div>
+ </div>
+ <h3>
+  Spacing
+ </h3>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Page Padding
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -2)">
+     -
+    </button>
+    <input id="inp-page-padding" type="number" value="36"/>
+    <button onclick="stepper(this, 2)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Line Height
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.1)">
+     -
+    </button>
+    <input id="inp-line-height" max="2.5" min="1.0" step="0.1" type="number" value="1.4"/>
+    <button onclick="stepper(this, 0.1)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Section Gap
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -1)">
+     -
+    </button>
+    <input id="inp-section-spacing" type="number" value="12"/>
+    <button onclick="stepper(this, 1)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Item Gap
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -1)">
+     -
+    </button>
+    <input id="inp-item-spacing" type="number" value="6"/>
+    <button onclick="stepper(this, 1)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-group">
+  <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+   <input id="chk-page-break" onchange="togglePageBreak(this)" type="checkbox"/>
+   Show Page Break Marker
+  </label>
+ </div>
+ <h3>
+  Add Content
+ </h3>
+ <div class="control-group">
+  <input id="new-sec-title" placeholder="Section Name" type="text"/>
+ </div>
+ <div class="control-row">
+  <button class="btn btn-sec" onclick="addSection()">
+   + Section
+  </button>
+  <button class="btn btn-sec" onclick="resumeCustomizer.addTag()">
+   + Tag
+  </button>
+ </div>
+ <button class="btn btn-print" onclick="window.print()">
+  Print / Save PDF
+ </button>
+</aside>
+
+
+================ Classic_Minimal.html ================
+
+<aside class="controls">
+ <h2>
+  Professional v1.0
+ </h2>
+ <div class="control-row">
+  <button class="btn" onclick="resumeCustomizer.saveSettings()">
+   💾 Save
+  </button>
+  <button class="btn btn-sec" onclick="resumeCustomizer.loadSettings()">
+   📂 Load
+  </button>
+  <button class="btn btn-danger" onclick="resumeCustomizer.resetSettings()">
+   ↺ Reset
+  </button>
+ </div>
+ <h3>
+  Color Schemes
+ </h3>
+ <div class="control-group">
+  <label>
+   Presets
+  </label>
+  <select id="inp-color-scheme" onchange="resumeCustomizer.applyScheme(this.value)">
+   <option value="none">
+    Custom Colors
+   </option>
+   <optgroup label="Professional">
+    <option value="california">
+     California Beaches
+    </option>
+    <option value="cobalt">
+     Cobalt Sky
+    </option>
+    <option value="salt">
+     Salt &amp; Pepper
+    </option>
+    <option value="gothic">
+     Gothic
+    </option>
+    <option value="harbor">
+     Harbor Haze
+    </option>
+   </optgroup>
+   <optgroup label="Classic">
+    <option value="winter">
+     Winter Chill
+    </option>
+    <option value="slate">
+     Slate &amp; Cream
+    </option>
+    <option value="noir">
+     Noir &amp; Taupe
+    </option>
+    <option value="elegant">
+     Elegant Teal
+    </option>
+    <option value="sand">
+     Sand &amp; Gold
+    </option>
+    <option value="industrial">
+     Industrial Blue
+    </option>
+   </optgroup>
+   <optgroup label="Vibrant">
+    <option value="stone">
+     Stone Path
+    </option>
+    <option value="urban">
+     Urban Loft
+    </option>
+    <option value="calm">
+     Calm Blue
+    </option>
+    <option value="moonlight">
+     Under the Moonlight
+    </option>
+    <option value="emerald">
+     Emerald Odyssey
+    </option>
+    <option value="ocean">
+     Ocean Tide
+    </option>
+    <option value="peach">
+     Peach Skyline
+    </option>
+    <option value="rainforest">
+     Tropical Rainforest
+    </option>
+    <option value="meadow">
+     Wildflower Meadow
+    </option>
+    <option value="breeze">
+     Summer Breeze
+    </option>
+   </optgroup>
+  </select>
+ </div>
+ <h3>
+  Colors
+ </h3>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Header Col
+   </label>
+   <input id="inp-header-color" type="color" value="#2c3e50"/>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Accent Col
+   </label>
+   <input id="inp-accent-color" type="color" value="#2980b9"/>
+  </div>
+ </div>
+ <div class="control-group">
+  <label>
+   Background
+  </label>
+  <input id="inp-bg-color" type="color" value="#ffffff"/>
+ </div>
+ <h3>
+  Text Formatting
+ </h3>
+ <div class="fmt-bar">
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('bold')">
+   B
+  </button>
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('italic')">
+   I
+  </button>
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('underline')">
+   U
+  </button>
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('removeFormat')">
+   ✕
+  </button>
+  <div class="fmt-color-wrap">
+   <input onchange="restoreAndFmt('foreColor', this.value)" type="color"/>
+  </div>
+  <div class="fmt-color-wrap">
+   <input onchange="restoreAndFmt('hiliteColor', this.value)" type="color"/>
+  </div>
+ </div>
+ <div class="control-group">
+  <label>
+   Selected Text Size
+  </label>
+  <div class="stepper">
+   <button onclick="stepper(this, -0.5)">
+    -
+   </button>
+   <input id="inp-selection-size" step="0.5" type="number" value="11"/>
+   <button onclick="stepper(this, 0.5)">
+    +
+   </button>
+  </div>
+ </div>
+ <h3>
+  Layout &amp; Sizes
+ </h3>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Page Padding
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -2)">
+     -
+    </button>
+    <input id="inp-page-padding" type="number" value="40"/>
+    <button onclick="stepper(this, 2)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Font Family
+   </label>
+   <select id="inp-font-family" style="padding: 6.5px;">
+    <option value="'Inter', sans-serif">
+     Inter
+    </option>
+    <option value="'Roboto', sans-serif">
+     Roboto
+    </option>
+    <option value="'Open Sans', sans-serif">
+     Open Sans
+    </option>
+    <option value="'Merriweather', serif">
+     Merriweather
+    </option>
+   </select>
+  </div>
+ </div>
+ <div class="control-group">
+  <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+   <input id="chk-page-break" onchange="togglePageBreak(this)" type="checkbox"/>
+   Show Page Break Marker
+  </label>
+ </div>
+ <h3>
+  Typography Sizes
+ </h3>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Base Font
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.5)">
+     -
+    </button>
+    <input id="inp-font" step="0.5" type="number" value="11"/>
+    <button onclick="stepper(this, 0.5)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Name Size
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -1)">
+     -
+    </button>
+    <input id="inp-hsize" type="number" value="24"/>
+    <button onclick="stepper(this, 1)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Section Title
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.5)">
+     -
+    </button>
+    <input id="inp-section-title-size" step="0.5" type="number" value="12"/>
+    <button onclick="stepper(this, 0.5)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Company/Edu
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.5)">
+     -
+    </button>
+    <input id="inp-company-size" step="0.5" type="number" value="11"/>
+    <button onclick="stepper(this, 0.5)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <h3>
+  Spacing
+ </h3>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Line Height
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.1)">
+     -
+    </button>
+    <input id="inp-line-height" max="2.5" min="1.0" step="0.1" type="number" value="1.4"/>
+    <button onclick="stepper(this, 0.1)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Section Gap
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -1)">
+     -
+    </button>
+    <input id="inp-section-spacing" type="number" value="15"/>
+    <button onclick="stepper(this, 1)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <h3>
+  Add Content
+ </h3>
+ <div class="control-group">
+  <input id="new-sec-title" placeholder="Section Name" type="text"/>
+ </div>
+ <div class="control-row">
+  <button class="btn" onclick="addSection()">
+   + Section
+  </button>
+  <button class="btn btn-sec" onclick="resumeCustomizer.addTag()">
+   + Add Tag
+  </button>
+ </div>
+ <button class="btn btn-print" onclick="window.print()">
+  Print PDF
+ </button>
+</aside>
+
+
+================ Modern_Sidebar.html ================
+
+<aside class="controls">
+ <h2>
+  Clean Layout v2.0
+ </h2>
+ <div class="control-row" style="margin-bottom:15px;">
+  <button class="btn" onclick="resumeCustomizer.saveSettings()">
+   💾 Save
+  </button>
+  <button class="btn btn-sec" onclick="resumeCustomizer.loadSettings()">
+   📂 Load
+  </button>
+  <button class="btn btn-danger" onclick="resumeCustomizer.resetSettings()">
+   ↺ Reset
+  </button>
+ </div>
+ <h3>
+  Color Schemes
+ </h3>
+ <div class="control-group">
+  <label>
+   Presets
+  </label>
+  <select id="inp-color-scheme" onchange="resumeCustomizer.applyScheme(this.value)">
+   <option value="none">
+    Custom Colors
+   </option>
+   <optgroup label="Professional">
+    <option value="california">
+     California Beaches
+    </option>
+    <option value="cobalt">
+     Cobalt Sky
+    </option>
+    <option value="salt">
+     Salt &amp; Pepper
+    </option>
+    <option value="gothic">
+     Gothic
+    </option>
+    <option value="harbor">
+     Harbor Haze
+    </option>
+   </optgroup>
+   <optgroup label="Classic">
+    <option value="winter">
+     Winter Chill
+    </option>
+    <option value="slate">
+     Slate &amp; Cream
+    </option>
+    <option value="noir">
+     Noir &amp; Taupe
+    </option>
+    <option value="elegant">
+     Elegant Teal
+    </option>
+    <option value="sand">
+     Sand &amp; Gold
+    </option>
+    <option value="industrial">
+     Industrial Blue
+    </option>
+   </optgroup>
+   <optgroup label="Vibrant">
+    <option value="stone">
+     Stone Path
+    </option>
+    <option value="urban">
+     Urban Loft
+    </option>
+    <option value="calm">
+     Calm Blue
+    </option>
+    <option value="moonlight">
+     Under the Moonlight
+    </option>
+    <option value="emerald">
+     Emerald Odyssey
+    </option>
+    <option value="ocean">
+     Ocean Tide
+    </option>
+    <option value="peach">
+     Peach Skyline
+    </option>
+    <option value="rainforest">
+     Tropical Rainforest
+    </option>
+    <option value="meadow">
+     Wildflower Meadow
+    </option>
+    <option value="breeze">
+     Summer Breeze
+    </option>
+   </optgroup>
+  </select>
+ </div>
+ <h3>
+  Text Formatting
+ </h3>
+ <div class="fmt-bar">
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('bold')">
+   B
+  </button>
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('italic')">
+   I
+  </button>
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('underline')">
+   U
+  </button>
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('removeFormat')">
+   ✕
+  </button>
+  <div class="fmt-color-wrap">
+   <input onchange="restoreAndFmt('foreColor', this.value)" type="color"/>
+  </div>
+  <div class="fmt-color-wrap">
+   <input onchange="restoreAndFmt('hiliteColor', this.value)" type="color"/>
+  </div>
+ </div>
+ <div class="control-group">
+  <label>
+   Selected Text Size
+  </label>
+  <div class="stepper">
+   <button onclick="stepper(this, -0.5)">
+    -
+   </button>
+   <input id="inp-selection-size" step="0.5" type="number" value="11"/>
+   <button onclick="stepper(this, 0.5)">
+    +
+   </button>
+  </div>
+ </div>
+ <h3>
+  Layout Sizes
+ </h3>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Page Padding
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -4)">
+     -
+    </button>
+    <input id="inp-page-padding" step="4" type="number" value="24"/>
+    <button onclick="stepper(this, 4)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Section Space
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -2)">
+     -
+    </button>
+    <input id="inp-section-spacing" step="2" type="number" value="12"/>
+    <button onclick="stepper(this, 2)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Line Height
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.1)">
+     -
+    </button>
+    <input id="inp-line-height" max="2.5" min="1.0" step="0.1" type="number" value="1.35"/>
+    <button onclick="stepper(this, 0.1)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Item Space
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -1)">
+     -
+    </button>
+    <input id="inp-item-spacing" type="number" value="6"/>
+    <button onclick="stepper(this, 1)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-group">
+  <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+   <input id="chk-page-break" onchange="togglePageBreak(this)" type="checkbox"/>
+   Show Page Break Marker
+  </label>
+ </div>
+ <h3>
+  Typography Sizes
+ </h3>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Base Font
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.5)">
+     -
+    </button>
+    <input id="inp-font" step="0.5" type="number" value="11"/>
+    <button onclick="stepper(this, 0.5)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Name Size
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -1)">
+     -
+    </button>
+    <input id="inp-hsize" type="number" value="24"/>
+    <button onclick="stepper(this, 1)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Section Title
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.5)">
+     -
+    </button>
+    <input id="inp-section-title-size" step="0.5" type="number" value="12"/>
+    <button onclick="stepper(this, 0.5)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Company/Edu
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.5)">
+     -
+    </button>
+    <input id="inp-company-size" step="0.5" type="number" value="11"/>
+    <button onclick="stepper(this, 0.5)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Font Family
+   </label>
+   <select id="inp-font-family" style="padding: 6.5px;">
+    <option value="'Inter', sans-serif">
+     Inter
+    </option>
+    <option value="'Roboto', sans-serif">
+     Roboto
+    </option>
+    <option value="'Open Sans', sans-serif">
+     Open Sans
+    </option>
+    <option value="'Merriweather', serif">
+     Merriweather
+    </option>
+   </select>
+  </div>
+ </div>
+ <h3>
+  Colors
+ </h3>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Header Col
+   </label>
+   <input id="inp-header-color" type="color" value="#16213e"/>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Accent Col
+   </label>
+   <input id="inp-accent-color" type="color" value="#0f7b6c"/>
+  </div>
+ </div>
+ <div class="control-group">
+  <label>
+   Background
+  </label>
+  <input id="inp-bg-color" type="color" value="#ffffff"/>
+ </div>
+ <h3>
+  Add Content
+ </h3>
+ <div class="control-row">
+  <button class="btn btn-sec" onclick="resumeCustomizer.addSection()">
+   + Section
+  </button>
+  <button class="btn btn-sec" onclick="resumeCustomizer.addJob()">
+   + Job Item
+  </button>
+  <button class="btn btn-sec" onclick="resumeCustomizer.addTag()">
+   + Tag
+  </button>
+ </div>
+ <button class="btn btn-print" onclick="window.print()">
+  Print / Save PDF
+ </button>
+</aside>
+
+
+================ Premium_Headshot.html ================
+
+<aside class="controls">
+ <h2>
+  Resume Builder v3.0
+ </h2>
+ <h3>
+  Color Schemes
+ </h3>
+ <div class="control-group">
+  <label>
+   Presets
+  </label>
+  <select id="inp-color-scheme" onchange="resumeCustomizer.applyScheme(this.value)">
+   <option value="none">
+    Custom Colors
+   </option>
+   <option value="ocean">
+    Ocean Tide
+   </option>
+   <option value="peach">
+    Peach Skyline
+   </option>
+   <option value="rainforest">
+    Tropical Rainforest
+   </option>
+   <option value="meadow">
+    Wildflower Meadow
+   </option>
+   <option value="breeze">
+    Summer Breeze
+   </option>
+   <option value="stone">
+    Stone Path
+   </option>
+   <option value="urban">
+    Urban Loft
+   </option>
+   <option value="calm">
+    Calm Blue
+   </option>
+   <option value="moonlight">
+    Under the Moonlight
+   </option>
+   <option value="emerald">
+    Emerald Odyssey
+   </option>
+   <option value="california">
+    California Beaches
+   </option>
+   <option value="cobalt">
+    Cobalt Sky
+   </option>
+   <option value="salt">
+    Salt and Pepper
+   </option>
+   <option value="gothic">
+    Gothic Noir
+   </option>
+   <option value="harbor">
+    Harbor Haze
+   </option>
+   <option value="winter">
+    Winter Chill
+   </option>
+   <option value="slate">
+    Slate &amp; Cream
+   </option>
+   <option value="noir">
+    Noir &amp; Taupe
+   </option>
+   <option value="elegant">
+    Elegant Teal
+   </option>
+   <option value="sand">
+    Sand &amp; Gold
+   </option>
+   <option value="industrial">
+    Industrial Blue
+   </option>
+  </select>
+ </div>
+ <div class="control-row">
+  <button class="btn" onclick="resumeCustomizer.saveSettings()">
+   💾 Save
+  </button>
+  <button class="btn btn-sec" onclick="resumeCustomizer.loadSettings()">
+   📂 Load
+  </button>
+  <button class="btn btn-danger" onclick="resumeCustomizer.resetSettings()">
+   ↺ Reset
+  </button>
+ </div>
+ <h3>
+  Text Formatting
+ </h3>
+ <p style="font-size:10px; color:#888; margin-bottom:4px;">
+  Select text inside resume to format
+ </p>
+ <div class="fmt-bar">
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('bold')">
+   B
+  </button>
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('italic')">
+   I
+  </button>
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('underline')">
+   U
+  </button>
+  <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('removeFormat')">
+   ✕
+  </button>
+  <div class="fmt-color-wrap" title="Text Color">
+   <input onchange="restoreAndFmt('foreColor', this.value)" type="color"/>
+  </div>
+  <div class="fmt-color-wrap" title="Highlight">
+   <input onchange="restoreAndFmt('hiliteColor', this.value)" type="color"/>
+  </div>
+ </div>
+ <div class="control-group">
+  <label>
+   Selected Text Size
+  </label>
+  <div class="stepper">
+   <button onclick="stepper(this, -0.5)">
+    -
+   </button>
+   <input id="inp-selection-size" step="0.5" type="number" value="11"/>
+   <button onclick="stepper(this, 0.5)">
+    +
+   </button>
+  </div>
+ </div>
+ <h3>
+  Layout &amp; Spacing
+ </h3>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Padding Top
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -1)">
+     -
+    </button>
+    <input id="inp-page-pt" type="number" value="20"/>
+    <button onclick="stepper(this, 1)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Padding Bottom
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -1)">
+     -
+    </button>
+    <input id="inp-page-pb" type="number" value="14"/>
+    <button onclick="stepper(this, 1)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Padding Left
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -1)">
+     -
+    </button>
+    <input id="inp-page-pl" type="number" value="22"/>
+    <button onclick="stepper(this, 1)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Padding Right
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -1)">
+     -
+    </button>
+    <input id="inp-page-pr" type="number" value="24"/>
+    <button onclick="stepper(this, 1)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Sidebar Width
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -2)">
+     -
+    </button>
+    <input id="inp-sb-width" step="2" type="number" value="218"/>
+    <button onclick="stepper(this, 2)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Sidebar Gap
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -1)">
+     -
+    </button>
+    <input id="inp-content-gap" type="number" value="16"/>
+    <button onclick="stepper(this, 1)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Section Spacing
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -1)">
+     -
+    </button>
+    <input id="inp-section-spacing" type="number" value="12"/>
+    <button onclick="stepper(this, 1)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Item Spacing
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -1)">
+     -
+    </button>
+    <input id="inp-item-spacing" type="number" value="6"/>
+    <button onclick="stepper(this, 1)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Sidebar Detail Spacing
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.1)">
+     -
+    </button>
+    <input id="inp-sb-lh" step="0.1" type="number" value="1.4"/>
+    <button onclick="stepper(this, 0.1)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Body Text Spacing
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.1)">
+     -
+    </button>
+    <input id="inp-main-lh" step="0.1" type="number" value="1.4"/>
+    <button onclick="stepper(this, 0.1)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-group">
+  <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+   <input id="chk-page-break" onchange="togglePageBreak(this)" type="checkbox"/>
+   Show Page Break Marker
+  </label>
+ </div>
+ <h3>
+  Add Content
+ </h3>
+ <div class="control-group">
+  <label>
+   SB Section Type
+  </label>
+  <div style="display:flex; gap:5px;">
+   <select id="inp-sb-type" style="flex:1; padding:8px; border:1px solid #ddd; border-radius:4px;">
+    <option value="generic">
+     Generic
+    </option>
+    <option value="contact">
+     Contact
+    </option>
+    <option value="education">
+     Education
+    </option>
+    <option value="skills">
+     Skills
+    </option>
+    <option value="languages">
+     Languages
+    </option>
+   </select>
+   <button class="btn btn-sec" onclick="resumeCustomizer.addSidebarSection()" style="width:50px; margin-top:0;">
+    +
+   </button>
+  </div>
+ </div>
+ <div class="control-row">
+  <button class="btn btn-sec" onclick="resumeCustomizer.addMainSection()">
+   + Main Section
+  </button>
+  <button class="btn btn-sec" onclick="resumeCustomizer.addTag()">
+   + Add Tag
+  </button>
+ </div>
+ <h3>
+  Headshot
+ </h3>
+ <div class="control-group">
+  <label>
+   Image File
+  </label>
+  <input accept="image/*" id="inp-headshot-file" type="file">
+  </input>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Size (px)
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -5)">
+     -
+    </button>
+    <input id="inp-headshot-size" step="5" type="number" value="80"/>
+    <button onclick="stepper(this, 5)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Font Family
+   </label>
+   <select id="inp-font-family" style="padding: 6.5px;">
+    <option value="'Inter', sans-serif">
+     Inter
+    </option>
+    <option value="'Roboto', sans-serif">
+     Roboto
+    </option>
+    <option value="'Open Sans', sans-serif">
+     Open Sans
+    </option>
+    <option value="'Merriweather', serif">
+     Merriweather
+    </option>
+   </select>
+  </div>
+ </div>
+ <h3>
+  Typography Sizes
+ </h3>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Base Font
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.5)">
+     -
+    </button>
+    <input id="inp-font" step="0.5" type="number" value="11"/>
+    <button onclick="stepper(this, 0.5)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Name Size
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -1)">
+     -
+    </button>
+    <input id="inp-hsize" type="number" value="24"/>
+    <button onclick="stepper(this, 1)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Section (Main)
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.5)">
+     -
+    </button>
+    <input id="inp-section-title-size" step="0.5" type="number" value="12"/>
+    <button onclick="stepper(this, 0.5)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Section (SB)
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.5)">
+     -
+    </button>
+    <input id="inp-sb-section-title-size" step="0.5" type="number" value="11"/>
+    <button onclick="stepper(this, 0.5)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Company/Edu
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.5)">
+     -
+    </button>
+    <input id="inp-company-size" step="0.5" type="number" value="11"/>
+    <button onclick="stepper(this, 0.5)">
+     +
+    </button>
+   </div>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Tag Size
+   </label>
+   <div class="stepper">
+    <button onclick="stepper(this, -0.5)">
+     -
+    </button>
+    <input id="inp-tag-size" step="0.5" type="number" value="11"/>
+    <button onclick="stepper(this, 0.5)">
+     +
+    </button>
+   </div>
+  </div>
+ </div>
+ <h3>
+  Colors
+ </h3>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Sidebar BG
+   </label>
+   <input id="inp-sb-bg" type="color" value="#16213e">
+   </input>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Sidebar Accent
+   </label>
+   <input id="inp-sb-accent" type="color" value="#7ec8e3">
+   </input>
+  </div>
+ </div>
+ <div class="control-row">
+  <div class="control-group" style="flex:1">
+   <label>
+    Heading Col
+   </label>
+   <input id="inp-header-color" type="color" value="#16213e">
+   </input>
+  </div>
+  <div class="control-group" style="flex:1">
+   <label>
+    Accent Col
+   </label>
+   <input id="inp-accent-color" type="color" value="#0f7b6c">
+   </input>
+  </div>
+ </div>
+ <div class="control-group">
+  <label>
+   Background
+  </label>
+  <input id="inp-bg-color" type="color" value="#ffffff">
+  </input>
+ </div>
+ <button class="btn btn-print" onclick="window.print()">
+  Print / Save PDF
+ </button>
+</aside>
+
