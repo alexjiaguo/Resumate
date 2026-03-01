@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Resume Builder v3.0 (Sidebar Layout)</title>
-    <style>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Premium Headshot v3.0</title>
+<style>
       @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;700&family=Inconsolata:wght@400;700&display=swap");
 
       :root {
@@ -79,6 +80,7 @@
         padding: 20px;
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         overflow-y: auto;
+        overflow-x: hidden;
         z-index: 1000;
         font-family:
           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -116,14 +118,15 @@
         overflow: hidden;
         background: #fff;
         transition: border-color 0.3s;
+        min-width: 0;
       }
       .stepper:focus-within {
         border-color: #40a9ff;
         box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
       }
       .stepper button {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
         background: #f5f5f5;
         border: none;
         cursor: pointer;
@@ -133,6 +136,7 @@
         align-items: center;
         justify-content: center;
         transition: all 0.2s;
+        flex-shrink: 0;
       }
       .stepper button:hover {
         background: #e6e6e6;
@@ -143,6 +147,7 @@
       }
       .stepper input {
         flex: 1;
+        min-width: 0;
         width: 100%;
         border: none;
         text-align: center;
@@ -186,6 +191,9 @@
       .control-row .btn {
         flex: 1;
         margin-top: 0;
+      }
+      .control-row .control-group {
+        min-width: 0;
       }
       .btn {
         width: 100%;
@@ -459,12 +467,16 @@
         background: rgba(126, 200, 227, 0.1);
         color: #a8c8d8;
         border: 1px solid rgba(126, 200, 227, 0.12);
+        position: relative;
+        cursor: pointer;
       }
       .sk.hl {
         background: rgba(126, 200, 227, 0.2);
         color: #fff;
         font-weight: 600;
       }
+      .sk .sk-del { display: none; position: absolute; top: -6px; right: -6px; width: 14px; height: 14px; background: #dc2626; color: #fff; border: none; border-radius: 50%; font-size: 9px; line-height: 1; cursor: pointer; align-items: center; justify-content: center; padding: 0; }
+      .sk:hover .sk-del { display: flex; }
       .lang-item {
         font-size: 11px;
         color: #c0c0cc;
@@ -587,373 +599,430 @@
         .page-break-marker { display: none; }
         .reorder-controls { display: none !important; }
       }
+          .cert-item { margin-bottom: 3px; font-size: 11px; }
     </style>
-  </head>
-  <body>
-    <!-- CONTROL PANEL -->
-    <aside class="controls">
-      <h2>Resume Builder v3.0</h2>
-
-      <h3>Color Schemes</h3>
-      <div class="control-group">
-        <label>Presets</label>
-        <select id="inp-color-scheme" onchange="resumeCustomizer.applyScheme(this.value)">
-          <option value="none">Custom Colors</option>
-          <option value="ocean">Ocean Tide</option>
-          <option value="peach">Peach Skyline</option>
-          <option value="rainforest">Tropical Rainforest</option>
-          <option value="meadow">Wildflower Meadow</option>
-          <option value="breeze">Summer Breeze</option>
-          <option value="stone">Stone Path</option>
-          <option value="urban">Urban Loft</option>
-          <option value="calm">Calm Blue</option>
-          <option value="moonlight">Under the Moonlight</option>
-          <option value="emerald">Emerald Odyssey</option>
-          <option value="california">California Beaches</option>
-          <option value="cobalt">Cobalt Sky</option>
-          <option value="salt">Salt and Pepper</option>
-          <option value="gothic">Gothic Noir</option>
-          <option value="harbor">Harbor Haze</option>
-          <option value="winter">Winter Chill</option>
-          <option value="slate">Slate & Cream</option>
-          <option value="noir">Noir & Taupe</option>
-          <option value="elegant">Elegant Teal</option>
-          <option value="sand">Sand & Gold</option>
-          <option value="industrial">Industrial Blue</option>
-        </select>
-      </div>
-
-      <div class="control-row">
-        <button class="btn" onclick="resumeCustomizer.saveSettings()">💾 Save</button>
-        <button class="btn btn-sec" onclick="resumeCustomizer.loadSettings()">📂 Load</button>
-        <button class="btn btn-danger" onclick="resumeCustomizer.resetSettings()">↺ Reset</button>
-      </div>
-
-      <h3>Text Formatting</h3>
-      <p style="font-size:10px; color:#888; margin-bottom:4px;">Select text inside resume to format</p>
-      <div class="fmt-bar">
-        <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('bold')">B</button>
-        <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('italic')">I</button>
-        <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('underline')">U</button>
-        <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('removeFormat')">✕</button>
-        <div class="fmt-color-wrap" title="Text Color">
-          <input type="color" onchange="restoreAndFmt('foreColor', this.value)">
-        </div>
-        <div class="fmt-color-wrap" title="Highlight">
-          <input type="color" onchange="restoreAndFmt('hiliteColor', this.value)">
-        </div>
-      </div>
-      <div class="control-group">
-        <label>Selected Text Size</label>
-        <div class="stepper">
-          <button onclick="stepper(this, -0.5)">-</button>
-          <input type="number" id="inp-selection-size" value="11" step="0.5">
-          <button onclick="stepper(this, 0.5)">+</button>
-        </div>
-      </div>
-
-      <h3>Layout & Spacing</h3>
-      <div class="control-row">
-        <div class="control-group" style="flex:1">
-          <label>Padding Top</label>
-          <div class="stepper">
-            <button onclick="stepper(this, -1)">-</button>
-            <input type="number" id="inp-page-pt" value="20">
-            <button onclick="stepper(this, 1)">+</button>
-          </div>
-        </div>
-        <div class="control-group" style="flex:1">
-          <label>Padding Bottom</label>
-          <div class="stepper">
-            <button onclick="stepper(this, -1)">-</button>
-            <input type="number" id="inp-page-pb" value="14">
-            <button onclick="stepper(this, 1)">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="control-row">
-        <div class="control-group" style="flex:1">
-          <label>Padding Left</label>
-          <div class="stepper">
-            <button onclick="stepper(this, -1)">-</button>
-            <input type="number" id="inp-page-pl" value="22">
-            <button onclick="stepper(this, 1)">+</button>
-          </div>
-        </div>
-        <div class="control-group" style="flex:1">
-          <label>Padding Right</label>
-          <div class="stepper">
-            <button onclick="stepper(this, -1)">-</button>
-            <input type="number" id="inp-page-pr" value="24">
-            <button onclick="stepper(this, 1)">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="control-row">
-        <div class="control-group" style="flex:1">
-          <label>Sidebar Width</label>
-          <div class="stepper">
-            <button onclick="stepper(this, -2)">-</button>
-            <input type="number" id="inp-sb-width" value="218" step="2">
-            <button onclick="stepper(this, 2)">+</button>
-          </div>
-        </div>
-        <div class="control-group" style="flex:1">
-          <label>Sidebar Gap</label>
-          <div class="stepper">
-            <button onclick="stepper(this, -1)">-</button>
-            <input type="number" id="inp-content-gap" value="16">
-            <button onclick="stepper(this, 1)">+</button>
-          </div>
-        </div>
-      </div>
-      
-      <div class="control-row">
-        <div class="control-group" style="flex:1">
-          <label>Section Spacing</label>
-          <div class="stepper">
-            <button onclick="stepper(this, -1)">-</button>
-            <input type="number" id="inp-section-spacing" value="12">
-            <button onclick="stepper(this, 1)">+</button>
-          </div>
-        </div>
-        <div class="control-group" style="flex:1">
-          <label>Item Spacing</label>
-          <div class="stepper">
-            <button onclick="stepper(this, -1)">-</button>
-            <input type="number" id="inp-item-spacing" value="6">
-            <button onclick="stepper(this, 1)">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="control-row">
-        <div class="control-group" style="flex:1">
-          <label>Sidebar Detail Spacing</label>
-          <div class="stepper">
-            <button onclick="stepper(this, -0.1)">-</button>
-            <input type="number" id="inp-sb-lh" value="1.4" step="0.1">
-            <button onclick="stepper(this, 0.1)">+</button>
-          </div>
-        </div>
-        <div class="control-group" style="flex:1">
-          <label>Body Text Spacing</label>
-          <div class="stepper">
-            <button onclick="stepper(this, -0.1)">-</button>
-            <input type="number" id="inp-main-lh" value="1.4" step="0.1">
-            <button onclick="stepper(this, 0.1)">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="control-group">
-          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-              <input type="checkbox" id="chk-page-break" onchange="togglePageBreak(this)">
+</head>
+<body>
+<!-- CONTROL PANEL -->
+<aside class="controls">
+<h2>Premium Headshot v3.0</h2>
+<h3>Color Schemes</h3>
+<div class="control-group">
+<label>Presets</label>
+<select id="inp-color-scheme" onchange="resumeCustomizer.applyScheme(this.value)">
+<option value="none">Custom Colors</option>
+<optgroup label="Professional">
+<option value="california">California Beaches</option>
+<option value="cobalt">Cobalt Sky</option>
+<option value="salt">Salt &amp; Pepper</option>
+<option value="gothic">Gothic</option>
+<option value="harbor">Harbor Haze</option>
+</optgroup>
+<optgroup label="Classic">
+<option value="winter">Winter Chill</option>
+<option value="slate">Slate &amp; Cream</option>
+<option value="noir">Noir &amp; Taupe</option>
+<option value="elegant">Elegant Teal</option>
+<option value="sand">Sand &amp; Gold</option>
+<option value="industrial">Industrial Blue</option>
+</optgroup>
+<optgroup label="Vibrant">
+<option value="stone">Stone Path</option>
+<option value="urban">Urban Loft</option>
+<option value="calm">Calm Blue</option>
+<option value="moonlight">Under the Moonlight</option>
+<option value="emerald">Emerald Odyssey</option>
+<option value="ocean">Ocean Tide</option>
+<option value="peach">Peach Skyline</option>
+<option value="rainforest">Tropical Rainforest</option>
+<option value="meadow">Wildflower Meadow</option>
+<option value="breeze">Summer Breeze</option>
+</optgroup>
+</select>
+</div>
+<div class="control-row">
+<button class="btn" onclick="resumeCustomizer.saveSettings()">💾 Save</button>
+<button class="btn btn-sec" onclick="resumeCustomizer.loadSettings()">📂 Load</button>
+<button class="btn btn-danger" onclick="resumeCustomizer.resetSettings()">↺ Reset</button>
+</div>
+<h3>Text Formatting</h3>
+<p style="font-size:10px; color:#888; margin-bottom:4px;">Select text inside resume to format</p>
+<div class="fmt-bar">
+<button class="fmt-btn" onmousedown="event.preventDefault(); fmt('bold')">B</button>
+<button class="fmt-btn" onmousedown="event.preventDefault(); fmt('italic')">I</button>
+<button class="fmt-btn" onmousedown="event.preventDefault(); fmt('underline')">U</button>
+<button class="fmt-btn" onmousedown="event.preventDefault(); fmt('removeFormat')">✕</button>
+<div class="fmt-color-wrap" title="Text Color">
+<input onchange="restoreAndFmt('foreColor', this.value)" type="color"/>
+</div>
+<div class="fmt-color-wrap" title="Highlight">
+<input onchange="restoreAndFmt('hiliteColor', this.value)" type="color"/>
+</div>
+</div>
+<div class="control-group">
+<label>Selected Text Size</label>
+<div class="stepper">
+<button onclick="stepper(this, -0.5)">-</button>
+<input id="inp-selection-size" step="0.5" type="number" value="11"/>
+<button onclick="stepper(this, 0.5)">+</button>
+</div>
+</div>
+<h3>Layout &amp; Spacing</h3>
+<div class="control-row">
+<div class="control-group" style="flex:1">
+<label>Padding Top</label>
+<div class="stepper">
+<button onclick="stepper(this, -1)">-</button>
+<input id="inp-page-pt" type="number" value="20"/>
+<button onclick="stepper(this, 1)">+</button>
+</div>
+</div>
+<div class="control-group" style="flex:1">
+<label>Padding Bottom</label>
+<div class="stepper">
+<button onclick="stepper(this, -1)">-</button>
+<input id="inp-page-pb" type="number" value="14"/>
+<button onclick="stepper(this, 1)">+</button>
+</div>
+</div>
+</div>
+<div class="control-row">
+<div class="control-group" style="flex:1">
+<label>Padding Left</label>
+<div class="stepper">
+<button onclick="stepper(this, -1)">-</button>
+<input id="inp-page-pl" type="number" value="22"/>
+<button onclick="stepper(this, 1)">+</button>
+</div>
+</div>
+<div class="control-group" style="flex:1">
+<label>Padding Right</label>
+<div class="stepper">
+<button onclick="stepper(this, -1)">-</button>
+<input id="inp-page-pr" type="number" value="24"/>
+<button onclick="stepper(this, 1)">+</button>
+</div>
+</div>
+</div>
+<div class="control-row">
+<div class="control-group" style="flex:1">
+<label>Sidebar Width</label>
+<div class="stepper">
+<button onclick="stepper(this, -2)">-</button>
+<input id="inp-sb-width" step="2" type="number" value="218"/>
+<button onclick="stepper(this, 2)">+</button>
+</div>
+</div>
+<div class="control-group" style="flex:1">
+<label>Sidebar Gap</label>
+<div class="stepper">
+<button onclick="stepper(this, -1)">-</button>
+<input id="inp-content-gap" type="number" value="16"/>
+<button onclick="stepper(this, 1)">+</button>
+</div>
+</div>
+</div>
+<div class="control-row">
+<div class="control-group" style="flex:1">
+<label>Section Spacing</label>
+<div class="stepper">
+<button onclick="stepper(this, -1)">-</button>
+<input id="inp-section-spacing" type="number" value="12"/>
+<button onclick="stepper(this, 1)">+</button>
+</div>
+</div>
+<div class="control-group" style="flex:1">
+<label>Item Spacing</label>
+<div class="stepper">
+<button onclick="stepper(this, -1)">-</button>
+<input id="inp-item-spacing" type="number" value="6"/>
+<button onclick="stepper(this, 1)">+</button>
+</div>
+</div>
+</div>
+<div class="control-row">
+<div class="control-group" style="flex:1">
+<label>Sidebar Detail Spacing</label>
+<div class="stepper">
+<button onclick="stepper(this, -0.1)">-</button>
+<input id="inp-sb-lh" step="0.1" type="number" value="1.4"/>
+<button onclick="stepper(this, 0.1)">+</button>
+</div>
+</div>
+<div class="control-group" style="flex:1">
+<label>Body Text Spacing</label>
+<div class="stepper">
+<button onclick="stepper(this, -0.1)">-</button>
+<input id="inp-main-lh" step="0.1" type="number" value="1.4"/>
+<button onclick="stepper(this, 0.1)">+</button>
+</div>
+</div>
+</div>
+<div class="control-group">
+<label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+<input id="chk-page-break" onchange="togglePageBreak(this)" type="checkbox"/>
               Show Page Break Marker
           </label>
-      </div>
-
-      <h3>Add Content</h3>
-      <div class="control-group">
-        <label>SB Section Type</label>
-        <div style="display:flex; gap:5px;">
-          <select id="inp-sb-type" style="flex:1; padding:8px; border:1px solid #ddd; border-radius:4px;">
-            <option value="generic">Generic</option>
-            <option value="contact">Contact</option>
-            <option value="education">Education</option>
-            <option value="skills">Skills</option>
-            <option value="languages">Languages</option>
-          </select>
-          <button class="btn btn-sec" style="width:50px; margin-top:0;" onclick="resumeCustomizer.addSidebarSection()">+</button>
-        </div>
-      </div>
-      <div class="control-row">
-        <button class="btn btn-sec" onclick="resumeCustomizer.addMainSection()">+ Main Section</button>
-        <button class="btn btn-sec" onclick="resumeCustomizer.addTag()">+ Add Tag</button>
-      </div>
-
-      <h3>Headshot</h3>
-      <div class="control-group">
-        <label>Image File</label>
-        <input type="file" id="inp-headshot-file" accept="image/*" />
-      </div>
-      <div class="control-row">
-          <div class="control-group" style="flex:1">
-            <label>Size (px)</label>
-            <div class="stepper">
-              <button onclick="stepper(this, -5)">-</button>
-              <input type="number" id="inp-headshot-size" value="80" step="5">
-              <button onclick="stepper(this, 5)">+</button>
-            </div>
-          </div>
-          <div class="control-group" style="flex:1">
-              <label>Font Family</label>
-              <select id="inp-font-family" style="padding: 6.5px;">
-                <option value="'Inter', sans-serif">Inter</option>
-                <option value="'Roboto', sans-serif">Roboto</option>
-                <option value="'Open Sans', sans-serif">Open Sans</option>
-                <option value="'Merriweather', serif">Merriweather</option>
-              </select>
-          </div>
-      </div>
-
-      <h3>Typography Sizes</h3>
-      <div class="control-row">
-          <div class="control-group" style="flex:1">
-            <label>Base Font</label>
-            <div class="stepper">
-              <button onclick="stepper(this, -0.5)">-</button>
-              <input type="number" id="inp-font" value="11" step="0.5">
-              <button onclick="stepper(this, 0.5)">+</button>
-            </div>
-          </div>
-          <div class="control-group" style="flex:1">
-            <label>Name Size</label>
-            <div class="stepper">
-              <button onclick="stepper(this, -1)">-</button>
-              <input type="number" id="inp-hsize" value="24">
-              <button onclick="stepper(this, 1)">+</button>
-            </div>
-          </div>
-      </div>
-
-      <div class="control-row">
-          <div class="control-group" style="flex:1">
-            <label>Section (Main)</label>
-            <div class="stepper">
-              <button onclick="stepper(this, -0.5)">-</button>
-              <input type="number" id="inp-section-title-size" value="12" step="0.5">
-              <button onclick="stepper(this, 0.5)">+</button>
-            </div>
-          </div>
-          <div class="control-group" style="flex:1">
-            <label>Section (SB)</label>
-            <div class="stepper">
-              <button onclick="stepper(this, -0.5)">-</button>
-              <input type="number" id="inp-sb-section-title-size" value="11" step="0.5">
-              <button onclick="stepper(this, 0.5)">+</button>
-            </div>
-          </div>
-      </div>
-
-      <div class="control-row">
-          <div class="control-group" style="flex:1">
-            <label>Company/Edu</label>
-            <div class="stepper">
-              <button onclick="stepper(this, -0.5)">-</button>
-              <input type="number" id="inp-company-size" value="11" step="0.5">
-              <button onclick="stepper(this, 0.5)">+</button>
-            </div>
-          </div>
-          <div class="control-group" style="flex:1">
-            <label>Tag Size</label>
-            <div class="stepper">
-              <button onclick="stepper(this, -0.5)">-</button>
-              <input type="number" id="inp-tag-size" value="11" step="0.5">
-              <button onclick="stepper(this, 0.5)">+</button>
-            </div>
-          </div>
-      </div>
-
-      <h3>Colors</h3>
-      <div class="control-row">
-          <div class="control-group" style="flex:1">
-            <label>Sidebar BG</label>
-            <input type="color" id="inp-sb-bg" value="#16213e" />
-          </div>
-          <div class="control-group" style="flex:1">
-            <label>Sidebar Accent</label>
-            <input type="color" id="inp-sb-accent" value="#7ec8e3" />
-          </div>
-      </div>
-      <div class="control-row">
-          <div class="control-group" style="flex:1">
-            <label>Heading Col</label>
-            <input type="color" id="inp-header-color" value="#16213e" />
-          </div>
-          <div class="control-group" style="flex:1">
-            <label>Accent Col</label>
-            <input type="color" id="inp-accent-color" value="#0f7b6c" />
-          </div>
-      </div>
-      <div class="control-group">
-        <label>Background</label>
-        <input type="color" id="inp-bg-color" value="#ffffff" />
-      </div>
-
-      <button class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
-    </aside>
-
-    <div class="resume" id="resume">
-      <div id="page-break-line" class="page-break-marker" style="top: 1122px; display: none"></div>
-
-      <!-- SIDEBAR -->
-      <div class="sidebar" id="sidebar-container" contenteditable="true">
-        <div class="headshot-container">
-          <img id="headshot-img" src="headshot.png" class="headshot" alt="Headshot" onerror="this.style.display = 'none'" />
-        </div>
-
-        <h1>Your Name</h1>
-        <div class="subtitle">JOB TITLE · X+ YRS</div>
-
-        <div class="sb-section">
-          <h3>Contact</h3>
-          <div class="contact-item"><span class="ic">☎</span> +1 234-567-8900</div>
-          <div class="contact-item"><span class="ic">✉</span> email@example.com</div>
-          <div class="contact-item"><span class="ic">🔗</span> linkedin.com/in/yourprofile</div>
-        </div>
-
-        <div class="sb-section">
-          <h3>Education</h3>
-          <div class="edu-block">
-            <div class="dates">2014 – 2017</div>
-            <div class="degree">Degree Title</div>
-            <div class="school">University Name</div>
-          </div>
-        </div>
-
-        <div class="sb-section">
-          <h3>Skills</h3>
-          <div class="skills-wrap">
-            <span class="sk hl">Skill 1</span>
-            <span class="sk hl">Skill 2</span>
-            <span class="sk">Skill 3</span>
-          </div>
-        </div>
-
-        <div class="sb-section">
-          <h3>Languages</h3>
-          <div class="lang-item"><strong>Language 1:</strong> Native</div>
-        </div>
-        <div class="sidebar-spacer"></div>
-      </div>
-
-      <!-- MAIN -->
-      <div class="main" id="main-container">
-        <div class="summary" contenteditable="true">
-          Professional summary goes here. Highlight your <strong>key achievements</strong> and expertise.
-        </div>
-
-        <div class="section">
-          <div class="section-title" contenteditable="true">Professional Experience</div>
-          <div class="job" contenteditable="true">
-            <div class="job-header">
-              <span class="job-company">Company Name</span>
-              <span class="job-dates">Date Range</span>
-            </div>
-            <div class="job-role">Role / Title · Location</div>
-            <ul>
-              <li><strong>Key Achievement</strong><span class="tag c">Tag</span> — Description of impact.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="main-spacer"></div>
-      </div>
-    </div>
-
-    <script>
+</div>
+<h3>Add Content</h3>
+<div class="control-group">
+<label>SB Section Type</label>
+<div style="display:flex; gap:5px;">
+<select id="inp-sb-type" style="flex:1; padding:8px; border:1px solid #ddd; border-radius:4px;">
+<option value="generic">Generic</option>
+<option value="contact">Contact</option>
+<option value="education">Education</option>
+<option value="skills">Skills</option>
+<option value="languages">Languages</option>
+</select>
+<button class="btn btn-sec" onclick="resumeCustomizer.addSidebarSection()" style="width:50px; margin-top:0;">+</button>
+</div>
+</div>
+<div class="control-row">
+<button class="btn btn-sec" onclick="resumeCustomizer.addMainSection()">+ Main Section</button>
+<button class="btn btn-sec" onclick="resumeCustomizer.addTag()">+ Add Tag</button>
+</div>
+<h3>Headshot</h3>
+<div class="control-group">
+<label>Image File</label>
+<input accept="image/*" id="inp-headshot-file" type="file">
+</input></div>
+<div class="control-row">
+<div class="control-group" style="flex:1">
+<label>Size (px)</label>
+<div class="stepper">
+<button onclick="stepper(this, -5)">-</button>
+<input id="inp-headshot-size" step="5" type="number" value="80"/>
+<button onclick="stepper(this, 5)">+</button>
+</div>
+</div>
+<div class="control-group" style="flex:1">
+<label>Font Family</label>
+<select id="inp-font-family" style="padding: 6.5px;">
+<option value="'Inter', sans-serif">Inter</option>
+<option value="'Roboto', sans-serif">Roboto</option>
+<option value="'Open Sans', sans-serif">Open Sans</option>
+<option value="'Merriweather', serif">Merriweather</option>
+</select>
+</div>
+</div>
+<h3>Typography Sizes</h3>
+<div class="control-row">
+<div class="control-group" style="flex:1">
+<label>Base Font</label>
+<div class="stepper">
+<button onclick="stepper(this, -0.5)">-</button>
+<input id="inp-font" step="0.5" type="number" value="11"/>
+<button onclick="stepper(this, 0.5)">+</button>
+</div>
+</div>
+<div class="control-group" style="flex:1">
+<label>Name Size</label>
+<div class="stepper">
+<button onclick="stepper(this, -1)">-</button>
+<input id="inp-hsize" type="number" value="24"/>
+<button onclick="stepper(this, 1)">+</button>
+</div>
+</div>
+</div>
+<div class="control-row">
+<div class="control-group" style="flex:1">
+<label>Section (Main)</label>
+<div class="stepper">
+<button onclick="stepper(this, -0.5)">-</button>
+<input id="inp-section-title-size" step="0.5" type="number" value="12"/>
+<button onclick="stepper(this, 0.5)">+</button>
+</div>
+</div>
+<div class="control-group" style="flex:1">
+<label>Section (SB)</label>
+<div class="stepper">
+<button onclick="stepper(this, -0.5)">-</button>
+<input id="inp-sb-section-title-size" step="0.5" type="number" value="11"/>
+<button onclick="stepper(this, 0.5)">+</button>
+</div>
+</div>
+</div>
+<div class="control-row">
+<div class="control-group" style="flex:1">
+<label>Company/Edu</label>
+<div class="stepper">
+<button onclick="stepper(this, -0.5)">-</button>
+<input id="inp-company-size" step="0.5" type="number" value="11"/>
+<button onclick="stepper(this, 0.5)">+</button>
+</div>
+</div>
+<div class="control-group" style="flex:1">
+<label>Tag Size</label>
+<div class="stepper">
+<button onclick="stepper(this, -0.5)">-</button>
+<input id="inp-tag-size" step="0.5" type="number" value="11"/>
+<button onclick="stepper(this, 0.5)">+</button>
+</div>
+</div>
+</div>
+<h3>Colors</h3>
+<div class="control-row">
+<div class="control-group" style="flex:1">
+<label>Sidebar BG</label>
+<input id="inp-sb-bg" type="color" value="#16213e">
+</input></div>
+<div class="control-group" style="flex:1">
+<label>Sidebar Accent</label>
+<input id="inp-sb-accent" type="color" value="#7ec8e3">
+</input></div>
+</div>
+<div class="control-row">
+<div class="control-group" style="flex:1">
+<label>Heading Col</label>
+<input id="inp-header-color" type="color" value="#16213e">
+</input></div>
+<div class="control-group" style="flex:1">
+<label>Accent Col</label>
+<input id="inp-accent-color" type="color" value="#0f7b6c">
+</input></div>
+</div>
+<div class="control-group">
+<label>Background</label>
+<input id="inp-bg-color" type="color" value="#ffffff">
+</input></div>
+<button class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
+</aside>
+<div class="resume" id="resume">
+<div class="page-break-marker" id="page-break-line" style="top: 1122px; display: none"></div>
+<!-- SIDEBAR -->
+<div class="sidebar" contenteditable="true" id="sidebar-container">
+<div class="headshot-container">
+<img alt="Headshot" class="headshot" id="headshot-img" onerror="this.style.display = 'none'" src="headshot.png"/>
+</div>
+<h1>Alex (Jiajia) Guo</h1>
+<div class="subtitle">Senior Product Manager, GenAI &amp; Operations</div>
+<div class="sb-section">
+<h3>Contact</h3>
+<div class="contact-item"><span class="ic">☎</span> +86 131-2038-1760</div>
+<div class="contact-item"><span class="ic">✉</span> alexjia.guo@gmail.com</div>
+<div class="contact-item"><span class="ic">🔗</span> linkedin.com/in/alex-jiajia</div>
+</div>
+<div class="sb-section">
+<h3>Education</h3>
+<div class="edu-block" style="margin-bottom:12px;">
+<div class="dates">Sep 2014 – Jul 2017</div>
+<div class="degree">Master of Science in Electrical Engineering</div>
+<div class="school">Xi'an Jiaotong University (XJTU), Xi'an, China</div>
+</div>
+<div class="edu-block" style="margin-bottom:12px;">
+<div class="dates">Sep 2009 – Jul 2013</div>
+<div class="degree">Bachelor of Science in Applied Physics (Honors Science Program)</div>
+<div class="school">Xi'an Jiaotong University (XJTU), Xi'an, China</div>
+</div>
+<div class="edu-block" style="margin-bottom:12px;">
+<div class="dates">Aug 2012 – Dec 2012</div>
+<div class="degree">Exchange Student — Physics</div>
+<div class="school">Michigan State University (MSU), East Lansing, MI, USA</div>
+</div>
+</div>
+<div class="sb-section">
+<h3>Technical</h3>
+<div style="font-size:10px; margin-bottom:4px; line-height:1.3;">AI &amp; ML: LLM, Agentic AI, AIGC, NLP, RAG Architecture, CTR Prediction, ML Algorithms, Prompt Engineering</div>
+<div style="font-size:10px; margin-bottom:4px; line-height:1.3;">Data &amp; Analytics: A/B Testing, Data Analysis, SQL, Python, Statistical Modeling, Funnel Analysis</div>
+<div style="font-size:10px; margin-bottom:4px; line-height:1.3;">Tools &amp; Platforms: Cursor, Claude, ChatGPT, Gemini, MCP (Model Context Protocol), Jira, Confluence</div>
+<div style="font-size:10px; margin-bottom:4px; line-height:1.3;">Methodologies: Agile / Scrum, Product Lifecycle Management, Cross-functional Leadership, RICE Prioritization</div>
+</div>
+<div class="sb-section">
+<h3>Languages &amp; Test Scores</h3>
+<div class="lang-item"><strong>Chinese:</strong> Native | <strong>English:</strong> Fluent — IELTS 7.5 (L:8.5 R:8.5 W:7.0 S:6.5) | TOEFL iBT 103 | GRE 321</div>
+</div>
+<div class="sb-section">
+<h3>Training &amp; Certifications</h3>
+<div class="cert-item"><strong>Digital Product Management</strong> — University of Virginia (Coursera), 2022</div>
+<div class="cert-item"><strong>Python for Data Analysis and Machine Learning</strong> — Udemy, 2018</div>
+</div>
+<div class="sb-section">
+<h3>Skills</h3>
+<div class="skills-wrap">
+<span class="sk hl">LLM<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+<span class="sk hl">RAG<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+<span class="sk hl">Agentic AI<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+<span class="sk">A/B Testing<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+<span class="sk">Product Management<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+<span class="sk">SQL<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+<span class="sk">Python<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+<span class="sk">Prompt Engineering<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+</div>
+</div>
+<div class="sidebar-spacer"></div>
+</div>
+<!-- MAIN -->
+<div class="main" id="main-container">
+<div class="section">
+<div class="summary" contenteditable="true">Results-driven Senior Product Manager with 8+ years of experience spanning AI/ML product development, ad-tech, SaaS, and enterprise systems. Proven track record in deploying LLM-powered solutions, driving $20M+ revenue impact, and leading cross-functional teams across global organizations including TikTok, Hulu (Disney), and JD.com. Passionate about leveraging Generative AI, RAG architectures, and data-driven strategies to build products that scale.</div>
+</div>
+<div class="section">
+<div class="section-title" contenteditable="true">Professional Experience</div>
+<div class="job" contenteditable="true">
+<div class="job-header">
+<span class="job-company">TikTok (ByteDance), Beijing</span>
+<span class="job-dates">Apr 2024 – Present</span>
+</div>
+<div class="job-role">Senior Product Manager, GenAI &amp; Operations</div>
+<ul>
+<li>Led end-to-end development of "Arena Copilot," an LLM-powered chatbot with RAG architecture for internal operations, reducing support tickets by 50% and cutting average resolution time from 3.5 hours to under 1 hour; increased self-solve rate from 8% to 65%.</li>
+<li>Spearheaded AIGC-driven banner ads transformation integrating AI auto-fitting across 20+ placements and multi-language support, reducing campaign setup time by 80%.</li>
+<li>Deployed ML-based CTR prediction model and intelligent frequency capping for banner ad ranking, increasing click-through rate from &lt;1% to 3%.</li>
+<li>Designed automated milestone notification system using creator behavior analysis and ML-based targeting, boosting CTR by 10% and unique viewers by 3%.</li>
+</ul>
+</div>
+<div class="job" contenteditable="true">
+<div class="job-header">
+<span class="job-company">Tripalink, Beijing</span>
+<span class="job-dates">Aug 2023 – Apr 2024</span>
+</div>
+<div class="job-role">AI Product Manager</div>
+<ul>
+<li>Reduced property onboarding time from 2 weeks to 2 days (85% improvement) by implementing automated data scraping and AI-powered description generation with SEO optimization.</li>
+<li>Redesigned promotion management system, cutting configuration time from 4+ hours to 30 minutes and reducing data error rate from 10% to 2%.</li>
+</ul>
+</div>
+<div class="job" contenteditable="true">
+<div class="job-header">
+<span class="job-company">Hulu (The Walt Disney Company), Beijing</span>
+<span class="job-dates">May 2021 – Aug 2023</span>
+</div>
+<div class="job-role">Ad Product Manager</div>
+<ul>
+<li>Drove integration of Hulu's ad inventory with third-party DSPs via real-time bidding and yield optimization, generating over $20M annual revenue lift.</li>
+<li>Designed and implemented a server-side A/B testing framework with SDK-level traffic splitting, accelerating algorithm and ad strategy optimization velocity by 40%.</li>
+<li>Built an offline ad server simulator enabling 20× accelerated testing; supported the launch of new pacing algorithms and unified selection logic for $3B+ ad revenue platform.</li>
+<li>Optimized ad asset lifecycle via AI-powered quality rating system, reducing manual review by 50% and asset ingestion time by 90%.</li>
+</ul>
+</div>
+<div class="job" contenteditable="true">
+<div class="job-header">
+<span class="job-company">JD.com, Beijing</span>
+<span class="job-dates">Oct 2018 – Nov 2020</span>
+</div>
+<div class="job-role">SaaS Product Manager</div>
+<ul>
+<li>Built ML-driven automatic replenishment system achieving 90% automation rate, reducing stock shortage rate to &lt;2% and optimizing inventory turnover to under 40 days.</li>
+<li>Developed intelligent pricing system integrating ML-based sales simulation and NLP-powered competitive price crawling, driving data-driven pricing strategies for major promotions.</li>
+</ul>
+</div>
+<div class="job" contenteditable="true">
+<div class="job-header">
+<span class="job-company">ABB, Beijing</span>
+<span class="job-dates">Jul 2017 – Oct 2018</span>
+</div>
+<div class="job-role">Project Manager</div>
+<ul>
+<li>Managed supplier quality initiative validating a local vendor with 80% cost reduction; identified testing methodology flaw through data analysis, saving millions in procurement costs.</li>
+<li>Led competitive benchmarking initiative creating price-to-performance matrices across product lines, providing strategic insights for product development roadmap.</li>
+</ul>
+</div>
+</div>
+<div class="main-spacer"></div>
+</div>
+</div>
+<script>
       function stepper(btn, amount) {
         const input = btn.parentNode.querySelector('input');
         const min = parseFloat(input.min) || 0;
@@ -1249,27 +1318,27 @@
         applyScheme(name) {
           const root = document.documentElement;
           const schemes = {
-            ocean: { "inp-sb-bg": "#4052D6", "inp-sb-accent": "#00D1D1", "inp-header-color": "#00ADAD", "inp-accent-color": "#005C5C", "inp-bg-color": "#ffffff" },
-            peach: { "inp-sb-bg": "#FFDBBB", "inp-sb-accent": "#496580", "inp-header-color": "#496580", "inp-accent-color": "#BADDFF", "inp-bg-color": "#ffffff" },
-            rainforest: { "inp-sb-bg": "#7E8C54", "inp-sb-accent": "#50C878", "inp-header-color": "#4F7942", "inp-accent-color": "#71AA34", "inp-bg-color": "#ffffff" },
-            meadow: { "inp-sb-bg": "#FBF9E7", "inp-sb-accent": "#FDB813", "inp-header-color": "#82C8E5", "inp-accent-color": "#7CFC00", "inp-bg-color": "#ffffff" },
-            breeze: { "inp-sb-bg": "#FFEB3B", "inp-sb-accent": "#F88379", "inp-header-color": "#82C8E5", "inp-accent-color": "#E6D8C4", "inp-bg-color": "#ffffff" },
-            stone: { "inp-sb-bg": "#968F83", "inp-sb-accent": "#A5A58D", "inp-header-color": "#968F83", "inp-accent-color": "#A49A87", "inp-bg-color": "#E8E5DF" },
-            urban: { "inp-sb-bg": "#000000", "inp-sb-accent": "#A35E47", "inp-header-color": "#464646", "inp-accent-color": "#A35E47", "inp-bg-color": "#ffffff" },
-            calm: { "inp-sb-bg": "#517891", "inp-sb-accent": "#90D5FF", "inp-header-color": "#517891", "inp-accent-color": "#57B9FF", "inp-bg-color": "#ffffff" },
-            moonlight: { "inp-sb-bg": "#292966", "inp-sb-accent": "#CCCCFF", "inp-header-color": "#292966", "inp-accent-color": "#5C5C99", "inp-bg-color": "#ffffff" },
-            emerald: { "inp-sb-bg": "#0A3C30", "inp-sb-accent": "#73E6CB", "inp-header-color": "#00674F", "inp-accent-color": "#3EBB9E", "inp-bg-color": "#ffffff" },
-            california: { "inp-sb-bg": "#7D99AA", "inp-sb-accent": "#66F4FF", "inp-header-color": "#7D99AA", "inp-accent-color": "#FFC067", "inp-bg-color": "#ffffff" },
-            cobalt: { "inp-sb-bg": "#000080", "inp-sb-accent": "#82C8E5", "inp-header-color": "#0047AB", "inp-accent-color": "#6D8196", "inp-bg-color": "#ffffff" },
-            salt: { "inp-sb-bg": "#2B2B2B", "inp-sb-accent": "#D4D4D4", "inp-header-color": "#2B2B2B", "inp-accent-color": "#B3B3B3", "inp-bg-color": "#ffffff" },
-            gothic: { "inp-sb-bg": "#000000", "inp-sb-accent": "#D1D0D0", "inp-header-color": "#5C4E4E", "inp-accent-color": "#988686", "inp-bg-color": "#ffffff" },
-            harbor: { "inp-sb-bg": "#736F60", "inp-sb-accent": "#909EAE", "inp-header-color": "#5C8DC5", "inp-accent-color": "#AD9E90", "inp-bg-color": "#ffffff" },
-            winter: { "inp-sb-bg": "#0B2E33", "inp-sb-accent": "#B8E3E9", "inp-header-color": "#0B2E33", "inp-accent-color": "#4F7C82", "inp-bg-color": "#ffffff" },
-            slate: { "inp-sb-bg": "#4A4A4A", "inp-sb-accent": "#FFFFE3", "inp-header-color": "#4A4A4A", "inp-accent-color": "#6D8196", "inp-bg-color": "#FFFFE3" },
-            noir: { "inp-sb-bg": "#000000", "inp-sb-accent": "#D1D0D0", "inp-header-color": "#5C4E4E", "inp-accent-color": "#988686", "inp-bg-color": "#ffffff" },
-            elegant: { "inp-sb-bg": "#245F73", "inp-sb-accent": "#BBBDBC", "inp-header-color": "#733E24", "inp-accent-color": "#245F73", "inp-bg-color": "#F2F0EF" },
-            sand: { "inp-sb-bg": "#AD9C8E", "inp-sb-accent": "#F7E6CA", "inp-header-color": "#AD9C8E", "inp-accent-color": "#E8D59E", "inp-bg-color": "#ffffff" },
-            industrial: { "inp-sb-bg": "#736F60", "inp-sb-accent": "#909EAE", "inp-header-color": "#5C8DC5", "inp-accent-color": "#AD9E90", "inp-bg-color": "#ffffff" }
+            california: { "inp-header-color": "#7D99AA", "inp-accent-color": "#FFC067", "inp-bg-color": "#ffffff" },
+            cobalt: { "inp-header-color": "#000080", "inp-accent-color": "#6D8196", "inp-bg-color": "#ffffff" },
+            salt: { "inp-header-color": "#2B2B2B", "inp-accent-color": "#B3B3B3", "inp-bg-color": "#ffffff" },
+            gothic: { "inp-header-color": "#000000", "inp-accent-color": "#988686", "inp-bg-color": "#ffffff" },
+            harbor: { "inp-header-color": "#5C8DC5", "inp-accent-color": "#AD9E90", "inp-bg-color": "#ffffff" },
+            winter: { "inp-header-color": "#0B2E33", "inp-accent-color": "#4F7C82", "inp-bg-color": "#ffffff" },
+            slate: { "inp-header-color": "#4A4A4A", "inp-accent-color": "#6D8196", "inp-bg-color": "#FFFFE3" },
+            noir: { "inp-header-color": "#000000", "inp-accent-color": "#5C4E4E", "inp-bg-color": "#ffffff" },
+            elegant: { "inp-header-color": "#245F73", "inp-accent-color": "#733E24", "inp-bg-color": "#F2F0EF" },
+            sand: { "inp-header-color": "#AD9C8E", "inp-accent-color": "#E8D59E", "inp-bg-color": "#ffffff" },
+            industrial: { "inp-header-color": "#736F60", "inp-accent-color": "#5C8DC5", "inp-bg-color": "#ffffff" },
+            stone: { "inp-header-color": "#968F83", "inp-accent-color": "#A49A87", "inp-bg-color": "#E8E5DF" },
+            urban: { "inp-header-color": "#464646", "inp-accent-color": "#A35E47", "inp-bg-color": "#ffffff" },
+            calm: { "inp-header-color": "#517891", "inp-accent-color": "#57B9FF", "inp-bg-color": "#ffffff" },
+            moonlight: { "inp-header-color": "#292966", "inp-accent-color": "#5C5C99", "inp-bg-color": "#ffffff" },
+            emerald: { "inp-header-color": "#00674F", "inp-accent-color": "#3EBB9E", "inp-bg-color": "#ffffff" },
+            ocean: { "inp-header-color": "#4052D6", "inp-accent-color": "#005C5C", "inp-bg-color": "#ffffff" },
+            peach: { "inp-header-color": "#496580", "inp-accent-color": "#BADDFF", "inp-bg-color": "#ffffff" },
+            rainforest: { "inp-header-color": "#4F7942", "inp-accent-color": "#71AA34", "inp-bg-color": "#ffffff" },
+            meadow: { "inp-header-color": "#82C8E5", "inp-accent-color": "#7CFC00", "inp-bg-color": "#ffffff" },
+            breeze: { "inp-header-color": "#82C8E5", "inp-accent-color": "#E6D8C4", "inp-bg-color": "#ffffff" },
           };
           const s = schemes[name];
           if (!s) return;
@@ -1282,6 +1351,15 @@
 
         initReordering() {}
         attachReorderButtons() {
+            // Ensure summary divs are wrapped in .section (fixes localStorage restoring old HTML)
+            document.querySelectorAll('#main-container > .summary, #main-container > .summary-text').forEach(sum => {
+                if (!sum.closest('.section')) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'section';
+                    sum.parentNode.insertBefore(wrapper, sum);
+                    wrapper.appendChild(sum);
+                }
+            });
             document.querySelectorAll('.sb-section, #main-container > .section, .job, .edu-block').forEach(sec => this.addButtonsToSection(sec));
         }
         addButtonsToSection(section) {
@@ -1386,6 +1464,7 @@
           const clone = document.getElementById("resume").cloneNode(true);
           clone.querySelectorAll('.reorder-controls').forEach(el => el.remove());
           settings.content = clone.innerHTML;
+          s._version = "2026-02-27d";
 
           localStorage.setItem(this.STORAGE_KEY, JSON.stringify(settings));
         }
@@ -1465,5 +1544,5 @@
         }
       });
     </script>
-  </body>
+</body>
 </html>

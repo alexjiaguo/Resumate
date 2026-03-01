@@ -12,8 +12,10 @@ export interface ResumeData {
   experience: ExperienceItem[];
   education: EducationItem[];
   skills: SkillItem[];
+  technicalSkills: TechnicalSkillCategory[];
   languages: string[];
   certifications: string[];
+  sectionVisibility: TemplateVisibility;
 }
 
 export interface ExperienceItem {
@@ -31,6 +33,8 @@ export interface EducationItem {
   degree: string;
   dates: string;
   location: string;
+  gpa?: string;
+  relevantCoursework?: string;
 }
 
 export interface SkillItem {
@@ -38,6 +42,49 @@ export interface SkillItem {
   name: string;
   isHighlighted: boolean;
 }
+
+export interface TechnicalSkillCategory {
+  id: string;
+  category: string;
+  skills: string;
+}
+
+// Section keys that can be toggled per-template
+export type SectionKey = 
+  | 'summary' 
+  | 'experience' 
+  | 'education' 
+  | 'skills' 
+  | 'technicalSkills' 
+  | 'languages' 
+  | 'certifications'
+  | 'photo';
+
+// Per-template section visibility
+export type TemplateVisibility = Record<string, Record<SectionKey, boolean>>;
+
+// All sections visible by default
+export const DEFAULT_SECTION_VISIBILITY: Record<SectionKey, boolean> = {
+  summary: true,
+  experience: true,
+  education: true,
+  skills: true,
+  technicalSkills: true,
+  languages: true,
+  certifications: true,
+  photo: true,
+};
+
+export const SECTION_LABELS: Record<SectionKey, string> = {
+  summary: 'Summary',
+  experience: 'Experience',
+  education: 'Education',
+  skills: 'Skills',
+  technicalSkills: 'Technical Skills',
+  languages: 'Languages',
+  certifications: 'Certifications',
+  photo: 'Headshot Photo',
+};
 
 export interface ThemeSettings {
   primaryColor: string;
@@ -48,6 +95,7 @@ export interface ThemeSettings {
   baseFontSize: number;
   headerFontSize: number;
   sectionTitleSize: number;
+  companyFontSize: number;
   lineHeight: number;
   pagePadding: number;
   sectionSpacing: number;
@@ -67,10 +115,19 @@ export interface ThemeSettings {
   // ATS Executive Specific
   metricsBg?: string;
   dividerColor?: string;
+
+  // Page Break
+  showPageBreak?: boolean;
 }
 
 export interface ApiSettings {
-  openaiApiKey: string;
+  openaiKey: string;
+  geminiKey: string;
+  deepseekKey: string;
+  customBaseUrl: string;
+  openaiBaseUrl: string;
+  geminiBaseUrl: string;
+  selectedProvider: 'openai' | 'gemini' | 'custom';
   model: string;
 }
 

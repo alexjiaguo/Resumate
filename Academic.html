@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Resume Builder — Academic</title>
+    <title>Academic v9.0</title>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Merriweather:wght@300;400;700&family=EB+Garamond:wght@400;500;600;700&family=Lora:wght@400;500;600;700&display=swap");
 
@@ -38,7 +38,7 @@
       .controls {
         position: fixed; top: 0; left: 0; bottom: 0;
         width: 300px; background: #1a1a2e; padding: 16px;
-        overflow-y: auto; z-index: 1000;
+        overflow-y: auto; overflow-x: hidden; z-index: 1000;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         font-size: 12px; color: #c8cad0;
       }
@@ -67,6 +67,7 @@
       .btn-print:hover { background: #047857; }
       .control-row { display: flex; gap: 4px; align-items: flex-end; }
       .control-row .btn { flex: 1; margin-top: 0; min-width: 0; }
+      .control-row .control-group { min-width: 0; }
 
       .fmt-bar { display: flex; gap: 3px; margin-bottom: 10px; padding: 6px; background: #2d2d4e; border-radius: 5px; border: 1px solid #3d3d5c; flex-wrap: wrap; }
       .fmt-btn { width: 26px; height: 26px; border: 1px solid #3d3d5c; background: #1a1a2e; border-radius: 3px; cursor: pointer; font-weight: bold; color: #c8cad0; display: flex; align-items: center; justify-content: center; font-size: 11px; }
@@ -121,21 +122,21 @@
 
       /* Inline skill tags */
       .skills-wrap { display: flex; flex-wrap: wrap; gap: 5px; }
-      .sk { padding: 2px 8px; border-radius: 3px; background: #f0f3f6; color: #2c3e50; position: relative; cursor: pointer; transition: opacity 0.15s; }
+      .sk { padding: 2px 8px; border-radius: 3px; background: #f0f3f6; color: #2c3e50; font-size: 11px; position: relative; cursor: pointer; transition: opacity 0.15s; }
       .sk.hl { background: var(--header-color); color: #fff; font-weight: 600; }
       .sk .sk-del { display: none; position: absolute; top: -6px; right: -6px; width: 14px; height: 14px; background: #dc2626; color: #fff; border: none; border-radius: 50%; font-size: 9px; line-height: 1; cursor: pointer; align-items: center; justify-content: center; padding: 0; }
       .sk:hover .sk-del { display: flex; }
 
       /* Certifications & Languages */
-      .cert-item { margin-bottom: 3px; font-size: 1em; }
-      .lang-item { font-size: 1em; }
+      .cert-item { margin-bottom: 3px; font-size: 11px; }
+      .lang-item { font-size: 11px; }
 
       /* Tags */
       .tag { font-size: var(--tag-size); font-weight: 700; color: #fff; padding: 1px 5px; border-radius: 2px; margin-left: 4px; vertical-align: middle; text-transform: uppercase; }
       .tag.c { background: var(--accent-color); }
 
       /* Reorder Controls */
-      .reorder-btns { position: absolute; right: -30px; top: 0; display: none; flex-direction: column; gap: 2px; }
+      .reorder-btns { position: absolute; right: 2px; top: 2px; display: none; flex-direction: column; gap: 2px; z-index: 10; background: rgba(255,255,255,0.95); padding: 2px; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
       .section:hover .reorder-btns { display: flex; }
       .reorder-btn { background: #eee; border: 1px solid #ddd; padding: 2px 4px; font-size: 10px; cursor: pointer; border-radius: 3px; }
       .reorder-btn:hover { background: #ddd; }
@@ -152,7 +153,7 @@
   </head>
   <body>
     <aside class="controls">
-      <h2>Academic</h2>
+      <h2>Academic v9.0</h2>
 
       <div class="control-row" style="margin-bottom:10px;">
         <button class="btn" onclick="resumeCustomizer.saveSettings()">💾 Save</button>
@@ -713,6 +714,7 @@
           const clone = document.getElementById('resume').cloneNode(true);
           clone.querySelectorAll('.reorder-btns').forEach(el => el.remove());
           s.content = clone.innerHTML;
+          s._version = "2026-02-27e";
           localStorage.setItem(this.STORAGE_KEY, JSON.stringify(s));
         }
 
@@ -721,6 +723,7 @@
           if (!raw) { this.attachReorderButtons(); return; }
           try {
             const s = JSON.parse(raw);
+            if (s._version !== "2026-02-27e") { localStorage.removeItem(this.STORAGE_KEY); return; }
             const root = document.documentElement;
             Object.keys(this.settingsMap).forEach(id => {
               if (s[id] !== undefined) {

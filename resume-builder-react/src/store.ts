@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { ResumeData, ThemeSettings, ApiSettings, SourceMaterials, DraftState } from './types';
+import { ResumeData, ThemeSettings, ApiSettings, SourceMaterials, DraftState, SectionKey, DEFAULT_SECTION_VISIBILITY } from './types';
 
 interface ResumeStore {
   data: ResumeData;
@@ -9,6 +9,10 @@ interface ResumeStore {
   apiSettings: ApiSettings;
   sourceMaterials: SourceMaterials;
   draftState: DraftState;
+  hasCompletedOnboarding: boolean;
+  uploadedResumeText: string;
+  sidebarWidth: number;
+  sectionOrder: SectionKey[];
   updateData: (newData: Partial<ResumeData>) => void;
   updateTheme: (newTheme: Partial<ThemeSettings>) => void;
   setTemplate: (template: string) => void;
@@ -16,6 +20,12 @@ interface ResumeStore {
   setSourceMaterial: (material: Partial<SourceMaterials>) => void;
   setDraft: (draft: Partial<DraftState>) => void;
   commitDraft: () => void;
+  setOnboardingComplete: () => void;
+  setUploadedResumeText: (text: string) => void;
+  setSidebarWidth: (width: number) => void;
+  moveSectionOrder: (key: SectionKey, direction: 'up' | 'down') => void;
+  toggleSectionVisibility: (template: string, section: SectionKey) => void;
+  isSectionVisible: (template: string, section: SectionKey) => boolean;
   reset: () => void;
 }
 
@@ -57,8 +67,13 @@ const initialData: ResumeData = {
     { id: '3', name: 'Node.js', isHighlighted: false },
     { id: '4', name: 'PostgreSQL', isHighlighted: false }
   ],
+  technicalSkills: [
+    { id: '1', category: 'Programming Languages', skills: 'JavaScript, TypeScript, Python' },
+    { id: '2', category: 'Frameworks & Libraries', skills: 'React, Node.js, Express' },
+  ],
   languages: ['English (Native)', 'Spanish (Professional)'],
-  certifications: ['AWS Certified Solutions Architect', 'Google Professional Cloud Developer']
+  certifications: ['AWS Certified Solutions Architect', 'Google Professional Cloud Developer'],
+  sectionVisibility: {},
 };
 
 const initialTheme: ThemeSettings = {
@@ -70,6 +85,7 @@ const initialTheme: ThemeSettings = {
   baseFontSize: 11,
   headerFontSize: 26,
   sectionTitleSize: 12,
+  companyFontSize: 11,
   lineHeight: 1.4,
   pagePadding: 40,
   sectionSpacing: 12,
@@ -83,10 +99,17 @@ const initialTheme: ThemeSettings = {
   summaryBg: '#f5f6fa',
   metricsBg: '#f8f9fb',
   dividerColor: '#d0d5dd',
+  showPageBreak: false,
 };
 
 const initialApiSettings: ApiSettings = {
-  openaiApiKey: '',
+  openaiKey: '',
+  geminiKey: '',
+  deepseekKey: '',
+  customBaseUrl: '',
+  openaiBaseUrl: 'https://api.openai.com/v1',
+  geminiBaseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
+  selectedProvider: 'openai',
   model: 'gpt-4o',
 };
 
@@ -103,13 +126,17 @@ const initialDraftState: DraftState = {
 
 export const useResumeStore = create<ResumeStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       data: initialData,
       theme: initialTheme,
       selectedTemplate: 'classic',
       apiSettings: initialApiSettings,
       sourceMaterials: initialSourceMaterials,
       draftState: initialDraftState,
+      hasCompletedOnboarding: false,
+      uploadedResumeText: '',
+      sidebarWidth: 420,
+      sectionOrder: ['summary', 'experience', 'education', 'skills', 'technicalSkills', 'languages', 'certifications', 'photo'] as SectionKey[],
       updateData: (newData) => set((state) => ({ data: { ...state.data, ...newData } })),
       updateTheme: (newTheme) => set((state) => ({ theme: { ...state.theme, ...newTheme } })),
       setTemplate: (template) => set({ selectedTemplate: template }),
@@ -119,10 +146,49 @@ export const useResumeStore = create<ResumeStore>()(
       commitDraft: () => set((state) => {
         if (!state.draftState.draftResume) return state;
         return {
-          data: state.draftState.draftResume,
+          data: { 
+            ...state.draftState.draftResume,
+            // Preserve fields that the LLM doesn't generate
+            technicalSkills: state.draftState.draftResume.technicalSkills || state.data.technicalSkills,
+            sectionVisibility: state.data.sectionVisibility,
+          },
           draftState: { ...state.draftState, draftResume: null }
         };
       }),
+      setOnboardingComplete: () => set({ hasCompletedOnboarding: true }),
+      setUploadedResumeText: (text: string) => set({ uploadedResumeText: text }),
+      setSidebarWidth: (width: number) => set({ sidebarWidth: Math.max(320, Math.min(600, width)) }),
+      moveSectionOrder: (key: SectionKey, direction: 'up' | 'down') => set((state) => {
+        const order = [...state.sectionOrder];
+        const idx = order.indexOf(key);
+        if (idx < 0) return state;
+        const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+        if (swapIdx < 0 || swapIdx >= order.length) return state;
+        [order[idx], order[swapIdx]] = [order[swapIdx], order[idx]];
+        return { sectionOrder: order };
+      }),
+      toggleSectionVisibility: (template: string, section: SectionKey) => set((state) => {
+        const currentVis = state.data.sectionVisibility || {};
+        const templateVis = currentVis[template] || { ...DEFAULT_SECTION_VISIBILITY };
+        return {
+          data: {
+            ...state.data,
+            sectionVisibility: {
+              ...currentVis,
+              [template]: {
+                ...templateVis,
+                [section]: !templateVis[section],
+              }
+            }
+          }
+        };
+      }),
+      isSectionVisible: (template: string, section: SectionKey) => {
+        const state = get();
+        const templateVis = state.data.sectionVisibility?.[template];
+        if (!templateVis) return DEFAULT_SECTION_VISIBILITY[section];
+        return templateVis[section] ?? DEFAULT_SECTION_VISIBILITY[section];
+      },
       reset: () => set({ 
         data: initialData, 
         theme: initialTheme, 
@@ -130,6 +196,10 @@ export const useResumeStore = create<ResumeStore>()(
         apiSettings: initialApiSettings,
         sourceMaterials: initialSourceMaterials,
         draftState: initialDraftState,
+        hasCompletedOnboarding: false,
+        uploadedResumeText: '',
+        sidebarWidth: 420,
+        sectionOrder: ['summary', 'experience', 'education', 'skills', 'technicalSkills', 'languages', 'certifications', 'photo'] as SectionKey[],
       }),
     }),
     {
@@ -140,6 +210,10 @@ export const useResumeStore = create<ResumeStore>()(
         selectedTemplate: state.selectedTemplate,
         apiSettings: state.apiSettings,
         sourceMaterials: state.sourceMaterials,
+        hasCompletedOnboarding: state.hasCompletedOnboarding,
+        uploadedResumeText: state.uploadedResumeText,
+        sidebarWidth: state.sidebarWidth,
+        sectionOrder: state.sectionOrder,
       }),
     }
   )

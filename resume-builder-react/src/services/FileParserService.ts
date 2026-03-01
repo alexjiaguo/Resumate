@@ -2,8 +2,7 @@ import * as pdfjs from 'pdfjs-dist';
 import mammoth from 'mammoth';
 
 // Set up worker for pdfjs - using a CDN link that matches the package version
-// In a real production app, this would be bundled or served from public/
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
 export class FileParserService {
   static async parseFile(file: File): Promise<string> {
@@ -21,27 +20,40 @@ export class FileParserService {
   }
 
   private static async parsePdf(file: File): Promise<string> {
-    const arrayBuffer = await file.arrayBuffer();
-    const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
-    const pdf = await loadingTask.promise;
-    let fullText = '';
-    
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const textContent = await page.getTextContent();
-      const pageText = textContent.items
-        .map((item: any) => item.str)
-        .join(' ');
-      fullText += pageText + '
-';
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
+      const pdf = await loadingTask.promise;
+      let fullText = '';
+      
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => {
+            const str = item.str || '';
+            // Add space if the item doesn't end with a space and next item starts on same line
+            return item.hasEOL ? str + '\n' : str;
+          })
+          .join(' ')
+          .replace(/  +/g, ' ')  // collapse multiple spaces
+          .trim();
+        fullText += pageText + '\n\n';
+      }
+      
+      return fullText.trim();
+    } catch (err) {
+      throw new Error(`PDF parsing failed: ${err instanceof Error ? err.message : String(err)}. The PDF may be image-based or corrupt.`);
     }
-    
-    return fullText;
   }
 
   private static async parseDocx(file: File): Promise<string> {
-    const arrayBuffer = await file.arrayBuffer();
-    const result = await mammoth.extractRawText({ arrayBuffer });
-    return result.value;
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer });
+      return result.value;
+    } catch (err) {
+      throw new Error(`DOCX parsing failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
   }
 }
