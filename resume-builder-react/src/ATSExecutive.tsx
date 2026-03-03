@@ -127,7 +127,11 @@ const ATSExecutive: React.FC = () => {
         <h1 style={{ fontSize: `${theme.headerFontSize}px`, fontWeight: 700, color: theme.primaryColor, letterSpacing: '0.3px', marginBottom: '1px', lineHeight: 1.2 }}>{data.personalInfo.fullName}</h1>
         <div style={{ fontSize: '12px', color: theme.accentColor, fontWeight: 600, marginBottom: '4px' }}>{data.personalInfo.title}</div>
         <div style={{ fontSize: '10px', color: '#555' }}>
-          {data.personalInfo.phone} · <span style={{ color: theme.accentColor }}>{data.personalInfo.email}</span> · {data.personalInfo.linkedin}
+          {[
+            data.personalInfo.phone,
+          ].join('')}<span style={{ color: theme.accentColor }}> · {data.personalInfo.email}</span> · {data.personalInfo.linkedin}
+          {vis('portfolio') && data.personalInfo.portfolioUrl && <> · {data.personalInfo.portfolioUrl}</>}
+          {vis('visaStatus') && data.personalInfo.visaStatus && <> · {data.personalInfo.visaStatus}</>}
         </div>
       </header>
 

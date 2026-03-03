@@ -17,6 +17,8 @@ import BoldEngineer from './BoldEngineer';
 import Academic from './Academic';
 import TailoringHub from './components/TailoringHub';
 import OnboardingScreen from './components/OnboardingScreen';
+import { FileParserService } from './services/FileParserService';
+import { ResumeParserService } from './services/ResumeParserService';
 import { downloadMarkdown, downloadHtml, downloadDocx } from './utils/ExportUtils';
 import { COLOR_SCHEMES } from './data/ColorSchemes';
 import { SECTION_LABELS } from './types';
@@ -25,8 +27,33 @@ import {
   PanelLeftClose, PanelLeft, ZoomIn, ZoomOut, Maximize,
   User, Palette, Download, ChevronDown, Sun, Moon, Sparkles,
   Camera, ImageOff, ArrowUp, ArrowDown, Bold, Italic, Underline as UnderlineIcon, RemoveFormatting, RotateCcw,
-  Eye, EyeOff
+  Eye, EyeOff, Upload, Loader2, Link, Globe
 } from 'lucide-react';
+
+/* ===== Color contrast utility ===== */
+const hexToLuminance = (hex: string): number => {
+  const c = hex.replace('#', '');
+  const r = parseInt(c.substring(0, 2), 16) / 255;
+  const g = parseInt(c.substring(2, 4), 16) / 255;
+  const b = parseInt(c.substring(4, 6), 16) / 255;
+  const toLinear = (v: number) => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+};
+
+const contrastRatio = (hex1: string, hex2: string): number => {
+  const l1 = hexToLuminance(hex1);
+  const l2 = hexToLuminance(hex2);
+  const lighter = Math.max(l1, l2);
+  const darker = Math.min(l1, l2);
+  return (lighter + 0.05) / (darker + 0.05);
+};
+
+const ensureContrast = (textColor: string, bgColor: string): string => {
+  if (contrastRatio(textColor, bgColor) >= 3.5) return textColor;
+  // If bg is light, darken text; if bg is dark, lighten text
+  const bgLum = hexToLuminance(bgColor);
+  return bgLum > 0.5 ? '#1a1a2e' : '#f0f0f0';
+};
 
 type SidebarTab = 'content' | 'ai' | 'design' | 'export';
 
@@ -208,7 +235,6 @@ const AchievementEditor: React.FC<{
 
   if (!editor) return null;
 
-  const isEmpty = editor.isEmpty;
 
   return (
     <div className="achievement-item-rich">
@@ -258,7 +284,7 @@ const AchievementEditor: React.FC<{
       </div>
       <EditorContent editor={editor} className="tiptap-editor" />
       <button 
-        onClick={() => { if (isEmpty) onDelete(); else onDelete(); }}
+        onClick={onDelete}
         className="btn-inline-delete"
         title="Remove achievement"
         style={{ position: 'absolute', top: '4px', right: '4px' }}
@@ -286,6 +312,7 @@ const App: React.FC = () => {
     moveSectionOrder,
     toggleSectionVisibility,
     isSectionVisible,
+    setUploadedResumeText,
     reset 
   } = useResumeStore();
 
@@ -293,8 +320,11 @@ const App: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(100);
   const [activeTab, setActiveTab] = useState<SidebarTab>('ai');
+  const [templateDropdownOpen, setTemplateDropdownOpen] = useState(false);
   const [activeColorScheme, setActiveColorScheme] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const resumeFileInputRef = useRef<HTMLInputElement>(null);
+  const [isResumeUploading, setIsResumeUploading] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('resume-builder-dark-mode');
     if (saved !== null) return saved === 'true';
@@ -346,11 +376,13 @@ const App: React.FC = () => {
     const scheme = COLOR_SCHEMES.find(s => s.id === schemeId);
     if (!scheme) return;
     setActiveColorScheme(schemeId);
+    const bg = '#ffffff'; // Always force white background
+    const safeTextColor = ensureContrast(scheme.colors.textColor, bg);
     updateTheme({
       primaryColor: scheme.colors.primaryColor,
       accentColor: scheme.colors.accentColor,
-      backgroundColor: scheme.colors.backgroundColor,
-      textColor: scheme.colors.textColor,
+      backgroundColor: bg,
+      textColor: safeTextColor,
       ...(scheme.colors.sidebarBg && { sidebarBg: scheme.colors.sidebarBg }),
       ...(scheme.colors.sidebarAccent && { sidebarAccent: scheme.colors.sidebarAccent }),
     });
@@ -547,8 +579,44 @@ const App: React.FC = () => {
   };
 
   /* ===== Tab Content: CONTENT ===== */
+  const handleResumeFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsResumeUploading(true);
+    try {
+      const ext = file.name.split('.').pop()?.toLowerCase() || '';
+      const rawText = await FileParserService.parseFile(file);
+      const resumeData = ResumeParserService.parse(rawText, ext);
+      setUploadedResumeText(rawText);
+      updateData(resumeData);
+    } catch (err) {
+      alert(`Could not parse "${file.name}": ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setIsResumeUploading(false);
+      if (resumeFileInputRef.current) resumeFileInputRef.current.value = '';
+    }
+  };
+
   const renderContentTab = () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      {/* Resume File Upload */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px',
+        background: 'var(--bg-secondary, #f3f4f6)', borderRadius: '8px', border: '1px dashed var(--border-color, #d1d5db)',
+        marginBottom: '4px'
+      }}>
+        <input ref={resumeFileInputRef} type="file" accept=".pdf,.docx,.doc,.txt,.md" onChange={handleResumeFileUpload} style={{ display: 'none' }} />
+        <button
+          onClick={() => resumeFileInputRef.current?.click()}
+          disabled={isResumeUploading}
+          className="btn-outline-sm"
+          style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0, fontWeight: 600 }}
+        >
+          {isResumeUploading ? <Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} /> : <Upload size={13} />}
+          {isResumeUploading ? 'Importing...' : 'Import Resume'}
+        </button>
+        <span style={{ fontSize: '11px', opacity: 0.55, lineHeight: 1.3 }}>PDF, DOCX, or MD — auto-fills all fields</span>
+      </div>
       <CollapsibleSection title="Personal Info" defaultOpen={true}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <label className="form-label">Full Name
@@ -572,6 +640,22 @@ const App: React.FC = () => {
             <label className="form-label">LinkedIn
               <input className="input-field" name="linkedin" value={data.personalInfo.linkedin} onChange={handlePersonalChange} />
             </label>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '3px' }}>
+                <Link size={11} style={{ opacity: 0.5 }} />
+                <input className="input-field" name="portfolioLabel" value={data.personalInfo.portfolioLabel || ''} onChange={handlePersonalChange} placeholder="Portfolio / Blog" style={{ fontWeight: 600, fontSize: '11px', padding: '2px 4px', border: '1px dashed var(--border-color, #d1d5db)', background: 'transparent' }} />
+              </div>
+              <input className="input-field" name="portfolioUrl" value={data.personalInfo.portfolioUrl || ''} onChange={handlePersonalChange} placeholder="github.com/user (optional)" />
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '3px' }}>
+                <Globe size={11} style={{ opacity: 0.5 }} />
+                <input className="input-field" name="visaLabel" value={data.personalInfo.visaLabel || ''} onChange={handlePersonalChange} placeholder="Visa Status" style={{ fontWeight: 600, fontSize: '11px', padding: '2px 4px', border: '1px dashed var(--border-color, #d1d5db)', background: 'transparent' }} />
+              </div>
+              <input className="input-field" name="visaStatus" value={data.personalInfo.visaStatus || ''} onChange={handlePersonalChange} placeholder="e.g. US Citizen (optional)" />
+            </div>
           </div>
           <label className="form-label">Summary</label>
           <SummaryEditor value={data.summary} onChange={(val) => updateData({ summary: val })} />
@@ -908,25 +992,11 @@ const App: React.FC = () => {
   /* ===== Tab Content: DESIGN ===== */
   const renderDesignTab = () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-      <CollapsibleSection title="Choose Template" defaultOpen={true}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-          {['classic', 'clean', 'premium', 'ats', 'photo', 'clean_prof', 'elegant', 'bold', 'academic'].map((tpl) => (
-            <button 
-              key={tpl} 
-              onClick={() => setTemplate(tpl)} 
-              className={`btn-template ${selectedTemplate === tpl ? 'active' : ''}`}
-            >
-              {tpl.replace('_', ' ')}
-            </button>
-          ))}
-        </div>
-      </CollapsibleSection>
 
       <CollapsibleSection title="Color Schemes" defaultOpen={true}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {(['Professional', 'Classic', 'Vibrant'] as const).map((category) => (
-            <div key={category}>
-              <div style={{ fontSize: '11px', fontWeight: 600, opacity: 0.5, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{category}</div>
+            <CollapsibleSection key={category} title={category} defaultOpen={category === 'Professional'}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '6px' }}>
                 {COLOR_SCHEMES.filter(s => s.category === category).map((scheme) => (
                   <button
@@ -950,7 +1020,7 @@ const App: React.FC = () => {
                   </button>
                 ))}
               </div>
-            </div>
+            </CollapsibleSection>
           ))}
           {activeColorScheme && (
             <button
@@ -1143,6 +1213,139 @@ const App: React.FC = () => {
             {darkMode ? <Sun size={16} /> : <Moon size={16} />}
           </button>
         </div>
+
+        {/* Template Selector — custom dropdown with layout previews */}
+        {(() => {
+          const templates = [
+            { id: 'classic', name: 'Classic Minimal', desc: 'Simple single-column', layout: 'single' },
+            { id: 'clean', name: 'Clean Layout', desc: 'Structured with sections', layout: 'single' },
+            { id: 'premium', name: 'Premium Headshot', desc: 'Photo sidebar layout', layout: 'sidebar-left' },
+            { id: 'ats', name: 'ATS Executive', desc: 'ATS-optimized format', layout: 'single' },
+            { id: 'photo', name: 'Photo Header', desc: 'Large photo header', layout: 'photo-header' },
+            { id: 'clean_prof', name: 'Clean Professional', desc: 'Clean with dividers', layout: 'single' },
+            { id: 'elegant', name: 'Elegant Two-Column', desc: 'Two-column design', layout: 'sidebar-right' },
+            { id: 'bold', name: 'Bold Engineer', desc: 'Dark header, badges', layout: 'bold-header' },
+            { id: 'academic', name: 'Academic', desc: 'Academic/research style', layout: 'single' },
+          ];
+          const current = templates.find(t => t.id === selectedTemplate);
+          const LayoutIcon = ({ type }: { type: string }) => (
+            <svg width="28" height="36" viewBox="0 0 28 36" fill="none" style={{ border: '1px solid var(--border-color, #d1d5db)', borderRadius: 2, flexShrink: 0 }}>
+              <rect width="28" height="36" rx="1" fill="var(--bg-secondary, #f9fafb)" />
+              {type === 'single' && (<>
+                <rect x="4" y="3" width="20" height="3" rx="0.5" fill="var(--accent-color, #6366f1)" opacity="0.7" />
+                <rect x="4" y="8" width="20" height="1" rx="0.3" fill="currentColor" opacity="0.2" />
+                <rect x="4" y="11" width="20" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+                <rect x="4" y="13" width="15" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+                <rect x="4" y="17" width="20" height="2" rx="0.5" fill="var(--accent-color, #6366f1)" opacity="0.4" />
+                <rect x="4" y="21" width="20" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+                <rect x="4" y="23" width="18" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+                <rect x="4" y="25" width="20" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+                <rect x="4" y="29" width="20" height="2" rx="0.5" fill="var(--accent-color, #6366f1)" opacity="0.4" />
+                <rect x="4" y="33" width="14" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+              </>)}
+              {type === 'sidebar-left' && (<>
+                <rect x="1" y="1" width="8" height="34" rx="0.5" fill="var(--accent-color, #6366f1)" opacity="0.2" />
+                <circle cx="5" cy="6" r="2.5" fill="var(--accent-color, #6366f1)" opacity="0.5" />
+                <rect x="2" y="11" width="6" height="1" rx="0.3" fill="currentColor" opacity="0.2" />
+                <rect x="2" y="14" width="6" height="1" rx="0.3" fill="currentColor" opacity="0.2" />
+                <rect x="11" y="3" width="14" height="2" rx="0.5" fill="var(--accent-color, #6366f1)" opacity="0.5" />
+                <rect x="11" y="7" width="14" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+                <rect x="11" y="10" width="14" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+                <rect x="11" y="15" width="14" height="2" rx="0.5" fill="var(--accent-color, #6366f1)" opacity="0.4" />
+                <rect x="11" y="19" width="14" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+              </>)}
+              {type === 'sidebar-right' && (<>
+                <rect x="4" y="3" width="12" height="2" rx="0.5" fill="var(--accent-color, #6366f1)" opacity="0.5" />
+                <rect x="4" y="7" width="12" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+                <rect x="4" y="10" width="12" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+                <rect x="4" y="15" width="12" height="2" rx="0.5" fill="var(--accent-color, #6366f1)" opacity="0.4" />
+                <rect x="4" y="19" width="12" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+                <rect x="19" y="1" width="8" height="34" rx="0.5" fill="var(--accent-color, #6366f1)" opacity="0.15" />
+                <rect x="20" y="4" width="6" height="1.5" rx="0.3" fill="var(--accent-color, #6366f1)" opacity="0.5" />
+                <rect x="20" y="8" width="6" height="1" rx="0.3" fill="currentColor" opacity="0.2" />
+                <rect x="20" y="11" width="6" height="1" rx="0.3" fill="currentColor" opacity="0.2" />
+              </>)}
+              {type === 'photo-header' && (<>
+                <rect x="1" y="1" width="26" height="10" rx="0.5" fill="var(--accent-color, #6366f1)" opacity="0.2" />
+                <circle cx="8" cy="6" r="3" fill="var(--accent-color, #6366f1)" opacity="0.5" />
+                <rect x="13" y="4" width="12" height="2" rx="0.5" fill="var(--accent-color, #6366f1)" opacity="0.5" />
+                <rect x="13" y="7" width="8" height="1" rx="0.3" fill="currentColor" opacity="0.2" />
+                <rect x="4" y="14" width="20" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+                <rect x="4" y="17" width="20" height="2" rx="0.5" fill="var(--accent-color, #6366f1)" opacity="0.4" />
+                <rect x="4" y="21" width="20" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+                <rect x="4" y="23" width="18" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+              </>)}
+              {type === 'bold-header' && (<>
+                <rect x="1" y="1" width="26" height="10" rx="0.5" fill="var(--accent-color, #333)" opacity="0.8" />
+                <rect x="4" y="3" width="14" height="2.5" rx="0.5" fill="#fff" opacity="0.9" />
+                <rect x="4" y="7" width="20" height="1" rx="0.3" fill="#fff" opacity="0.5" />
+                <rect x="4" y="14" width="20" height="2" rx="0.5" fill="var(--accent-color, #6366f1)" opacity="0.5" />
+                <rect x="4" y="18" width="20" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+                <rect x="4" y="20" width="18" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+                <rect x="4" y="24" width="20" height="2" rx="0.5" fill="var(--accent-color, #6366f1)" opacity="0.4" />
+                <rect x="4" y="28" width="20" height="1" rx="0.3" fill="currentColor" opacity="0.15" />
+              </>)}
+            </svg>
+          );
+          return (
+            <div style={{ padding: '8px 12px', margin: '4px 0', position: 'relative' }}>
+              <button
+                onClick={() => setTemplateDropdownOpen(!templateDropdownOpen)}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
+                  padding: '8px 10px', borderRadius: '8px', cursor: 'pointer',
+                  border: '1px solid var(--border-color, #d1d5db)',
+                  background: 'var(--bg-secondary, #f9fafb)',
+                  color: 'var(--text-primary, #1f2937)',
+                  transition: 'border-color 0.15s',
+                }}
+              >
+                <LayoutIcon type={current?.layout || 'single'} />
+                <div style={{ flex: 1, textAlign: 'left' }}>
+                  <div style={{ fontWeight: 600, fontSize: '12px' }}>{current?.name}</div>
+                  <div style={{ fontSize: '10px', opacity: 0.6 }}>{current?.desc}</div>
+                </div>
+                <ChevronDown size={14} style={{ opacity: 0.5, transform: templateDropdownOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
+              </button>
+              {templateDropdownOpen && (
+                <>
+                  <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={() => setTemplateDropdownOpen(false)} />
+                  <div style={{
+                    position: 'absolute', top: '100%', left: '12px', right: '12px', zIndex: 100,
+                    background: 'var(--panel-bg, #fff)', border: '1px solid var(--border-color, #d1d5db)',
+                    borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                    maxHeight: '320px', overflowY: 'auto',
+                    padding: '4px',
+                  }}>
+                    {templates.map(tpl => (
+                      <button
+                        key={tpl.id}
+                        onClick={() => { setTemplate(tpl.id); setTemplateDropdownOpen(false); }}
+                        style={{
+                          width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
+                          padding: '8px 8px', borderRadius: '6px', cursor: 'pointer',
+                          border: 'none', textAlign: 'left',
+                          background: selectedTemplate === tpl.id ? 'var(--accent-color, #6366f1)11' : 'transparent',
+                          color: 'var(--text-primary, #1f2937)',
+                          transition: 'background 0.1s',
+                        }}
+                        onMouseEnter={e => { if (selectedTemplate !== tpl.id) (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-secondary, #f3f4f6)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = selectedTemplate === tpl.id ? 'var(--accent-color, #6366f1)11' : 'transparent'; }}
+                      >
+                        <LayoutIcon type={tpl.layout} />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: selectedTemplate === tpl.id ? 700 : 500, fontSize: '12px' }}>{tpl.name}</div>
+                          <div style={{ fontSize: '10px', opacity: 0.5 }}>{tpl.desc}</div>
+                        </div>
+                        {selectedTemplate === tpl.id && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent-color, #6366f1)' }} />}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Tab Navigation — 4 tabs */}
         <div className="sidebar-tabs">

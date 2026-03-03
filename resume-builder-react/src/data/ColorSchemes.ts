@@ -106,7 +106,7 @@ export const COLOR_SCHEMES: ColorScheme[] = [
     colors: {
       primaryColor: '#4A4A4A',
       accentColor: '#6D8196',
-      backgroundColor: '#FFFFE3',
+      backgroundColor: '#ffffff',
       textColor: '#4A4A4A',
       sidebarBg: '#4A4A4A',
       sidebarAccent: '#6D8196',
@@ -132,7 +132,7 @@ export const COLOR_SCHEMES: ColorScheme[] = [
     colors: {
       primaryColor: '#245F73',
       accentColor: '#733E24',
-      backgroundColor: '#F2F0EF',
+      backgroundColor: '#ffffff',
       textColor: '#245F73',
       sidebarBg: '#245F73',
       sidebarAccent: '#733E24',
@@ -173,7 +173,7 @@ export const COLOR_SCHEMES: ColorScheme[] = [
     colors: {
       primaryColor: '#968F83',
       accentColor: '#A49A87',
-      backgroundColor: '#E8E5DF',
+      backgroundColor: '#ffffff',
       textColor: '#4A4A4A',
       sidebarBg: '#968F83',
       sidebarAccent: '#A49A87',

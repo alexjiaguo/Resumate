@@ -19,11 +19,9 @@ const Academic: React.FC = () => {
 
   const sections: Record<string, () => React.ReactNode> = {
     summary: () => data.summary ? (
-      <div key="summary" style={{
-        fontSize: '11px', color: '#3a3a5c', lineHeight: 1.5,
-        marginBottom: '12px', padding: '7px 10px',
-        background: '#f5f6fa', borderLeft: `2.5px solid ${theme.primaryColor}`,
-      }} dangerouslySetInnerHTML={{ __html: data.summary }} />
+      <section key="summary" style={{ marginBottom: '12px' }}>
+        <div style={{ fontSize: `${theme.baseFontSize}px`, color: '#3a3a3a', lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: data.summary }} />
+      </section>
     ) : null,
 
     experience: () => (
@@ -143,7 +141,9 @@ const Academic: React.FC = () => {
             data.personalInfo.phone,
             data.personalInfo.email && <span key="email" style={{ color: theme.accentColor }}>{data.personalInfo.email}</span>,
             data.personalInfo.linkedin && <span key="linkedin" style={{ color: theme.accentColor }}>{data.personalInfo.linkedin}</span>,
-            data.personalInfo.location
+            data.personalInfo.location,
+            vis('portfolio') && data.personalInfo.portfolioUrl && <span key="portfolio" style={{ color: theme.accentColor }}>{data.personalInfo.portfolioUrl}</span>,
+            vis('visaStatus') && data.personalInfo.visaStatus,
           ].filter(Boolean).map((item, index, arr) => (
              <React.Fragment key={index}>
                {item}

@@ -25,8 +25,8 @@ const PhotoHeader: React.FC = () => {
     </div>
   );
 
-  const sidebarKeys = new Set<string>(['photo', 'summary', 'education', 'skills', 'technicalSkills', 'languages']);
-  const mainKeys = new Set<string>(['experience', 'certifications']);
+  const sidebarKeys = new Set<string>(['photo', 'summary', 'education', 'technicalSkills', 'skills', 'languages', 'certifications']);
+  const mainKeys = new Set<string>(['experience']);
 
   // Sidebar sections
   const sidebarSections: Record<string, () => React.ReactNode> = {
@@ -53,14 +53,16 @@ const PhotoHeader: React.FC = () => {
     skills: () => (
       <section key="skills-side" style={{ marginBottom: `${theme.sectionSpacing}px`, position: 'relative' }}>
         {sectionTitle('Key Skills')}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
           {data.skills.map((skill) => (
-            <div key={skill.id} style={{ display: 'flex', flexDirection: 'column', gap: '4px', position: 'relative' }}>
-              <div style={{ fontWeight: 600, fontSize: '11px' }}>{skill.name}</div>
-              <div style={{ height: '4px', background: '#eee', borderRadius: '2px', overflow: 'hidden' }}>
-                <div style={{ height: '100%', background: skill.isHighlighted ? theme.accentColor : theme.primaryColor, width: '80%' }} />
-              </div>
-            </div>
+            <span key={skill.id} style={{
+              padding: '2px 8px', borderRadius: '3px', fontSize: '11px', cursor: 'pointer', transition: 'opacity 0.15s',
+              background: skill.isHighlighted ? theme.primaryColor : '#f0f3f6',
+              color: skill.isHighlighted ? '#fff' : '#2c3e50',
+              fontWeight: skill.isHighlighted ? 600 : 400,
+            }}>
+              {skill.name}
+            </span>
           ))}
         </div>
       </section>
@@ -85,6 +87,15 @@ const PhotoHeader: React.FC = () => {
         ))}
       </section>
     ) : null,
+
+    certifications: () => data.certifications.length > 0 ? (
+      <section key="certs-side" style={{ marginBottom: `${theme.sectionSpacing}px`, position: 'relative' }}>
+        {sectionTitle('Training & Certifications')}
+        {data.certifications.map((cert, idx) => (
+          <div key={idx} style={{ marginBottom: '3px', fontSize: '11px' }}>{cert}</div>
+        ))}
+      </section>
+    ) : null,
   };
 
   // Main column sections — timeline-style experience
@@ -99,9 +110,9 @@ const PhotoHeader: React.FC = () => {
           }}>
             {/* Timeline dot */}
             <div style={{
-              position: 'absolute', left: '-7px', top: '0',
-              width: '12px', height: '12px', background: theme.accentColor,
-              borderRadius: '50%', border: '3px solid #fff',
+              position: 'absolute', left: '-6px', top: '0',
+              width: '10px', height: '10px', background: theme.accentColor,
+              borderRadius: '50%', border: '2px solid #fff',
             }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
               <span style={{ fontWeight: 700, color: theme.primaryColor, fontSize: '11px' }}>{item.title}</span>
@@ -119,14 +130,6 @@ const PhotoHeader: React.FC = () => {
       </section>
     ),
 
-    certifications: () => data.certifications.length > 0 ? (
-      <section key="certs" style={{ marginBottom: `${theme.sectionSpacing}px`, position: 'relative' }}>
-        {sectionTitle('Certifications & Training')}
-        {data.certifications.map((cert, idx) => (
-          <div key={idx} style={{ marginBottom: '3px', fontSize: '11px' }}>{cert}</div>
-        ))}
-      </section>
-    ) : null,
   };
 
   return (
@@ -139,7 +142,7 @@ const PhotoHeader: React.FC = () => {
     }} className="resume-paper">
 
       {/* ── HEADER ── photo left, name right */}
-      <header style={{ display: 'flex', alignItems: 'center', gap: '30px', marginBottom: '25px', background: '#eee', padding: '25px 30px', borderRadius: '4px' }}>
+      <header style={{ display: 'flex', alignItems: 'center', gap: '30px', marginBottom: '25px', background: '#f0f2f5', padding: '25px 30px', borderRadius: '4px' }}>
         {vis('photo') && (
           <div style={{
             width: `${theme.headshotSize || 140}px`, height: `${theme.headshotSize || 140}px`,
@@ -162,6 +165,8 @@ const PhotoHeader: React.FC = () => {
             {data.personalInfo.email && <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ color: theme.accentColor, fontWeight: 'bold', width: '14px', textAlign: 'center', flexShrink: 0, fontSize: '11px' }}>✉</span>{data.personalInfo.email}</div>}
             {data.personalInfo.location && <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ color: theme.accentColor, fontWeight: 'bold', width: '14px', textAlign: 'center', flexShrink: 0, fontSize: '11px' }}>📍</span>{data.personalInfo.location}</div>}
             {data.personalInfo.linkedin && <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ color: theme.accentColor, fontWeight: 'bold', width: '14px', textAlign: 'center', flexShrink: 0, fontSize: '11px' }}>🌐</span>{data.personalInfo.linkedin}</div>}
+            {vis('portfolio') && data.personalInfo.portfolioUrl && <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ color: theme.accentColor, fontWeight: 'bold', width: '14px', textAlign: 'center', flexShrink: 0, fontSize: '11px' }}>💻</span>{data.personalInfo.portfolioUrl}</div>}
+            {vis('visaStatus') && data.personalInfo.visaStatus && <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ color: theme.accentColor, fontWeight: 'bold', width: '14px', textAlign: 'center', flexShrink: 0, fontSize: '11px' }}>🛂</span>{data.personalInfo.visaStatus}</div>}
           </div>
         </div>
       </header>

@@ -7,6 +7,10 @@ export interface ResumeData {
     linkedin: string;
     location: string;
     photo?: string;
+    portfolioUrl?: string;
+    portfolioLabel?: string;
+    visaStatus?: string;
+    visaLabel?: string;
   };
   summary: string;
   experience: ExperienceItem[];
@@ -58,7 +62,9 @@ export type SectionKey =
   | 'technicalSkills' 
   | 'languages' 
   | 'certifications'
-  | 'photo';
+  | 'photo'
+  | 'portfolio'
+  | 'visaStatus';
 
 // Per-template section visibility
 export type TemplateVisibility = Record<string, Record<SectionKey, boolean>>;
@@ -73,6 +79,8 @@ export const DEFAULT_SECTION_VISIBILITY: Record<SectionKey, boolean> = {
   languages: true,
   certifications: true,
   photo: true,
+  portfolio: true,
+  visaStatus: true,
 };
 
 export const SECTION_LABELS: Record<SectionKey, string> = {
@@ -84,6 +92,8 @@ export const SECTION_LABELS: Record<SectionKey, string> = {
   languages: 'Languages',
   certifications: 'Certifications',
   photo: 'Headshot Photo',
+  portfolio: 'Portfolio / Blog',
+  visaStatus: 'Visa Status',
 };
 
 export interface ThemeSettings {

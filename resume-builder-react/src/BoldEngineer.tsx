@@ -24,28 +24,28 @@ const BoldEngineer: React.FC = () => {
 
   const contactLabel: React.CSSProperties = {
     background: '#000', color: '#fff', padding: '2px 8px', borderRadius: '4px',
-    fontWeight: 700, textTransform: 'uppercase', fontSize: '8px',
+    fontWeight: 700, textTransform: 'uppercase', fontSize: '9px',
   };
 
   const sections: Record<string, () => React.ReactNode> = {
     summary: () => data.summary ? (
-      <section key="summary" style={{ marginBottom: '25px' }}>
-        <div style={{ fontSize: '11px', lineHeight: 1.5, marginBottom: '5px' }} dangerouslySetInnerHTML={{ __html: data.summary }} />
+      <section key="summary" style={{ marginBottom: `${theme.sectionSpacing || 25}px` }}>
+        <div style={{ fontSize: `${theme.baseFontSize}px`, lineHeight: theme.lineHeight, marginBottom: '5px' }} dangerouslySetInnerHTML={{ __html: data.summary }} />
       </section>
     ) : null,
 
     experience: () => (
-      <section key="experience" style={{ marginBottom: '25px' }}>
+      <section key="experience" style={{ marginBottom: `${theme.sectionSpacing || 25}px` }}>
         {secHeader('Professional Experience')}
         {data.experience.map((item) => (
-          <div key={item.id} style={{ marginBottom: '7px', fontSize: '11px', lineHeight: theme.lineHeight }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 600, color: theme.primaryColor }}>
+          <div key={item.id} style={{ marginBottom: `${theme.itemSpacing || 7}px`, fontSize: `${theme.baseFontSize}px`, lineHeight: theme.lineHeight }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: `${theme.companyFontSize || 11}px`, fontWeight: 600, color: theme.primaryColor }}>
               <span>{item.title} — {item.company}{item.location ? `, ${item.location}` : ''}</span>
               <span style={{ color: theme.accentColor, fontWeight: 400, fontStyle: 'italic', fontSize: '0.95em' }}>{item.dates}</span>
             </div>
             <ul style={{ paddingLeft: '16px', marginTop: '2px', margin: 0 }}>
               {item.achievements.map((ach, idx) => (
-                <li key={idx} style={{ marginBottom: '1px', lineHeight: theme.lineHeight }} dangerouslySetInnerHTML={{ __html: ach }} />
+                <li key={idx} style={{ marginBottom: '1px', lineHeight: theme.lineHeight, fontSize: `${theme.baseFontSize}px` }} dangerouslySetInnerHTML={{ __html: ach }} />
               ))}
             </ul>
           </div>
@@ -54,11 +54,11 @@ const BoldEngineer: React.FC = () => {
     ),
 
     education: () => (
-      <section key="education" style={{ marginBottom: '25px' }}>
+      <section key="education" style={{ marginBottom: `${theme.sectionSpacing || 25}px` }}>
         {secHeader('Education')}
         {data.education.map((item) => (
-          <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '6px' }}>
-            <span><strong style={{ fontWeight: 700, color: theme.primaryColor, fontSize: '11px' }}>{item.school}{item.location ? `, ${item.location}` : ''}</strong> — <span style={{ fontSize: '1em' }}>{item.degree}</span></span>
+          <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: `${theme.itemSpacing || 6}px` }}>
+            <span><strong style={{ fontWeight: 700, color: theme.primaryColor, fontSize: `${theme.companyFontSize || 11}px` }}>{item.school}{item.location ? `, ${item.location}` : ''}</strong> — <span style={{ fontSize: '1em' }}>{item.degree}</span></span>
             <span style={{ color: theme.accentColor, fontStyle: 'italic', fontSize: '0.95em', whiteSpace: 'nowrap', marginLeft: '10px' }}>{item.dates}</span>
           </div>
         ))}
@@ -66,12 +66,12 @@ const BoldEngineer: React.FC = () => {
     ),
 
     skills: () => (
-      <section key="skills" style={{ marginBottom: '25px' }}>
+      <section key="skills" style={{ marginBottom: `${theme.sectionSpacing || 25}px` }}>
         {secHeader('Key Skills')}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
           {data.skills.map((skill) => (
             <span key={skill.id} style={{
-              padding: '2px 8px', borderRadius: '3px', fontSize: '11px',
+              padding: '2px 8px', borderRadius: '3px', fontSize: `${theme.baseFontSize}px`,
               backgroundColor: skill.isHighlighted ? theme.primaryColor : '#f0f3f6',
               color: skill.isHighlighted ? '#fff' : '#2c3e50',
               fontWeight: skill.isHighlighted ? 600 : 400,
@@ -82,10 +82,10 @@ const BoldEngineer: React.FC = () => {
     ),
 
     technicalSkills: () => (data.technicalSkills || []).length > 0 ? (
-      <section key="technicalSkills" style={{ marginBottom: '25px' }}>
+      <section key="technicalSkills" style={{ marginBottom: `${theme.sectionSpacing || 25}px` }}>
         {secHeader('Technical Skills')}
         {data.technicalSkills!.map((cat) => (
-          <div key={cat.id} style={{ marginBottom: '3px', fontSize: '1em' }}>
+          <div key={cat.id} style={{ marginBottom: '3px', fontSize: `${theme.baseFontSize}px` }}>
             <strong style={{ color: theme.primaryColor }}>{cat.category}:</strong> {cat.skills}
           </div>
         ))}
@@ -98,18 +98,18 @@ const BoldEngineer: React.FC = () => {
     const showCert = vis('certifications') && data.certifications.length > 0;
     if (!showLang && !showCert) return null;
     return (
-      <div key="lang-cert" style={{ display: 'grid', gridTemplateColumns: showLang && showCert ? '1fr 1fr' : '1fr', gap: '30px', marginBottom: '25px' }}>
+      <div key="lang-cert" style={{ display: 'grid', gridTemplateColumns: showLang && showCert ? '1fr 1fr' : '1fr', gap: '30px', marginBottom: `${theme.sectionSpacing || 25}px` }}>
         {showLang && (
           <section>
             {secHeader('Languages')}
-            <div style={{ fontSize: '11px' }}>{data.languages.join(' · ')}</div>
+            <div style={{ fontSize: `${theme.baseFontSize}px` }}>{data.languages.join(' · ')}</div>
           </section>
         )}
         {showCert && (
           <section>
             {secHeader('Certifications')}
             {data.certifications.map((cert, idx) => (
-              <div key={idx} style={{ marginBottom: '3px', fontSize: '11px' }}>{cert}</div>
+              <div key={idx} style={{ marginBottom: '3px', fontSize: `${theme.baseFontSize}px` }}>{cert}</div>
             ))}
           </section>
         )}
@@ -128,7 +128,7 @@ const BoldEngineer: React.FC = () => {
     }} className="resume-paper">
 
       {/* Top header: left name+title+contact, right headshot */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: `${theme.sectionSpacing || 25}px` }}>
         <div style={{ flex: 1 }}>
           <h1 style={{ fontSize: `${theme.headerFontSize}px`, color: theme.primaryColor, fontWeight: 900, lineHeight: 1, marginBottom: '2px' }}>{data.personalInfo.fullName}</h1>
           <div style={{ fontSize: '18px', color: '#555', fontWeight: 500, marginBottom: '5px' }}>{data.personalInfo.title}</div>
@@ -138,6 +138,12 @@ const BoldEngineer: React.FC = () => {
             <span style={contactLabel}>Email</span><span style={{ fontSize: '10px' }}>{data.personalInfo.email}</span>
             <span style={contactLabel}>LinkedIn</span><span style={{ fontSize: '10px' }}>{data.personalInfo.linkedin}</span>
             <span style={contactLabel}>Location</span><span style={{ fontSize: '10px' }}>{data.personalInfo.location}</span>
+            {vis('portfolio') && data.personalInfo.portfolioUrl && (<>
+              <span style={contactLabel}>{data.personalInfo.portfolioLabel || 'Portfolio'}</span><span style={{ fontSize: '10px' }}>{data.personalInfo.portfolioUrl}</span>
+            </>)}
+            {vis('visaStatus') && data.personalInfo.visaStatus && (<>
+              <span style={contactLabel}>{data.personalInfo.visaLabel || 'Visa'}</span><span style={{ fontSize: '10px' }}>{data.personalInfo.visaStatus}</span>
+            </>)}
           </div>
         </div>
         {vis('photo') && (

@@ -34,7 +34,7 @@ const PremiumHeadshot: React.FC = () => {
   const mainLineHeight = 1.38;
 
   // Sidebar sections
-  const sidebarKeys = new Set<string>(['photo', 'education', 'skills', 'technicalSkills', 'languages', 'certifications']);
+  const sidebarKeys = new Set<string>(['photo', 'education', 'skills', 'languages', 'technicalSkills', 'certifications']);
   const mainKeys = new Set<string>(['summary', 'experience']);
 
   const sidebarSections: Record<string, () => React.ReactNode> = {
@@ -81,8 +81,9 @@ const PremiumHeadshot: React.FC = () => {
       <section key="techSkills-side" style={{ marginBottom: `${theme.sectionSpacing || 12}px` }}>
         <h3 style={sbTitle}>Technical Skills</h3>
         {data.technicalSkills!.map((cat) => (
-          <div key={cat.id} style={{ marginBottom: '3px', fontSize: '11px', lineHeight: 1.4, color: '#c0c0cc' }}>
-            <strong style={{ color: '#fff' }}>{cat.category}:</strong> {cat.skills}
+          <div key={cat.id} style={{ marginBottom: '3px', fontSize: '11px', lineHeight: 1.4 }}>
+            <span style={{ color: sbAccent, fontWeight: 600 }}>{cat.category}:</span>{' '}
+            <span style={{ color: '#c0c0cc' }}>{cat.skills}</span>
           </div>
         ))}
       </section>
@@ -90,13 +91,14 @@ const PremiumHeadshot: React.FC = () => {
 
     certifications: () => data.certifications.length > 0 ? (
       <section key="certs-side" style={{ marginBottom: `${theme.sectionSpacing || 12}px` }}>
-        <h3 style={sbTitle}>Certifications & Training</h3>
+        <h3 style={sbTitle}>Certifications</h3>
         {data.certifications.map((cert, idx) => (
           <div key={idx} style={{ marginBottom: '3px', fontSize: '11px', lineHeight: 1.4, color: '#c0c0cc' }}>{cert}</div>
         ))}
       </section>
     ) : null,
   };
+
 
   // Main column sections
   const mainSections: Record<string, () => React.ReactNode> = {
@@ -127,6 +129,10 @@ const PremiumHeadshot: React.FC = () => {
         ))}
       </section>
     ),
+
+    technicalSkills: () => null, // Rendered in sidebar now
+
+    certifications: () => null, // Rendered in sidebar now
   };
 
   return (
@@ -177,6 +183,8 @@ const PremiumHeadshot: React.FC = () => {
             { icon: '📞', val: data.personalInfo.phone },
             { icon: '📍', val: data.personalInfo.location },
             { icon: '🔗', val: data.personalInfo.linkedin },
+            ...(vis('portfolio') && data.personalInfo.portfolioUrl ? [{ icon: '🌐', val: data.personalInfo.portfolioUrl }] : []),
+            ...(vis('visaStatus') && data.personalInfo.visaStatus ? [{ icon: '🛂', val: data.personalInfo.visaStatus }] : []),
           ].map((c, i) => (
             <div key={i} style={{ fontSize: '11px', marginBottom: '4px', color: '#c0c0cc', display: 'flex', alignItems: 'center', gap: '6px', lineHeight: 1.4 }}>
               <span style={{ color: sbAccent, fontSize: '11px', width: '12px', textAlign: 'center', flexShrink: 0 }}>{c.icon}</span>

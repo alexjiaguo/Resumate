@@ -29,11 +29,9 @@ const CleanLayout: React.FC = () => {
 
   const sections: Record<string, () => React.ReactNode> = {
     summary: () => data.summary ? (
-      <div key="summary" style={{
-        fontSize: '11px', color: '#3a3a5c', lineHeight: 1.5,
-        marginBottom: '9px', padding: '7px 10px',
-        background: '#f5f6fa', borderLeft: `2.5px solid ${theme.primaryColor}`,
-      }} dangerouslySetInnerHTML={{ __html: data.summary }} />
+      <section key="summary" style={{ marginBottom: `${theme.sectionSpacing}px` }}>
+        <div style={{ fontSize: `${theme.baseFontSize}px`, color: '#3a3a3a', lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: data.summary }} />
+      </section>
     ) : null,
 
     experience: () => (
@@ -145,7 +143,10 @@ const CleanLayout: React.FC = () => {
         <h1 style={{ fontSize: `${theme.headerFontSize}px`, fontWeight: 700, color: theme.primaryColor, letterSpacing: '0.3px', marginBottom: '2px', lineHeight: 1.2 }}>{data.personalInfo.fullName}</h1>
         <div style={{ fontSize: '11px', color: '#5a5a7a', fontWeight: 500, marginBottom: '6px' }}>{data.personalInfo.title}</div>
         <div style={{ fontSize: '11px', color: '#555' }}>
-          {data.personalInfo.phone} | {data.personalInfo.email} | {data.personalInfo.linkedin}
+          {[data.personalInfo.location, data.personalInfo.phone, data.personalInfo.email, data.personalInfo.linkedin,
+            ...(vis('portfolio') && data.personalInfo.portfolioUrl ? [data.personalInfo.portfolioUrl] : []),
+            ...(vis('visaStatus') && data.personalInfo.visaStatus ? [data.personalInfo.visaStatus] : []),
+          ].filter(Boolean).join(' | ')}
         </div>
       </header>
 

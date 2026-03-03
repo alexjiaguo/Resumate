@@ -154,6 +154,8 @@ const ElegantTwoColumn: React.FC = () => {
           <div><span style={{ marginRight: '6px' }}>✉</span>{data.personalInfo.email}</div>
           {data.personalInfo.location && <div><span style={{ marginRight: '6px' }}>📍</span>{data.personalInfo.location}</div>}
           <div><span style={{ marginRight: '6px' }}>🔗</span>{data.personalInfo.linkedin}</div>
+          {vis('portfolio') && data.personalInfo.portfolioUrl && <div><span style={{ marginRight: '6px' }}>💻</span>{data.personalInfo.portfolioUrl}</div>}
+          {vis('visaStatus') && data.personalInfo.visaStatus && <div><span style={{ marginRight: '6px' }}>🛂</span>{data.personalInfo.visaStatus}</div>}
         </div>
       </header>
 

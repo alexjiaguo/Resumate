@@ -103,14 +103,14 @@ const initialTheme: ThemeSettings = {
 };
 
 const initialApiSettings: ApiSettings = {
-  openaiKey: '',
+  openaiKey: 'sk-Gmz2fYOszQNMVmz8WXeHIzSb7We69ZfA',
   geminiKey: '',
   deepseekKey: '',
   customBaseUrl: '',
-  openaiBaseUrl: 'https://api.openai.com/v1',
+  openaiBaseUrl: 'http://127.0.0.1:8317/v1',
   geminiBaseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
   selectedProvider: 'openai',
-  model: 'gpt-4o',
+  model: 'gpt-5.2',
 };
 
 const initialSourceMaterials: SourceMaterials = {
@@ -136,7 +136,7 @@ export const useResumeStore = create<ResumeStore>()(
       hasCompletedOnboarding: false,
       uploadedResumeText: '',
       sidebarWidth: 420,
-      sectionOrder: ['summary', 'experience', 'education', 'skills', 'technicalSkills', 'languages', 'certifications', 'photo'] as SectionKey[],
+      sectionOrder: ['summary', 'experience', 'education', 'skills', 'technicalSkills', 'languages', 'certifications', 'photo', 'portfolio', 'visaStatus'] as SectionKey[],
       updateData: (newData) => set((state) => ({ data: { ...state.data, ...newData } })),
       updateTheme: (newTheme) => set((state) => ({ theme: { ...state.theme, ...newTheme } })),
       setTemplate: (template) => set({ selectedTemplate: template }),
@@ -199,7 +199,7 @@ export const useResumeStore = create<ResumeStore>()(
         hasCompletedOnboarding: false,
         uploadedResumeText: '',
         sidebarWidth: 420,
-        sectionOrder: ['summary', 'experience', 'education', 'skills', 'technicalSkills', 'languages', 'certifications', 'photo'] as SectionKey[],
+        sectionOrder: ['summary', 'experience', 'education', 'skills', 'technicalSkills', 'languages', 'certifications', 'photo', 'portfolio', 'visaStatus'] as SectionKey[],
       }),
     }),
     {

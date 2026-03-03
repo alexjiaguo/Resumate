@@ -24,11 +24,9 @@ const CleanProfessional: React.FC = () => {
 
   const sections: Record<string, () => React.ReactNode> = {
     summary: () => data.summary ? (
-      <div key="summary" style={{
-        fontSize: '11px', color: '#3a3a5c', lineHeight: 1.5,
-        marginBottom: '12px', padding: '7px 10px',
-        background: '#f5f6fa', borderLeft: `2.5px solid ${theme.primaryColor}`,
-      }} dangerouslySetInnerHTML={{ __html: data.summary }} />
+      <section key="summary" style={{ marginBottom: '12px' }}>
+        <div style={{ fontSize: `${theme.baseFontSize}px`, color: '#3a3a3a', lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: data.summary }} />
+      </section>
     ) : null,
 
     experience: () => (
@@ -136,6 +134,8 @@ const CleanProfessional: React.FC = () => {
           <span>{data.personalInfo.email}</span>
           <span>{data.personalInfo.location}</span>
           <span>{data.personalInfo.linkedin}</span>
+          {vis('portfolio') && data.personalInfo.portfolioUrl && <span>{data.personalInfo.portfolioUrl}</span>}
+          {vis('visaStatus') && data.personalInfo.visaStatus && <span>{data.personalInfo.visaStatus}</span>}
         </div>
       </header>
 

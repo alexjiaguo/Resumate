@@ -22,11 +22,7 @@ const ClassicMinimal: React.FC = () => {
   const sections: Record<string, () => React.ReactNode> = {
     summary: () => data.summary ? (
       <section key="summary" style={{ marginBottom: `${theme.sectionSpacing}px` }}>
-        <div style={{
-          fontSize: '11px', color: '#3a3a5c', lineHeight: 1.5,
-          marginBottom: '12px', padding: '7px 10px',
-          background: '#f5f6fa', borderLeft: `2.5px solid ${theme.primaryColor}`,
-        }} dangerouslySetInnerHTML={{ __html: data.summary }} />
+        <div style={{ fontSize: `${theme.baseFontSize}px`, color: '#3a3a3a', lineHeight: 1.5 }} dangerouslySetInnerHTML={{ __html: data.summary }} />
       </section>
     ) : null,
 
@@ -35,7 +31,7 @@ const ClassicMinimal: React.FC = () => {
         <h2 style={sectionTitle}>Professional Experience</h2>
         {data.experience.map((item) => (
           <div key={item.id} style={{ marginBottom: `${theme.itemSpacing || 8}px`, fontSize: '11px', lineHeight: theme.lineHeight }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 600, color: theme.primaryColor }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: `${theme.companyFontSize || 11}px`, fontWeight: 600, color: theme.primaryColor }}>
               <span>{item.company}</span>
               <span style={{ color: theme.accentColor, fontWeight: 400 }}>{item.dates}</span>
             </div>
@@ -133,7 +129,10 @@ const ClassicMinimal: React.FC = () => {
           textTransform: 'uppercase', letterSpacing: '2px', lineHeight: 1.2,
         }}>{data.personalInfo.fullName}</h1>
         <div style={{ fontSize: '10px', color: '#555', marginTop: '4px' }}>
-          {data.personalInfo.phone} · {data.personalInfo.email} · {data.personalInfo.linkedin}
+          {[data.personalInfo.phone, data.personalInfo.email, data.personalInfo.linkedin,
+            ...(vis('portfolio') && data.personalInfo.portfolioUrl ? [data.personalInfo.portfolioUrl] : []),
+            ...(vis('visaStatus') && data.personalInfo.visaStatus ? [data.personalInfo.visaStatus] : []),
+          ].filter(Boolean).join(' · ')}
         </div>
       </header>
 
