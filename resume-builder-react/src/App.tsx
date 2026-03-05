@@ -8,6 +8,9 @@ import TextStyle from '@tiptap/extension-text-style';
 import Highlight from '@tiptap/extension-highlight';
 import TailoringHub from './components/TailoringHub';
 import OnboardingScreen from './components/OnboardingScreen';
+import TemplateGallery from './components/TemplateGallery';
+import AutoSaveIndicator from './components/AutoSaveIndicator';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { COLOR_SCHEMES } from './data/ColorSchemes';
 import { SECTION_LABELS } from './types';
 
@@ -21,12 +24,12 @@ const CleanProfessional = lazy(() => import('./CleanProfessional'));
 const ElegantTwoColumn = lazy(() => import('./ElegantTwoColumn'));
 const BoldEngineer = lazy(() => import('./BoldEngineer'));
 const Academic = lazy(() => import('./Academic'));
-import { 
-  Printer, RefreshCcw, Plus, Trash2, FileText, Code, X, 
+import {
+  Printer, RefreshCcw, Plus, Trash2, FileText, Code, X,
   PanelLeftClose, PanelLeft, ZoomIn, ZoomOut, Maximize,
   User, Palette, Download, ChevronDown, Sun, Moon, Sparkles,
-  Camera, ImageOff, ArrowUp, ArrowDown, Bold, Italic, Underline as UnderlineIcon, RemoveFormatting, RotateCcw,
-  Eye, EyeOff, Upload, Loader2, Link, Globe
+  Camera, ImageOff, ArrowUp, ArrowDown, Bold, Italic, Underline as UnderlineIcon, RemoveFormatting, RotateCcw, RotateCw,
+  Eye, EyeOff, Upload, Loader2, Link, Globe, Grid3x3
 } from 'lucide-react';
 
 /* ===== Color contrast utility ===== */
@@ -295,15 +298,15 @@ const AchievementEditor: React.FC<{
 };
 
 const App: React.FC = () => {
-  const { 
-    data, 
-    theme, 
-    selectedTemplate, 
+  const {
+    data,
+    theme,
+    selectedTemplate,
     apiSettings,
     hasCompletedOnboarding,
-    updateData, 
-    updateTheme, 
-    setTemplate, 
+    updateData,
+    updateTheme,
+    setTemplate,
     updateApiSettings,
     sidebarWidth,
     setSidebarWidth,
@@ -312,10 +315,15 @@ const App: React.FC = () => {
     toggleSectionVisibility,
     isSectionVisible,
     setUploadedResumeText,
-    reset 
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    reset
   } = useResumeStore();
 
   const [showTailoringHub, setShowTailoringHub] = useState(false);
+  const [showTemplateGallery, setShowTemplateGallery] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(100);
   const [activeTab, setActiveTab] = useState<SidebarTab>('ai');
@@ -329,6 +337,29 @@ const App: React.FC = () => {
     if (saved !== null) return saved === 'true';
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: 'z',
+      meta: true,
+      callback: () => canUndo() && undo(),
+      description: 'Undo',
+    },
+    {
+      key: 'z',
+      meta: true,
+      shift: true,
+      callback: () => canRedo() && redo(),
+      description: 'Redo',
+    },
+    {
+      key: 'p',
+      meta: true,
+      callback: () => window.print(),
+      description: 'Print',
+    },
+  ]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
@@ -1224,13 +1255,34 @@ const App: React.FC = () => {
             </h1>
             <p>Build · Tailor · Export</p>
           </div>
-          <button
-            className="theme-toggle"
-            onClick={() => setDarkMode(!darkMode)}
-            title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {darkMode ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AutoSaveIndicator status="saved" />
+            <button
+              className="icon-button"
+              onClick={undo}
+              disabled={!canUndo()}
+              title="Undo (Cmd+Z)"
+              style={{ opacity: canUndo() ? 1 : 0.4 }}
+            >
+              <RotateCcw size={16} />
+            </button>
+            <button
+              className="icon-button"
+              onClick={redo}
+              disabled={!canRedo()}
+              title="Redo (Cmd+Shift+Z)"
+              style={{ opacity: canRedo() ? 1 : 0.4 }}
+            >
+              <RotateCw size={16} />
+            </button>
+            <button
+              className="theme-toggle"
+              onClick={() => setDarkMode(!darkMode)}
+              title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+          </div>
         </div>
 
         {/* Template Selector — custom dropdown with layout previews */}
@@ -1308,24 +1360,43 @@ const App: React.FC = () => {
           );
           return (
             <div style={{ padding: '8px 12px', margin: '4px 0', position: 'relative' }}>
-              <button
-                onClick={() => setTemplateDropdownOpen(!templateDropdownOpen)}
-                style={{
-                  width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
-                  padding: '8px 10px', borderRadius: '8px', cursor: 'pointer',
-                  border: '1px solid var(--border-color, #d1d5db)',
-                  background: 'var(--bg-secondary, #f9fafb)',
-                  color: 'var(--text-primary, #1f2937)',
-                  transition: 'border-color 0.15s',
-                }}
-              >
-                <LayoutIcon type={current?.layout || 'single'} />
-                <div style={{ flex: 1, textAlign: 'left' }}>
-                  <div style={{ fontWeight: 600, fontSize: '12px' }}>{current?.name}</div>
-                  <div style={{ fontSize: '10px', opacity: 0.6 }}>{current?.desc}</div>
-                </div>
-                <ChevronDown size={14} style={{ opacity: 0.5, transform: templateDropdownOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
-              </button>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                <button
+                  onClick={() => setTemplateDropdownOpen(!templateDropdownOpen)}
+                  style={{
+                    flex: 1, display: 'flex', alignItems: 'center', gap: '10px',
+                    padding: '8px 10px', borderRadius: '8px', cursor: 'pointer',
+                    border: '1px solid var(--border-color, #d1d5db)',
+                    background: 'var(--bg-secondary, #f9fafb)',
+                    color: 'var(--text-primary, #1f2937)',
+                    transition: 'border-color 0.15s',
+                  }}
+                >
+                  <LayoutIcon type={current?.layout || 'single'} />
+                  <div style={{ flex: 1, textAlign: 'left' }}>
+                    <div style={{ fontWeight: 600, fontSize: '12px' }}>{current?.name}</div>
+                    <div style={{ fontSize: '10px', opacity: 0.6 }}>{current?.desc}</div>
+                  </div>
+                  <ChevronDown size={14} style={{ opacity: 0.5, transform: templateDropdownOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
+                </button>
+                <button
+                  onClick={() => setShowTemplateGallery(true)}
+                  title="Browse all templates"
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    border: '1px solid var(--border-color, #d1d5db)',
+                    background: 'var(--bg-secondary, #f9fafb)',
+                    color: 'var(--text-primary, #1f2937)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Grid3x3 size={16} />
+                </button>
+              </div>
               {templateDropdownOpen && (
                 <>
                   <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={() => setTemplateDropdownOpen(false)} />
@@ -1457,6 +1528,18 @@ const App: React.FC = () => {
 
       {/* Tailoring Hub Modal */}
       {showTailoringHub && <TailoringHub onClose={() => setShowTailoringHub(false)} />}
+
+      {/* Template Gallery Modal */}
+      {showTemplateGallery && (
+        <TemplateGallery
+          selectedTemplate={selectedTemplate}
+          onSelectTemplate={(templateId) => {
+            setTemplate(templateId);
+            setShowTemplateGallery(false);
+          }}
+          onClose={() => setShowTemplateGallery(false)}
+        />
+      )}
 
       {/* Onboarding Screen */}
       {!hasCompletedOnboarding && <OnboardingScreen />}
