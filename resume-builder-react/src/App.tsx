@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { useResumeStore } from './store';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -6,22 +6,21 @@ import Underline from '@tiptap/extension-underline';
 import Color from '@tiptap/extension-color';
 import TextStyle from '@tiptap/extension-text-style';
 import Highlight from '@tiptap/extension-highlight';
-import ClassicMinimal from './ClassicMinimal';
-import PremiumHeadshot from './PremiumHeadshot';
-import CleanLayout from './CleanLayout';
-import ATSExecutive from './ATSExecutive';
-import PhotoHeader from './PhotoHeader';
-import CleanProfessional from './CleanProfessional';
-import ElegantTwoColumn from './ElegantTwoColumn';
-import BoldEngineer from './BoldEngineer';
-import Academic from './Academic';
 import TailoringHub from './components/TailoringHub';
 import OnboardingScreen from './components/OnboardingScreen';
-import { FileParserService } from './services/FileParserService';
-import { ResumeParserService } from './services/ResumeParserService';
-import { downloadMarkdown, downloadHtml, downloadDocx } from './utils/ExportUtils';
 import { COLOR_SCHEMES } from './data/ColorSchemes';
 import { SECTION_LABELS } from './types';
+
+// Lazy load all templates
+const ClassicMinimal = lazy(() => import('./ClassicMinimal'));
+const PremiumHeadshot = lazy(() => import('./PremiumHeadshot'));
+const CleanLayout = lazy(() => import('./CleanLayout'));
+const ATSExecutive = lazy(() => import('./ATSExecutive'));
+const PhotoHeader = lazy(() => import('./PhotoHeader'));
+const CleanProfessional = lazy(() => import('./CleanProfessional'));
+const ElegantTwoColumn = lazy(() => import('./ElegantTwoColumn'));
+const BoldEngineer = lazy(() => import('./BoldEngineer'));
+const Academic = lazy(() => import('./Academic'));
 import { 
   Printer, RefreshCcw, Plus, Trash2, FileText, Code, X, 
   PanelLeftClose, PanelLeft, ZoomIn, ZoomOut, Maximize,
@@ -565,17 +564,25 @@ const App: React.FC = () => {
   const zoomFit = () => setZoomLevel(100);
 
   const renderTemplate = () => {
-    switch (selectedTemplate) {
-      case 'premium': return <PremiumHeadshot />;
-      case 'clean': return <CleanLayout />;
-      case 'ats': return <ATSExecutive />;
-      case 'photo': return <PhotoHeader />;
-      case 'clean_prof': return <CleanProfessional />;
-      case 'elegant': return <ElegantTwoColumn />;
-      case 'bold': return <BoldEngineer />;
-      case 'academic': return <Academic />;
-      default: return <ClassicMinimal />;
-    }
+    const TemplateComponent = (() => {
+      switch (selectedTemplate) {
+        case 'premium': return PremiumHeadshot;
+        case 'clean': return CleanLayout;
+        case 'ats': return ATSExecutive;
+        case 'photo': return PhotoHeader;
+        case 'clean_prof': return CleanProfessional;
+        case 'elegant': return ElegantTwoColumn;
+        case 'bold': return BoldEngineer;
+        case 'academic': return Academic;
+        default: return ClassicMinimal;
+      }
+    })();
+
+    return (
+      <Suspense fallback={<div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>Loading template...</div>}>
+        <TemplateComponent />
+      </Suspense>
+    );
   };
 
   /* ===== Tab Content: CONTENT ===== */
@@ -585,8 +592,11 @@ const App: React.FC = () => {
     setIsResumeUploading(true);
     try {
       const ext = file.name.split('.').pop()?.toLowerCase() || '';
-      const rawText = await FileParserService.parseFile(file);
-      const resumeData = ResumeParserService.parse(rawText, ext);
+      // Dynamically import parser services only when needed
+      const { FileParserService: FPS } = await import('./services/FileParserService');
+      const { ResumeParserService: RPS } = await import('./services/ResumeParserService');
+      const rawText = await FPS.parseFile(file);
+      const resumeData = RPS.parse(rawText, ext);
       setUploadedResumeText(rawText);
       updateData(resumeData);
     } catch (err) {
@@ -1175,9 +1185,18 @@ const App: React.FC = () => {
             <button onClick={() => window.print()} className="btn-primary"><Printer size={16} /> Print PDF</button>
           </div>
           <div className="export-row">
-            <button onClick={() => downloadDocx(data)} className="btn-muted"><FileText size={16} /> Word</button>
-            <button onClick={() => downloadMarkdown(data)} className="btn-muted"><FileText size={16} /> Markdown</button>
-            <button onClick={() => downloadHtml('resume-preview', data.personalInfo.fullName)} className="btn-muted"><Code size={16} /> HTML</button>
+            <button onClick={async () => {
+              const { downloadDocx } = await import('./utils/ExportUtils');
+              downloadDocx(data);
+            }} className="btn-muted"><FileText size={16} /> Word</button>
+            <button onClick={async () => {
+              const { downloadMarkdown } = await import('./utils/ExportUtils');
+              downloadMarkdown(data);
+            }} className="btn-muted"><FileText size={16} /> Markdown</button>
+            <button onClick={async () => {
+              const { downloadHtml } = await import('./utils/ExportUtils');
+              downloadHtml('resume-preview', data.personalInfo.fullName);
+            }} className="btn-muted"><Code size={16} /> HTML</button>
           </div>
         </div>
       </CollapsibleSection>

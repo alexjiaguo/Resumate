@@ -10,6 +10,10 @@ export default defineConfig({
       algorithm: 'gzip',
       ext: '.gz',
     }),
+    viteCompression({
+      algorithm: 'brotliCompress',
+      ext: '.br',
+    }),
     visualizer({
       filename: './dist/stats.html',
       open: false,
@@ -36,20 +40,34 @@ export default defineConfig({
           'pdf-parser': ['pdfjs-dist'],
           'word-parser': ['mammoth'],
           'docx-export': ['docx', 'file-saver'],
+          // UI libraries
+          'ui-vendor': ['lucide-react', 'framer-motion'],
         },
       },
     },
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 500,
     sourcemap: false,
     minify: 'terser',
     terserOptions: {
       compress: {
         drop_console: true,
         drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+      },
+      mangle: {
+        safari10: true,
       },
     },
+    cssCodeSplit: true,
+    assetsInlineLimit: 4096, // Inline assets < 4kb
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'zustand'],
+    exclude: ['pdfjs-dist', 'mammoth', 'docx'],
+  },
+  server: {
+    hmr: {
+      overlay: true,
+    },
   },
 })
