@@ -103,14 +103,14 @@ const initialTheme: ThemeSettings = {
 };
 
 const initialApiSettings: ApiSettings = {
-  openaiKey: 'sk-Gmz2fYOszQNMVmz8WXeHIzSb7We69ZfA',
-  geminiKey: '',
-  deepseekKey: '',
-  customBaseUrl: '',
-  openaiBaseUrl: 'http://127.0.0.1:8317/v1',
-  geminiBaseUrl: 'https://generativelanguage.googleapis.com/v1beta/openai',
+  openaiKey: import.meta.env.VITE_OPENAI_API_KEY || '',
+  geminiKey: import.meta.env.VITE_GEMINI_API_KEY || '',
+  deepseekKey: import.meta.env.VITE_DEEPSEEK_API_KEY || '',
+  customBaseUrl: import.meta.env.VITE_CUSTOM_BASE_URL || '',
+  openaiBaseUrl: import.meta.env.VITE_OPENAI_BASE_URL || 'https://api.openai.com/v1',
+  geminiBaseUrl: import.meta.env.VITE_GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai',
   selectedProvider: 'openai',
-  model: 'gpt-5.2',
+  model: import.meta.env.VITE_OPENAI_MODEL || 'gpt-4',
 };
 
 const initialSourceMaterials: SourceMaterials = {

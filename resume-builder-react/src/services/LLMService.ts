@@ -6,6 +6,9 @@ export interface LLMProvider {
 }
 
 export class LLMService {
+  private static readonly REQUEST_TIMEOUT = 30000; // 30 seconds
+  private static readonly MAX_RETRIES = 3;
+  private static readonly RETRY_DELAY = 1000; // 1 second
 
   private static readonly SYSTEM_PROMPT = `You are an expert resume tailoring engine. You output ONLY valid raw JSON — never markdown, never code fences, never explanation text.
 
@@ -56,6 +59,56 @@ Use instead: Built, Shipped, Led, Ran, Owned, Managed, Cut, Reduced, Raised, Fix
 - End with a positioning statement about what kind of work you do best
 - Do NOT list skills in the summary — that's what the Skills section is for`;
 
+  /**
+   * Fetch with timeout
+   */
+  private static async fetchWithTimeout(
+    url: string,
+    options: RequestInit,
+    timeout: number
+  ): Promise<Response> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      return response;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error('Request timeout - please try again');
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Retry logic with exponential backoff
+   */
+  private static async retryWithBackoff<T>(
+    fn: () => Promise<T>,
+    retries: number = this.MAX_RETRIES
+  ): Promise<T> {
+    try {
+      return await fn();
+    } catch (error) {
+      if (retries <= 0) throw error;
+
+      // Don't retry on client errors (4xx)
+      if (error instanceof Error && error.message.includes('400')) {
+        throw error;
+      }
+
+      const delay = this.RETRY_DELAY * (this.MAX_RETRIES - retries + 1);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return this.retryWithBackoff(fn, retries - 1);
+    }
+  }
+
   static async tailorResume(
     provider: LLMProvider,
     sourceResume: string,
@@ -104,31 +157,80 @@ ${workHistory}
 ## TARGET JOB DESCRIPTION:
 ${jobDescription}`;
 
-    const response = await fetch(`${provider.baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${provider.apiKey}`
-      },
-      body: JSON.stringify({
-        model: provider.model,
-        messages: [
-          { role: 'system', content: this.SYSTEM_PROMPT },
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: 0.7,
-        ...(provider.name === 'openai' ? { response_format: { type: 'json_object' } } : {})
-      })
-    });
-
-    if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error?.message || 'LLM Call Failed');
+    // Validate inputs
+    if (!provider.apiKey) {
+      throw new Error('API key is required');
+    }
+    if (!provider.baseUrl) {
+      throw new Error('Base URL is required');
+    }
+    if (!sourceResume.trim() && !workHistory.trim()) {
+      throw new Error('Source resume or work history is required');
+    }
+    if (!jobDescription.trim()) {
+      throw new Error('Job description is required');
     }
 
-    const data = await response.json();
-    const content = data.choices[0].message.content;
-    // Strip markdown code fences if the LLM wrapped the JSON
-    return content.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
+    return this.retryWithBackoff(async () => {
+      const response = await this.fetchWithTimeout(
+        `${provider.baseUrl}/chat/completions`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${provider.apiKey}`
+          },
+          body: JSON.stringify({
+            model: provider.model,
+            messages: [
+              { role: 'system', content: this.SYSTEM_PROMPT },
+              { role: 'user', content: userPrompt }
+            ],
+            temperature: 0.7,
+            max_tokens: 4000,
+            ...(provider.name === 'openai' ? { response_format: { type: 'json_object' } } : {})
+          })
+        },
+        this.REQUEST_TIMEOUT
+      );
+
+      if (!response.ok) {
+        let errorMessage = 'LLM API call failed';
+        try {
+          const err = await response.json();
+          errorMessage = err.error?.message || err.message || errorMessage;
+        } catch {
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        throw new Error('Invalid response format from LLM API');
+      }
+
+      const content = data.choices[0].message.content;
+
+      if (!content) {
+        throw new Error('Empty response from LLM API');
+      }
+
+      // Strip markdown code fences if the LLM wrapped the JSON
+      const cleanedContent = content
+        .replace(/^```(?:json)?\s*\n?/i, '')
+        .replace(/\n?```\s*$/i, '')
+        .trim();
+
+      // Validate it's valid JSON
+      try {
+        JSON.parse(cleanedContent);
+      } catch (error) {
+        throw new Error('LLM returned invalid JSON format');
+      }
+
+      return cleanedContent;
+    });
   }
 }
