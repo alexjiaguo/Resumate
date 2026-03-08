@@ -1,4 +1,6 @@
 .worktrees/
+.claude/
+.git_old/
 # Personal Data
 headshot.png
 *_backup.html

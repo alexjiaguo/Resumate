@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Resume Builder v3.0 (Sidebar Layout)</title>
+<title>Premium Headshot v3.0</title>
 <style>
       @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Merriweather:wght@300;400;700&family=Playfair+Display:wght@400;700&family=Inconsolata:wght@400;700&display=swap");
 
@@ -80,6 +80,7 @@
         padding: 20px;
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         overflow-y: auto;
+        overflow-x: hidden;
         z-index: 1000;
         font-family:
           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -117,14 +118,15 @@
         overflow: hidden;
         background: #fff;
         transition: border-color 0.3s;
+        min-width: 0;
       }
       .stepper:focus-within {
         border-color: #40a9ff;
         box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
       }
       .stepper button {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
         background: #f5f5f5;
         border: none;
         cursor: pointer;
@@ -134,6 +136,7 @@
         align-items: center;
         justify-content: center;
         transition: all 0.2s;
+        flex-shrink: 0;
       }
       .stepper button:hover {
         background: #e6e6e6;
@@ -144,6 +147,7 @@
       }
       .stepper input {
         flex: 1;
+        min-width: 0;
         width: 100%;
         border: none;
         text-align: center;
@@ -187,6 +191,9 @@
       .control-row .btn {
         flex: 1;
         margin-top: 0;
+      }
+      .control-row .control-group {
+        min-width: 0;
       }
       .btn {
         width: 100%;
@@ -460,12 +467,16 @@
         background: rgba(126, 200, 227, 0.1);
         color: #a8c8d8;
         border: 1px solid rgba(126, 200, 227, 0.12);
+        position: relative;
+        cursor: pointer;
       }
       .sk.hl {
         background: rgba(126, 200, 227, 0.2);
         color: #fff;
         font-weight: 600;
       }
+      .sk .sk-del { display: none; position: absolute; top: -6px; right: -6px; width: 14px; height: 14px; background: #dc2626; color: #fff; border: none; border-radius: 50%; font-size: 9px; line-height: 1; cursor: pointer; align-items: center; justify-content: center; padding: 0; }
+      .sk:hover .sk-del { display: flex; }
       .lang-item {
         font-size: 11px;
         color: #c0c0cc;
@@ -588,12 +599,46 @@
         .page-break-marker { display: none; }
         .reorder-controls { display: none !important; }
       }
+          .cert-item { margin-bottom: 3px; font-size: 11px; }
     </style>
+
+<style id="tpl-sw-styles">
+@media print { .tpl-sw-bar, .no-print { display: none !important; } }
+.tpl-sw-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 99999;
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  background: #1a1a2e; padding: 0 8px;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.2);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  height: 36px;
+  opacity: 0.45; transition: opacity 0.25s ease;
+}
+.tpl-sw-bar:hover { opacity: 1; }
+.tpl-sw-label {
+  color: #8892a4; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.5px; text-transform: uppercase;
+  margin-right: 8px; white-space: nowrap;
+}
+.tpl-sw-item {
+  color: #a0aec0; text-decoration: none;
+  font-size: 11px; font-weight: 600;
+  padding: 6px 10px; border-radius: 4px;
+  transition: all 0.15s ease; white-space: nowrap;
+}
+.tpl-sw-item:hover { color: #fff; background: #2d2d44; }
+.tpl-sw-item.active {
+  color: #60a5fa; background: #2d2d44;
+  box-shadow: inset 0 -2px 0 #60a5fa;
+}
+.tpl-sw-idx { color: #fbbf24; font-size: 14px; margin-left: 4px; }
+.tpl-sw-idx:hover { color: #f59e0b; background: #2d2d44; }
+</style>
 </head>
 <body>
 <!-- CONTROL PANEL -->
 <aside class="controls">
-<h2>Resume Builder v3.0</h2>
+<h2>Premium Headshot v3.0</h2>
 <h3>Color Schemes</h3>
 <div class="control-group">
 <label>Presets</label>
@@ -747,8 +792,8 @@
 </div>
 </div>
 <div class="control-group">
-<label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-<input id="chk-page-break" onchange="togglePageBreak(this)" type="checkbox"/>
+<label style="display:flex; align-items:center; gap:8px; cursor:pointer; justify-content:flex-start; width:100%;">
+<input id="chk-page-break" onchange="togglePageBreak(this)" style="width:auto;" type="checkbox"/>
               Show Page Break Marker
           </label>
 </div>
@@ -773,8 +818,8 @@
 <h3>Headshot</h3>
 <div class="control-group">
 <label>Image File</label>
-<input accept="image/*" id="inp-headshot-file" type="file">
-</input></div>
+<input accept="image/*" id="inp-headshot-file" type="file"/>
+</div>
 <div class="control-row">
 <div class="control-group" style="flex:1">
 <label>Size (px)</label>
@@ -853,27 +898,27 @@
 <div class="control-row">
 <div class="control-group" style="flex:1">
 <label>Sidebar BG</label>
-<input id="inp-sb-bg" type="color" value="#16213e">
-</input></div>
+<input id="inp-sb-bg" type="color" value="#16213e"/>
+</div>
 <div class="control-group" style="flex:1">
 <label>Sidebar Accent</label>
-<input id="inp-sb-accent" type="color" value="#7ec8e3">
-</input></div>
+<input id="inp-sb-accent" type="color" value="#7ec8e3"/>
+</div>
 </div>
 <div class="control-row">
 <div class="control-group" style="flex:1">
 <label>Heading Col</label>
-<input id="inp-header-color" type="color" value="#16213e">
-</input></div>
+<input id="inp-header-color" type="color" value="#16213e"/>
+</div>
 <div class="control-group" style="flex:1">
 <label>Accent Col</label>
-<input id="inp-accent-color" type="color" value="#0f7b6c">
-</input></div>
+<input id="inp-accent-color" type="color" value="#0f7b6c"/>
+</div>
 </div>
 <div class="control-group">
 <label>Background</label>
-<input id="inp-bg-color" type="color" value="#ffffff">
-</input></div>
+<input id="inp-bg-color" type="color" value="#ffffff"/>
+</div>
 <button class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
 </aside>
 <div class="resume" id="resume">
@@ -895,17 +940,17 @@
 <h3>Education</h3>
 <div class="edu-block" style="margin-bottom:12px;">
 <div class="dates">Sep 2014 – Jul 2017</div>
-<div class="degree">Master of Science in Electrical Engineering | GPA: 3.20 / 4.0</div>
+<div class="degree">Master of Science in Electrical Engineering</div>
 <div class="school">Xi'an Jiaotong University (XJTU), Xi'an, China</div>
 </div>
 <div class="edu-block" style="margin-bottom:12px;">
 <div class="dates">Sep 2009 – Jul 2013</div>
-<div class="degree">Bachelor of Science in Applied Physics (Honors Science Program) | GPA: 3.19 / 4.0</div>
+<div class="degree">Bachelor of Science in Applied Physics (Honors Science Program)</div>
 <div class="school">Xi'an Jiaotong University (XJTU), Xi'an, China</div>
 </div>
 <div class="edu-block" style="margin-bottom:12px;">
 <div class="dates">Aug 2012 – Dec 2012</div>
-<div class="degree">Exchange Student — Physics | GPA: 3.46 / 4.0</div>
+<div class="degree">Exchange Student — Physics</div>
 <div class="school">Michigan State University (MSU), East Lansing, MI, USA</div>
 </div>
 </div>
@@ -915,6 +960,15 @@
 <div style="font-size:10px; margin-bottom:4px; line-height:1.3;">Data &amp; Analytics: A/B Testing, Data Analysis, SQL, Python, Statistical Modeling, Funnel Analysis</div>
 <div style="font-size:10px; margin-bottom:4px; line-height:1.3;">Tools &amp; Platforms: Cursor, Claude, ChatGPT, Gemini, MCP (Model Context Protocol), Jira, Confluence</div>
 <div style="font-size:10px; margin-bottom:4px; line-height:1.3;">Methodologies: Agile / Scrum, Product Lifecycle Management, Cross-functional Leadership, RICE Prioritization</div>
+</div>
+<div class="sb-section">
+<h3>Languages &amp; Test Scores</h3>
+<div class="lang-item"><strong>Chinese:</strong> Native | <strong>English:</strong> Fluent — IELTS 7.5 (L:8.5 R:8.5 W:7.0 S:6.5) | TOEFL iBT 103 | GRE 321</div>
+</div>
+<div class="sb-section">
+<h3>Training &amp; Certifications</h3>
+<div class="cert-item"><strong>Digital Product Management</strong> — University of Virginia (Coursera), 2022</div>
+<div class="cert-item"><strong>Python for Data Analysis and Machine Learning</strong> — Udemy, 2018</div>
 </div>
 <div class="sb-section">
 <h3>Skills</h3>
@@ -933,6 +987,9 @@
 </div>
 <!-- MAIN -->
 <div class="main" id="main-container">
+<div class="section">
+<div class="summary" contenteditable="true">Results-driven Senior Product Manager with 8+ years of experience spanning AI/ML product development, ad-tech, SaaS, and enterprise systems. Proven track record in deploying LLM-powered solutions, driving $20M+ revenue impact, and leading cross-functional teams across global organizations including TikTok, Hulu (Disney), and JD.com. Passionate about leveraging Generative AI, RAG architectures, and data-driven strategies to build products that scale.</div>
+</div>
 <div class="section">
 <div class="section-title" contenteditable="true">Professional Experience</div>
 <div class="job" contenteditable="true">
@@ -1294,27 +1351,27 @@
         applyScheme(name) {
           const root = document.documentElement;
           const schemes = {
-            california: { "inp-header-color": "#7D99AA", "inp-accent-color": "#FFC067", "inp-bg-color": "#ffffff" },
-            cobalt: { "inp-header-color": "#000080", "inp-accent-color": "#6D8196", "inp-bg-color": "#ffffff" },
-            salt: { "inp-header-color": "#2B2B2B", "inp-accent-color": "#B3B3B3", "inp-bg-color": "#ffffff" },
-            gothic: { "inp-header-color": "#000000", "inp-accent-color": "#988686", "inp-bg-color": "#ffffff" },
-            harbor: { "inp-header-color": "#5C8DC5", "inp-accent-color": "#AD9E90", "inp-bg-color": "#ffffff" },
-            winter: { "inp-header-color": "#0B2E33", "inp-accent-color": "#4F7C82", "inp-bg-color": "#ffffff" },
-            slate: { "inp-header-color": "#4A4A4A", "inp-accent-color": "#6D8196", "inp-bg-color": "#FFFFE3" },
-            noir: { "inp-header-color": "#000000", "inp-accent-color": "#5C4E4E", "inp-bg-color": "#ffffff" },
-            elegant: { "inp-header-color": "#245F73", "inp-accent-color": "#733E24", "inp-bg-color": "#F2F0EF" },
-            sand: { "inp-header-color": "#AD9C8E", "inp-accent-color": "#E8D59E", "inp-bg-color": "#ffffff" },
-            industrial: { "inp-header-color": "#736F60", "inp-accent-color": "#5C8DC5", "inp-bg-color": "#ffffff" },
-            stone: { "inp-header-color": "#968F83", "inp-accent-color": "#A49A87", "inp-bg-color": "#E8E5DF" },
-            urban: { "inp-header-color": "#464646", "inp-accent-color": "#A35E47", "inp-bg-color": "#ffffff" },
-            calm: { "inp-header-color": "#517891", "inp-accent-color": "#57B9FF", "inp-bg-color": "#ffffff" },
-            moonlight: { "inp-header-color": "#292966", "inp-accent-color": "#5C5C99", "inp-bg-color": "#ffffff" },
-            emerald: { "inp-header-color": "#00674F", "inp-accent-color": "#3EBB9E", "inp-bg-color": "#ffffff" },
-            ocean: { "inp-header-color": "#4052D6", "inp-accent-color": "#005C5C", "inp-bg-color": "#ffffff" },
-            peach: { "inp-header-color": "#496580", "inp-accent-color": "#BADDFF", "inp-bg-color": "#ffffff" },
-            rainforest: { "inp-header-color": "#4F7942", "inp-accent-color": "#71AA34", "inp-bg-color": "#ffffff" },
-            meadow: { "inp-header-color": "#82C8E5", "inp-accent-color": "#7CFC00", "inp-bg-color": "#ffffff" },
-            breeze: { "inp-header-color": "#82C8E5", "inp-accent-color": "#E6D8C4", "inp-bg-color": "#ffffff" },
+            california: { "inp-header-color": "#7D99AA", "inp-accent-color": "#FFC067", "inp-bg-color": "#ffffff", "inp-sb-bg": "#3d4f5c", "inp-sb-accent": "#FFC067" },
+            cobalt: { "inp-header-color": "#000080", "inp-accent-color": "#6D8196", "inp-bg-color": "#ffffff", "inp-sb-bg": "#0a0a40", "inp-sb-accent": "#8faabe" },
+            salt: { "inp-header-color": "#2B2B2B", "inp-accent-color": "#B3B3B3", "inp-bg-color": "#ffffff", "inp-sb-bg": "#1a1a1a", "inp-sb-accent": "#B3B3B3" },
+            gothic: { "inp-header-color": "#000000", "inp-accent-color": "#988686", "inp-bg-color": "#ffffff", "inp-sb-bg": "#111111", "inp-sb-accent": "#b09e9e" },
+            harbor: { "inp-header-color": "#5C8DC5", "inp-accent-color": "#AD9E90", "inp-bg-color": "#ffffff", "inp-sb-bg": "#2a3f5c", "inp-sb-accent": "#8bb8e0" },
+            winter: { "inp-header-color": "#0B2E33", "inp-accent-color": "#4F7C82", "inp-bg-color": "#ffffff", "inp-sb-bg": "#0B2E33", "inp-sb-accent": "#6fa8af" },
+            slate: { "inp-header-color": "#4A4A4A", "inp-accent-color": "#6D8196", "inp-bg-color": "#FFFFE3", "inp-sb-bg": "#2d2d2d", "inp-sb-accent": "#8da0b4" },
+            noir: { "inp-header-color": "#000000", "inp-accent-color": "#5C4E4E", "inp-bg-color": "#ffffff", "inp-sb-bg": "#111111", "inp-sb-accent": "#8a7a7a" },
+            elegant: { "inp-header-color": "#245F73", "inp-accent-color": "#733E24", "inp-bg-color": "#F2F0EF", "inp-sb-bg": "#1a3d4a", "inp-sb-accent": "#5fb5a0" },
+            sand: { "inp-header-color": "#AD9C8E", "inp-accent-color": "#E8D59E", "inp-bg-color": "#ffffff", "inp-sb-bg": "#4a4038", "inp-sb-accent": "#E8D59E" },
+            industrial: { "inp-header-color": "#736F60", "inp-accent-color": "#5C8DC5", "inp-bg-color": "#ffffff", "inp-sb-bg": "#363430", "inp-sb-accent": "#7daad4" },
+            stone: { "inp-header-color": "#968F83", "inp-accent-color": "#A49A87", "inp-bg-color": "#E8E5DF", "inp-sb-bg": "#3d3a35", "inp-sb-accent": "#c4b8a4" },
+            urban: { "inp-header-color": "#464646", "inp-accent-color": "#A35E47", "inp-bg-color": "#ffffff", "inp-sb-bg": "#252525", "inp-sb-accent": "#c87e65" },
+            calm: { "inp-header-color": "#517891", "inp-accent-color": "#57B9FF", "inp-bg-color": "#ffffff", "inp-sb-bg": "#1e3a50", "inp-sb-accent": "#57B9FF" },
+            moonlight: { "inp-header-color": "#292966", "inp-accent-color": "#5C5C99", "inp-bg-color": "#ffffff", "inp-sb-bg": "#1a1a40", "inp-sb-accent": "#8080cc" },
+            emerald: { "inp-header-color": "#00674F", "inp-accent-color": "#3EBB9E", "inp-bg-color": "#ffffff", "inp-sb-bg": "#0a3328", "inp-sb-accent": "#5ed4b3" },
+            ocean: { "inp-header-color": "#4052D6", "inp-accent-color": "#005C5C", "inp-bg-color": "#ffffff", "inp-sb-bg": "#1a2266", "inp-sb-accent": "#6b8aef" },
+            peach: { "inp-header-color": "#496580", "inp-accent-color": "#BADDFF", "inp-bg-color": "#ffffff", "inp-sb-bg": "#253340", "inp-sb-accent": "#BADDFF" },
+            rainforest: { "inp-header-color": "#4F7942", "inp-accent-color": "#71AA34", "inp-bg-color": "#ffffff", "inp-sb-bg": "#1e3518", "inp-sb-accent": "#8dcc52" },
+            meadow: { "inp-header-color": "#82C8E5", "inp-accent-color": "#7CFC00", "inp-bg-color": "#ffffff", "inp-sb-bg": "#1a3e50", "inp-sb-accent": "#7CFC00" },
+            breeze: { "inp-header-color": "#82C8E5", "inp-accent-color": "#E6D8C4", "inp-bg-color": "#ffffff", "inp-sb-bg": "#1a3e50", "inp-sb-accent": "#e6d8c4" },
           };
           const s = schemes[name];
           if (!s) return;
@@ -1327,6 +1384,15 @@
 
         initReordering() {}
         attachReorderButtons() {
+            // Ensure summary divs are wrapped in .section (fixes localStorage restoring old HTML)
+            document.querySelectorAll('#main-container > .summary, #main-container > .summary-text').forEach(sum => {
+                if (!sum.closest('.section')) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'section';
+                    sum.parentNode.insertBefore(wrapper, sum);
+                    wrapper.appendChild(sum);
+                }
+            });
             document.querySelectorAll('.sb-section, #main-container > .section, .job, .edu-block').forEach(sec => this.addButtonsToSection(sec));
         }
         addButtonsToSection(section) {
@@ -1431,6 +1497,7 @@
           const clone = document.getElementById("resume").cloneNode(true);
           clone.querySelectorAll('.reorder-controls').forEach(el => el.remove());
           settings.content = clone.innerHTML;
+          s._version = "2026-02-27d";
 
           localStorage.setItem(this.STORAGE_KEY, JSON.stringify(settings));
         }
@@ -1510,5 +1577,9 @@
         }
       });
     </script>
-</body>
+<div class="tpl-sw-bar no-print" id="tpl-switcher">
+<span class="tpl-sw-label">Templates</span>
+<a class="tpl-sw-item" data-tpl="Classic_Minimal" href="Classic_Minimal.html" title="Classic Minimal">v1.0</a><a class="tpl-sw-item" data-tpl="Clean_Layout" href="Clean_Layout.html" title="Clean Layout">v2.0</a><a class="tpl-sw-item active" data-tpl="Premium_Headshot" href="Premium_Headshot.html" title="Premium Headshot">v3.0</a><a class="tpl-sw-item" data-tpl="ATS_Executive" href="ATS_Executive.html" title="ATS Executive">v4.0</a><a class="tpl-sw-item" data-tpl="Photo_Header" href="Photo_Header.html" title="Photo Header">v5.0</a><a class="tpl-sw-item" data-tpl="Clean_Professional" href="Clean_Professional.html" title="Clean Professional">v6.0</a><a class="tpl-sw-item" data-tpl="Elegant_TwoColumn" href="Elegant_TwoColumn.html" title="Elegant TwoColumn">v7.0</a><a class="tpl-sw-item" data-tpl="Bold_Engineer" href="Bold_Engineer.html" title="Bold Engineer">v8.0</a><a class="tpl-sw-item" data-tpl="Academic" href="Academic.html" title="Academic">v9.0</a>
+<a class="tpl-sw-item tpl-sw-idx" href="index.html" title="Index">☰</a>
+</div></body>
 </html>

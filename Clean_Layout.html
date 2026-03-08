@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Builder v2.0 (Clean Layout)</title>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clean Layout v2.0</title>
+<style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Merriweather:wght@300;400;700&display=swap');
 
         :root {
@@ -44,7 +45,7 @@
             position: fixed; top: 0; left: 0; bottom: 0;
             width: 300px; background: #fff; padding: 20px;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            overflow-y: auto; z-index: 1000;
+            overflow-y: auto; overflow-x: hidden; z-index: 1000;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             font-size: 13px;
         }
@@ -54,10 +55,10 @@
         .control-group label { display: block; margin-bottom: 4px; color: #555; font-weight: 500; }
 
         /* STEPPER */
-        .stepper { display: flex; align-items: center; border: 1px solid #d9d9d9; border-radius: 4px; width: 100%; overflow: hidden; background: #fff; }
-        .stepper button { width: 32px; height: 32px; background: #f5f5f5; border: none; cursor: pointer; font-size: 16px; color: #595959; display: flex; align-items: center; justify-content: center; }
+        .stepper { display: flex; align-items: center; border: 1px solid #d9d9d9; border-radius: 4px; width: 100%; overflow: hidden; background: #fff; min-width: 0; }
+        .stepper button { width: 28px; height: 28px; background: #f5f5f5; border: none; cursor: pointer; font-size: 16px; color: #595959; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .stepper button:hover { background: #e6e6e6; color: #1890ff; }
-        .stepper input { flex: 1; width: 100%; border: none; text-align: center; padding: 4px 8px; font-size: 13px; outline: none; -moz-appearance: textfield; }
+        .stepper input { flex: 1; min-width: 0; width: 100%; border: none; text-align: center; padding: 4px 8px; font-size: 13px; outline: none; -moz-appearance: textfield; }
         .stepper input::-webkit-outer-spin-button,
         .stepper input::-webkit-inner-spin-button { appearance: none; -webkit-appearance: none; margin: 0; }
 
@@ -72,6 +73,7 @@
         .btn-print { background: #28a745; margin-top: 20px; }
         .control-row { display: flex; gap: 6px; align-items: flex-end; }
         .control-row .btn { flex: 1; margin-top: 0; }
+        .control-row .control-group { min-width: 0; }
 
         /* FORMAT TOOLBAR */
         .fmt-bar { display: flex; gap: 4px; margin-bottom: 15px; padding: 8px; background: #f8f9fa; border-radius: 6px; border: 1px solid #eee; flex-wrap: wrap; }
@@ -98,6 +100,7 @@
         .header-left .title { font-size: 11px; color: #5a5a7a; font-weight: 500; margin-bottom: 6px; }
         .header-right { font-size: 11px; color: #444; line-height: 1.6; }
         .header-right a { color: var(--header-color); text-decoration: none; }
+        .contact-info { font-size: 11px; color: #555; }
 
         .summary { font-size: 11px; color: #3a3a5c; line-height: 1.5; margin-bottom: 9px; padding: 7px 10px; background: var(--summary-bg); border-left: 2.5px solid var(--header-color); }
 
@@ -119,11 +122,13 @@
         .bottom-section h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--header-color); font-weight: 700; margin-bottom: 4px; }
         .bottom-section p, .bottom-section li { font-size: 11px; color: #3a3a5c; }
         .bottom-section ul { list-style: none; padding: 0; }
-        .sk { font-size: 11px; background: #f0f1f6; color: #2e2e4a; padding: 2px 6px; border-radius: 2px; margin-right: 3px; display: inline-block; margin-bottom: 3px; }
-        .sk.hl { background: var(--header-color); color: #fff; font-weight: 600; }
+      .sk { padding: 2px 8px; border-radius: 3px; background: #f0f3f6; color: #2c3e50; font-size: 11px; position: relative; cursor: pointer; transition: opacity 0.15s; }
+      .sk.hl { background: var(--header-color); color: #fff; font-weight: 600; }
+      .sk .sk-del { display: none; position: absolute; top: -6px; right: -6px; width: 14px; height: 14px; background: #dc2626; color: #fff; border: none; border-radius: 50%; font-size: 9px; line-height: 1; cursor: pointer; align-items: center; justify-content: center; padding: 0; }
+      .sk:hover .sk-del { display: flex; }
 
         /* REORDER */
-        .reorder-btns { position: absolute; right: -30px; top: 0; display: none; flex-direction: column; gap: 2px; }
+        .reorder-btns { position: absolute; right: 2px; top: 2px; display: none; flex-direction: column; gap: 2px; z-index: 10; background: rgba(255,255,255,0.95); padding: 2px; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
         .section:hover .reorder-btns { display: flex; }
         .reorder-btn { background: #fff; border: 1px solid #ddd; padding: 2px 4px; font-size: 10px; cursor: pointer; border-radius: 3px; }
         .reorder-btn:hover { background: #eee; }
@@ -136,163 +141,281 @@
             @page { margin: 0; size: auto; }
             .reorder-btns, .fmt-bar, .page-break-marker { display: none !important; }
         }
+          .lang-item { font-size: 11px; }
+          .cert-item { margin-bottom: 3px; font-size: 11px; }
     </style>
+
+<style id="tpl-sw-styles">
+@media print { .tpl-sw-bar, .no-print { display: none !important; } }
+.tpl-sw-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 99999;
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  background: #1a1a2e; padding: 0 8px;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.2);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  height: 36px;
+  opacity: 0.45; transition: opacity 0.25s ease;
+}
+.tpl-sw-bar:hover { opacity: 1; }
+.tpl-sw-label {
+  color: #8892a4; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.5px; text-transform: uppercase;
+  margin-right: 8px; white-space: nowrap;
+}
+.tpl-sw-item {
+  color: #a0aec0; text-decoration: none;
+  font-size: 11px; font-weight: 600;
+  padding: 6px 10px; border-radius: 4px;
+  transition: all 0.15s ease; white-space: nowrap;
+}
+.tpl-sw-item:hover { color: #fff; background: #2d2d44; }
+.tpl-sw-item.active {
+  color: #60a5fa; background: #2d2d44;
+  box-shadow: inset 0 -2px 0 #60a5fa;
+}
+.tpl-sw-idx { color: #fbbf24; font-size: 14px; margin-left: 4px; }
+.tpl-sw-idx:hover { color: #f59e0b; background: #2d2d44; }
+</style>
 </head>
 <body>
-
-    <aside class="controls">
-        <h2>Clean Layout v2.0</h2>
-
-        <div class="control-row" style="margin-bottom:15px;">
-           <button class="btn" onclick="resumeCustomizer.saveSettings()">💾 Save</button>
-           <button class="btn btn-sec" onclick="resumeCustomizer.loadSettings()">📂 Load</button>
-           <button class="btn btn-danger" onclick="resumeCustomizer.resetSettings()">↺ Reset</button>
-        </div>
-
-        <h3>Color Schemes</h3>
-        <div class="control-group">
-          <label>Presets</label>
-          <select id="inp-color-scheme" onchange="resumeCustomizer.applyScheme(this.value)">
-            <option value="none">Custom Colors</option>
-            <optgroup label="Professional">
-              <option value="california">California Beaches</option>
-              <option value="cobalt">Cobalt Sky</option>
-              <option value="salt">Salt &amp; Pepper</option>
-              <option value="gothic">Gothic</option>
-              <option value="harbor">Harbor Haze</option>
-            </optgroup>
-            <optgroup label="Classic">
-              <option value="winter">Winter Chill</option>
-              <option value="slate">Slate &amp; Cream</option>
-              <option value="noir">Noir &amp; Taupe</option>
-              <option value="elegant">Elegant Teal</option>
-              <option value="sand">Sand &amp; Gold</option>
-              <option value="industrial">Industrial Blue</option>
-            </optgroup>
-            <optgroup label="Vibrant">
-              <option value="stone">Stone Path</option>
-              <option value="urban">Urban Loft</option>
-              <option value="calm">Calm Blue</option>
-              <option value="moonlight">Under the Moonlight</option>
-              <option value="emerald">Emerald Odyssey</option>
-              <option value="ocean">Ocean Tide</option>
-              <option value="peach">Peach Skyline</option>
-              <option value="rainforest">Tropical Rainforest</option>
-              <option value="meadow">Wildflower Meadow</option>
-              <option value="breeze">Summer Breeze</option>
-            </optgroup>
-          </select>
-        </div>
-
-        <h3>Text Formatting</h3>
-        <div class="fmt-bar">
-          <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('bold')">B</button>
-          <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('italic')">I</button>
-          <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('underline')">U</button>
-          <button class="fmt-btn" onmousedown="event.preventDefault(); fmt('removeFormat')">✕</button>
-          <div class="fmt-color-wrap"><input type="color" onchange="restoreAndFmt('foreColor', this.value)"></div>
-          <div class="fmt-color-wrap"><input type="color" onchange="restoreAndFmt('hiliteColor', this.value)"></div>
-        </div>
-        <div class="control-group">
-          <label>Selected Text Size</label>
-          <div class="stepper">
-            <button onclick="stepper(this, -0.5)">-</button>
-            <input type="number" id="inp-selection-size" value="11" step="0.5">
-            <button onclick="stepper(this, 0.5)">+</button>
-          </div>
-        </div>
-
-        <h3>Layout Sizes</h3>
-        <div class="control-row">
-            <div class="control-group" style="flex:1"><label>Page Padding</label><div class="stepper"><button onclick="stepper(this, -4)">-</button><input type="number" id="inp-page-padding" value="24" step="4"><button onclick="stepper(this, 4)">+</button></div></div>
-            <div class="control-group" style="flex:1"><label>Section Space</label><div class="stepper"><button onclick="stepper(this, -2)">-</button><input type="number" id="inp-section-spacing" value="12" step="2"><button onclick="stepper(this, 2)">+</button></div></div>
-        </div>
-        <div class="control-row">
-            <div class="control-group" style="flex:1"><label>Line Height</label><div class="stepper"><button onclick="stepper(this, -0.1)">-</button><input type="number" id="inp-line-height" value="1.35" step="0.1" min="1.0" max="2.5"><button onclick="stepper(this, 0.1)">+</button></div></div>
-            <div class="control-group" style="flex:1"><label>Item Space</label><div class="stepper"><button onclick="stepper(this, -1)">-</button><input type="number" id="inp-item-spacing" value="6"><button onclick="stepper(this, 1)">+</button></div></div>
-        </div>
-
-        <div class="control-group">
-            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                <input type="checkbox" id="chk-page-break" onchange="togglePageBreak(this)">
+<aside class="controls">
+<h2>Clean Layout v2.0</h2>
+<div class="control-row" style="margin-bottom:15px;">
+<button class="btn" onclick="resumeCustomizer.saveSettings()">💾 Save</button>
+<button class="btn btn-sec" onclick="resumeCustomizer.loadSettings()">📂 Load</button>
+<button class="btn btn-danger" onclick="resumeCustomizer.resetSettings()">↺ Reset</button>
+</div>
+<h3>Color Schemes</h3>
+<div class="control-group">
+<label>Presets</label>
+<select id="inp-color-scheme" onchange="resumeCustomizer.applyScheme(this.value)">
+<option value="none">Custom Colors</option>
+<optgroup label="Professional">
+<option value="california">California Beaches</option>
+<option value="cobalt">Cobalt Sky</option>
+<option value="salt">Salt &amp; Pepper</option>
+<option value="gothic">Gothic</option>
+<option value="harbor">Harbor Haze</option>
+</optgroup>
+<optgroup label="Classic">
+<option value="winter">Winter Chill</option>
+<option value="slate">Slate &amp; Cream</option>
+<option value="noir">Noir &amp; Taupe</option>
+<option value="elegant">Elegant Teal</option>
+<option value="sand">Sand &amp; Gold</option>
+<option value="industrial">Industrial Blue</option>
+</optgroup>
+<optgroup label="Vibrant">
+<option value="stone">Stone Path</option>
+<option value="urban">Urban Loft</option>
+<option value="calm">Calm Blue</option>
+<option value="moonlight">Under the Moonlight</option>
+<option value="emerald">Emerald Odyssey</option>
+<option value="ocean">Ocean Tide</option>
+<option value="peach">Peach Skyline</option>
+<option value="rainforest">Tropical Rainforest</option>
+<option value="meadow">Wildflower Meadow</option>
+<option value="breeze">Summer Breeze</option>
+</optgroup>
+</select>
+</div>
+<h3>Text Formatting</h3>
+<div class="fmt-bar">
+<button class="fmt-btn" onmousedown="event.preventDefault(); fmt('bold')">B</button>
+<button class="fmt-btn" onmousedown="event.preventDefault(); fmt('italic')">I</button>
+<button class="fmt-btn" onmousedown="event.preventDefault(); fmt('underline')">U</button>
+<button class="fmt-btn" onmousedown="event.preventDefault(); fmt('removeFormat')">✕</button>
+<div class="fmt-color-wrap"><input onchange="restoreAndFmt('foreColor', this.value)" type="color"/></div>
+<div class="fmt-color-wrap"><input onchange="restoreAndFmt('hiliteColor', this.value)" type="color"/></div>
+</div>
+<div class="control-group">
+<label>Selected Text Size</label>
+<div class="stepper">
+<button onclick="stepper(this, -0.5)">-</button>
+<input id="inp-selection-size" step="0.5" type="number" value="11"/>
+<button onclick="stepper(this, 0.5)">+</button>
+</div>
+</div>
+<h3>Layout Sizes</h3>
+<div class="control-row">
+<div class="control-group" style="flex:1"><label>Page Padding</label><div class="stepper"><button onclick="stepper(this, -4)">-</button><input id="inp-page-padding" step="4" type="number" value="24"/><button onclick="stepper(this, 4)">+</button></div></div>
+<div class="control-group" style="flex:1"><label>Section Space</label><div class="stepper"><button onclick="stepper(this, -2)">-</button><input id="inp-section-spacing" step="2" type="number" value="12"/><button onclick="stepper(this, 2)">+</button></div></div>
+</div>
+<div class="control-row">
+<div class="control-group" style="flex:1"><label>Line Height</label><div class="stepper"><button onclick="stepper(this, -0.1)">-</button><input id="inp-line-height" max="2.5" min="1.0" step="0.1" type="number" value="1.35"/><button onclick="stepper(this, 0.1)">+</button></div></div>
+<div class="control-group" style="flex:1"><label>Item Space</label><div class="stepper"><button onclick="stepper(this, -1)">-</button><input id="inp-item-spacing" type="number" value="6"/><button onclick="stepper(this, 1)">+</button></div></div>
+</div>
+<div class="control-group">
+<label style="display:flex; align-items:center; gap:8px; cursor:pointer; justify-content:flex-start; width:100%;">
+<input id="chk-page-break" onchange="togglePageBreak(this)" style="width:auto;" type="checkbox"/>
                 Show Page Break Marker
             </label>
-        </div>
-
-        <h3>Typography Sizes</h3>
-        <div class="control-row">
-            <div class="control-group" style="flex:1"><label>Base Font</label><div class="stepper"><button onclick="stepper(this, -0.5)">-</button><input type="number" id="inp-font" value="11" step="0.5"><button onclick="stepper(this, 0.5)">+</button></div></div>
-            <div class="control-group" style="flex:1"><label>Name Size</label><div class="stepper"><button onclick="stepper(this, -1)">-</button><input type="number" id="inp-hsize" value="24"><button onclick="stepper(this, 1)">+</button></div></div>
-        </div>
-        <div class="control-row">
-            <div class="control-group" style="flex:1"><label>Section Title</label><div class="stepper"><button onclick="stepper(this, -0.5)">-</button><input type="number" id="inp-section-title-size" value="12" step="0.5"><button onclick="stepper(this, 0.5)">+</button></div></div>
-            <div class="control-group" style="flex:1"><label>Company/Edu</label><div class="stepper"><button onclick="stepper(this, -0.5)">-</button><input type="number" id="inp-company-size" value="11" step="0.5"><button onclick="stepper(this, 0.5)">+</button></div></div>
-        </div>
-        <div class="control-row">
-            <div class="control-group" style="flex:1">
-                <label>Font Family</label>
-                <select id="inp-font-family" style="padding: 6.5px;">
-                    <option value="'Inter', sans-serif">Inter</option>
-                    <option value="'Roboto', sans-serif">Roboto</option>
-                    <option value="'Open Sans', sans-serif">Open Sans</option>
-                    <option value="'Merriweather', serif">Merriweather</option>
-                </select>
-            </div>
-        </div>
-
-        <h3>Colors</h3>
-        <div class="control-row">
-            <div class="control-group" style="flex:1"><label>Header Col</label><input type="color" id="inp-header-color" value="#16213e"></div>
-            <div class="control-group" style="flex:1"><label>Accent Col</label><input type="color" id="inp-accent-color" value="#0f7b6c"></div>
-        </div>
-        <div class="control-group"><label>Background</label><input type="color" id="inp-bg-color" value="#ffffff"></div>
-
-        <h3>Add Content</h3>
-        <div class="control-row">
-            <button class="btn btn-sec" onclick="resumeCustomizer.addSection()">+ Section</button>
-            <button class="btn btn-sec" onclick="resumeCustomizer.addJob()">+ Job Item</button>
-            <button class="btn btn-sec" onclick="resumeCustomizer.addTag()">+ Tag</button>
-        </div>
-
-        <button class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
-    </aside>
-
-    <div class="resume" id="resume" contenteditable="true">
-        <div id="page-break-line" class="page-break-marker" style="top: 1122px;"></div>
-        <div class="header">
-            <div class="header-left">
-                <h1>Your Name</h1>
-                <div class="title">Current Role · Specialized in X</div>
-            </div>
-            <div class="header-right">
-                +1 234-567-8900 · email@example.com<br>linkdn.com/in/user
-            </div>
-        </div>
-
-        <div class="summary">Professional high-level overview. Keep it concise (11px).</div>
-
-        <div id="experience-container">
-            <div class="section">
-                <div class="section-title">Professional Experience</div>
-                <div class="job">
-                    <div class="job-header">
-                        <span class="job-company">Company Name</span>
-                        <span class="job-dates">Date Range</span>
-                    </div>
-                    <div class="job-title-line">Role / Title · Location</div>
-                    <ul><li>Key impact statement (11px).</li></ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="bottom" id="bottom-grid">
-            <div class="bottom-section section"><h3>Education</h3><ul><li><strong>Degree</strong> — Uni (Year)</li></ul></div>
-            <div class="bottom-section section"><h3>Skills</h3><span class="sk hl">Skill 1</span><span class="sk">Skill 2</span></div>
-            <div class="bottom-section section"><h3>Details</h3><p>Other (11px)</p></div>
-        </div>
+</div>
+<h3>Typography Sizes</h3>
+<div class="control-row">
+<div class="control-group" style="flex:1"><label>Base Font</label><div class="stepper"><button onclick="stepper(this, -0.5)">-</button><input id="inp-font" step="0.5" type="number" value="11"/><button onclick="stepper(this, 0.5)">+</button></div></div>
+<div class="control-group" style="flex:1"><label>Name Size</label><div class="stepper"><button onclick="stepper(this, -1)">-</button><input id="inp-hsize" type="number" value="24"/><button onclick="stepper(this, 1)">+</button></div></div>
+</div>
+<div class="control-row">
+<div class="control-group" style="flex:1"><label>Section Title</label><div class="stepper"><button onclick="stepper(this, -0.5)">-</button><input id="inp-section-title-size" step="0.5" type="number" value="12"/><button onclick="stepper(this, 0.5)">+</button></div></div>
+<div class="control-group" style="flex:1"><label>Company/Edu</label><div class="stepper"><button onclick="stepper(this, -0.5)">-</button><input id="inp-company-size" step="0.5" type="number" value="11"/><button onclick="stepper(this, 0.5)">+</button></div></div>
+</div>
+<div class="control-row">
+<div class="control-group" style="flex:1">
+<label>Font Family</label>
+<select id="inp-font-family" style="padding: 6.5px;">
+<option value="'Inter', sans-serif">Inter</option>
+<option value="'Roboto', sans-serif">Roboto</option>
+<option value="'Open Sans', sans-serif">Open Sans</option>
+<option value="'Merriweather', serif">Merriweather</option>
+</select>
+</div>
+</div>
+<h3>Colors</h3>
+<div class="control-row">
+<div class="control-group" style="flex:1"><label>Header Col</label><input id="inp-header-color" type="color" value="#16213e"/></div>
+<div class="control-group" style="flex:1"><label>Accent Col</label><input id="inp-accent-color" type="color" value="#0f7b6c"/></div>
+</div>
+<div class="control-group"><label>Background</label><input id="inp-bg-color" type="color" value="#ffffff"/></div>
+<h3>Add Content</h3>
+<div class="control-row">
+<button class="btn btn-sec" onclick="resumeCustomizer.addSection()">+ Section</button>
+<button class="btn btn-sec" onclick="resumeCustomizer.addJob()">+ Job Item</button>
+<button class="btn btn-sec" onclick="resumeCustomizer.addTag()">+ Tag</button>
+</div>
+<button class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
+</aside>
+<div class="resume" contenteditable="true" id="resume">
+<div class="header">
+<div class="header-left">
+<h1>Alex (Jiajia) Guo</h1>
+<div class="title">Senior Product Manager, GenAI &amp; Operations</div>
+<div class="contact-info">
+      +86 131-2038-1760 | alexjia.guo@gmail.com | linkedin.com/in/alex-jiajia
     </div>
-
-    <script>
+</div>
+</div>
+<div class="section">
+<div class="summary">Results-driven Senior Product Manager with 8+ years of experience spanning AI/ML product development, ad-tech, SaaS, and enterprise systems. Proven track record in deploying LLM-powered solutions, driving $20M+ revenue impact, and leading cross-functional teams across global organizations including TikTok, Hulu (Disney), and JD.com. Passionate about leveraging Generative AI, RAG architectures, and data-driven strategies to build products that scale.</div>
+</div>
+<div id="experience-container">
+<div class="section">
+<div class="section-title">Professional Experience</div>
+<div class="job">
+<div class="job-header">
+<span class="job-company">Senior Product Manager, GenAI &amp; Operations</span>
+<span class="job-dates">Apr 2024 – Present</span>
+</div>
+<div class="job-title-line">TikTok (ByteDance), Beijing</div>
+<ul>
+<li>Led end-to-end development of "Arena Copilot," an LLM-powered chatbot with RAG architecture for internal operations, reducing support tickets by 50% and cutting average resolution time from 3.5 hours to under 1 hour; increased self-solve rate from 8% to 65%.</li>
+<li>Spearheaded AIGC-driven banner ads transformation integrating AI auto-fitting across 20+ placements and multi-language support, reducing campaign setup time by 80%.</li>
+<li>Deployed ML-based CTR prediction model and intelligent frequency capping for banner ad ranking, increasing click-through rate from &lt;1% to 3%.</li>
+<li>Designed automated milestone notification system using creator behavior analysis and ML-based targeting, boosting CTR by 10% and unique viewers by 3%.</li>
+</ul>
+</div>
+<div class="job">
+<div class="job-header">
+<span class="job-company">AI Product Manager</span>
+<span class="job-dates">Aug 2023 – Apr 2024</span>
+</div>
+<div class="job-title-line">Tripalink, Beijing</div>
+<ul>
+<li>Reduced property onboarding time from 2 weeks to 2 days (85% improvement) by implementing automated data scraping and AI-powered description generation with SEO optimization.</li>
+<li>Redesigned promotion management system, cutting configuration time from 4+ hours to 30 minutes and reducing data error rate from 10% to 2%.</li>
+</ul>
+</div>
+<div class="job">
+<div class="job-header">
+<span class="job-company">Ad Product Manager</span>
+<span class="job-dates">May 2021 – Aug 2023</span>
+</div>
+<div class="job-title-line">Hulu (The Walt Disney Company), Beijing</div>
+<ul>
+<li>Drove integration of Hulu's ad inventory with third-party DSPs via real-time bidding and yield optimization, generating over $20M annual revenue lift.</li>
+<li>Designed and implemented a server-side A/B testing framework with SDK-level traffic splitting, accelerating algorithm and ad strategy optimization velocity by 40%.</li>
+<li>Built an offline ad server simulator enabling 20× accelerated testing; supported the launch of new pacing algorithms and unified selection logic for $3B+ ad revenue platform.</li>
+<li>Optimized ad asset lifecycle via AI-powered quality rating system, reducing manual review by 50% and asset ingestion time by 90%.</li>
+</ul>
+</div>
+<div class="job">
+<div class="job-header">
+<span class="job-company">SaaS Product Manager</span>
+<span class="job-dates">Oct 2018 – Nov 2020</span>
+</div>
+<div class="job-title-line">JD.com, Beijing</div>
+<ul>
+<li>Built ML-driven automatic replenishment system achieving 90% automation rate, reducing stock shortage rate to &lt;2% and optimizing inventory turnover to under 40 days.</li>
+<li>Developed intelligent pricing system integrating ML-based sales simulation and NLP-powered competitive price crawling, driving data-driven pricing strategies for major promotions.</li>
+</ul>
+</div>
+<div class="job">
+<div class="job-header">
+<span class="job-company">Project Manager</span>
+<span class="job-dates">Jul 2017 – Oct 2018</span>
+</div>
+<div class="job-title-line">ABB, Beijing</div>
+<ul>
+<li>Managed supplier quality initiative validating a local vendor with 80% cost reduction; identified testing methodology flaw through data analysis, saving millions in procurement costs.</li>
+<li>Led competitive benchmarking initiative creating price-to-performance matrices across product lines, providing strategic insights for product development roadmap.</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="bottom" id="bottom-grid">
+<div class="section bottom-section">
+<div class="section-title">Education</div>
+<div class="job" style="margin-bottom:10px;">
+<div class="job-company" style="font-size:12px;">Xi'an Jiaotong University (XJTU), Xi'an, China</div>
+<div class="job-title-line" style="font-size:11px;">Master of Science in Electrical Engineering</div>
+<div class="job-dates" style="font-size:10px;">Sep 2014 – Jul 2017</div>
+</div>
+<div class="job" style="margin-bottom:10px;">
+<div class="job-company" style="font-size:12px;">Xi'an Jiaotong University (XJTU), Xi'an, China</div>
+<div class="job-title-line" style="font-size:11px;">Bachelor of Science in Applied Physics (Honors Science Program)</div>
+<div class="job-dates" style="font-size:10px;">Sep 2009 – Jul 2013</div>
+</div>
+<div class="job" style="margin-bottom:10px;">
+<div class="job-company" style="font-size:12px;">Michigan State University (MSU), East Lansing, MI, USA</div>
+<div class="job-title-line" style="font-size:11px;">Exchange Student — Physics</div>
+<div class="job-dates" style="font-size:10px;">Aug 2012 – Dec 2012</div>
+</div>
+</div>
+<div class="section bottom-section">
+<div class="section-title">Technical</div>
+<div style="display:flex; flex-direction:column; gap:4px;">
+<div style="font-size:11px;">AI &amp; ML: LLM, Agentic AI, AIGC, NLP, RAG Architecture, CTR Prediction, ML Algorithms, Prompt Engineering</div>
+<div style="font-size:11px;">Data &amp; Analytics: A/B Testing, Data Analysis, SQL, Python, Statistical Modeling, Funnel Analysis</div>
+<div style="font-size:11px;">Tools &amp; Platforms: Cursor, Claude, ChatGPT, Gemini, MCP (Model Context Protocol), Jira, Confluence</div>
+<div style="font-size:11px;">Methodologies: Agile / Scrum, Product Lifecycle Management, Cross-functional Leadership, RICE Prioritization</div>
+</div>
+</div>
+<div class="section">
+<div class="section-title">Languages &amp; Test Scores</div>
+<div class="lang-item"><strong>Chinese:</strong> Native | <strong>English:</strong> Fluent — IELTS 7.5 (L:8.5 R:8.5 W:7.0 S:6.5) | TOEFL iBT 103 | GRE 321</div>
+</div>
+<div class="section">
+<div class="section-title">Training &amp; Certifications</div>
+<div class="cert-item"><strong>Digital Product Management</strong> — University of Virginia (Coursera), 2022</div>
+<div class="cert-item"><strong>Python for Data Analysis and Machine Learning</strong> — Udemy, 2018</div>
+</div>
+<div class="section bottom-section">
+<div class="section-title">Core Skills</div>
+<div class="skills-wrap" style="display:flex; flex-wrap:wrap; gap:5px;">
+<span class="sk hl">LLM<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+<span class="sk hl">RAG<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+<span class="sk hl">Agentic AI<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+<span class="sk">A/B Testing<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+<span class="sk">Product Management<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+<span class="sk">SQL<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+<span class="sk">Python<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+<span class="sk">Prompt Engineering<span class="sk-del" contenteditable="false" onclick="resumeCustomizer.removeSkill(this)">×</span></span>
+</div>
+</div>
+</div>
+</div>
+<script>
         function stepper(btn, amount) {
             const input = btn.parentNode.querySelector('input');
             const min = parseFloat(input.min) || 0;
@@ -487,28 +610,28 @@
             applyScheme(name) {
                 const root = document.documentElement;
                 const schemes = {
-                    california: { 'inp-header-color': '#7D99AA', 'inp-accent-color': '#FFC067', 'inp-bg-color': '#ffffff' },
-                    cobalt: { 'inp-header-color': '#000080', 'inp-accent-color': '#6D8196', 'inp-bg-color': '#ffffff' },
-                    salt: { 'inp-header-color': '#2B2B2B', 'inp-accent-color': '#B3B3B3', 'inp-bg-color': '#ffffff' },
-                    gothic: { 'inp-header-color': '#000000', 'inp-accent-color': '#988686', 'inp-bg-color': '#ffffff' },
-                    harbor: { 'inp-header-color': '#5C8DC5', 'inp-accent-color': '#AD9E90', 'inp-bg-color': '#ffffff' },
-                    winter: { 'inp-header-color': '#0B2E33', 'inp-accent-color': '#4F7C82', 'inp-bg-color': '#ffffff' },
-                    slate: { 'inp-header-color': '#4A4A4A', 'inp-accent-color': '#6D8196', 'inp-bg-color': '#FFFFE3' },
-                    noir: { 'inp-header-color': '#000000', 'inp-accent-color': '#5C4E4E', 'inp-bg-color': '#ffffff' },
-                    elegant: { 'inp-header-color': '#245F73', 'inp-accent-color': '#733E24', 'inp-bg-color': '#F2F0EF' },
-                    sand: { 'inp-header-color': '#AD9C8E', 'inp-accent-color': '#E8D59E', 'inp-bg-color': '#ffffff' },
-                    industrial: { 'inp-header-color': '#736F60', 'inp-accent-color': '#5C8DC5', 'inp-bg-color': '#ffffff' },
-                    stone: { 'inp-header-color': '#968F83', 'inp-accent-color': '#A49A87', 'inp-bg-color': '#E8E5DF' },
-                    urban: { 'inp-header-color': '#464646', 'inp-accent-color': '#A35E47', 'inp-bg-color': '#ffffff' },
-                    calm: { 'inp-header-color': '#517891', 'inp-accent-color': '#57B9FF', 'inp-bg-color': '#ffffff' },
-                    moonlight: { 'inp-header-color': '#292966', 'inp-accent-color': '#5C5C99', 'inp-bg-color': '#ffffff' },
-                    emerald: { 'inp-header-color': '#00674F', 'inp-accent-color': '#3EBB9E', 'inp-bg-color': '#ffffff' },
-                    ocean: { 'inp-header-color': '#4052D6', 'inp-accent-color': '#005C5C', 'inp-bg-color': '#ffffff' },
-                    peach: { 'inp-header-color': '#496580', 'inp-accent-color': '#BADDFF', 'inp-bg-color': '#ffffff' },
-                    rainforest: { 'inp-header-color': '#4F7942', 'inp-accent-color': '#71AA34', 'inp-bg-color': '#ffffff' },
-                    meadow: { 'inp-header-color': '#82C8E5', 'inp-accent-color': '#7CFC00', 'inp-bg-color': '#ffffff' },
-                    breeze: { 'inp-header-color': '#82C8E5', 'inp-accent-color': '#E6D8C4', 'inp-bg-color': '#ffffff' },
-                };
+            california: { "inp-header-color": "#7D99AA", "inp-accent-color": "#FFC067", "inp-bg-color": "#ffffff" },
+            cobalt: { "inp-header-color": "#000080", "inp-accent-color": "#6D8196", "inp-bg-color": "#ffffff" },
+            salt: { "inp-header-color": "#2B2B2B", "inp-accent-color": "#B3B3B3", "inp-bg-color": "#ffffff" },
+            gothic: { "inp-header-color": "#000000", "inp-accent-color": "#988686", "inp-bg-color": "#ffffff" },
+            harbor: { "inp-header-color": "#5C8DC5", "inp-accent-color": "#AD9E90", "inp-bg-color": "#ffffff" },
+            winter: { "inp-header-color": "#0B2E33", "inp-accent-color": "#4F7C82", "inp-bg-color": "#ffffff" },
+            slate: { "inp-header-color": "#4A4A4A", "inp-accent-color": "#6D8196", "inp-bg-color": "#FFFFE3" },
+            noir: { "inp-header-color": "#000000", "inp-accent-color": "#5C4E4E", "inp-bg-color": "#ffffff" },
+            elegant: { "inp-header-color": "#245F73", "inp-accent-color": "#733E24", "inp-bg-color": "#F2F0EF" },
+            sand: { "inp-header-color": "#AD9C8E", "inp-accent-color": "#E8D59E", "inp-bg-color": "#ffffff" },
+            industrial: { "inp-header-color": "#736F60", "inp-accent-color": "#5C8DC5", "inp-bg-color": "#ffffff" },
+            stone: { "inp-header-color": "#968F83", "inp-accent-color": "#A49A87", "inp-bg-color": "#E8E5DF" },
+            urban: { "inp-header-color": "#464646", "inp-accent-color": "#A35E47", "inp-bg-color": "#ffffff" },
+            calm: { "inp-header-color": "#517891", "inp-accent-color": "#57B9FF", "inp-bg-color": "#ffffff" },
+            moonlight: { "inp-header-color": "#292966", "inp-accent-color": "#5C5C99", "inp-bg-color": "#ffffff" },
+            emerald: { "inp-header-color": "#00674F", "inp-accent-color": "#3EBB9E", "inp-bg-color": "#ffffff" },
+            ocean: { "inp-header-color": "#4052D6", "inp-accent-color": "#005C5C", "inp-bg-color": "#ffffff" },
+            peach: { "inp-header-color": "#496580", "inp-accent-color": "#BADDFF", "inp-bg-color": "#ffffff" },
+            rainforest: { "inp-header-color": "#4F7942", "inp-accent-color": "#71AA34", "inp-bg-color": "#ffffff" },
+            meadow: { "inp-header-color": "#82C8E5", "inp-accent-color": "#7CFC00", "inp-bg-color": "#ffffff" },
+            breeze: { "inp-header-color": "#82C8E5", "inp-accent-color": "#E6D8C4", "inp-bg-color": "#ffffff" },
+          };
                 const s = schemes[name];
                 if (!s) return;
                 Object.keys(s).forEach(id => {
@@ -519,6 +642,15 @@
             }
 
             attachReorderButtons() {
+                // Ensure summary divs are wrapped in .section (fixes localStorage restoring old HTML)
+                document.querySelectorAll('#resume > .summary, #resume > .summary-text').forEach(sum => {
+                    if (!sum.closest('.section')) {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'section';
+                        sum.parentNode.insertBefore(wrapper, sum);
+                        wrapper.appendChild(sum);
+                    }
+                });
                 document.querySelectorAll('.section').forEach(sec => {
                     const existing = sec.querySelector('.reorder-btns');
                     if (existing) existing.remove();
@@ -566,6 +698,7 @@
                 const clone = document.getElementById('resume').cloneNode(true);
                 clone.querySelectorAll('.reorder-btns').forEach(el => el.remove());
                 s.content = clone.innerHTML;
+          s._version = "2026-02-27e";
                 localStorage.setItem(this.STORAGE_KEY, JSON.stringify(s));
             }
 
@@ -574,6 +707,7 @@
                 if (!raw) { this.attachReorderButtons(); return; }
                 try {
                     const s = JSON.parse(raw);
+            if (s._version !== "2026-02-27e") { localStorage.removeItem(this.STORAGE_KEY); return; }
                     const root = document.documentElement;
                     Object.keys(this.settingsMap).forEach(id => {
                         if (s[id] !== undefined) {
@@ -620,5 +754,9 @@
             if (e.target.isContentEditable) { e.preventDefault(); const text = e.clipboardData.getData('text/plain'); document.execCommand('insertText', false, text); }
         });
     </script>
-</body>
+<div class="tpl-sw-bar no-print" id="tpl-switcher">
+<span class="tpl-sw-label">Templates</span>
+<a class="tpl-sw-item" data-tpl="Classic_Minimal" href="Classic_Minimal.html" title="Classic Minimal">v1.0</a><a class="tpl-sw-item active" data-tpl="Clean_Layout" href="Clean_Layout.html" title="Clean Layout">v2.0</a><a class="tpl-sw-item" data-tpl="Premium_Headshot" href="Premium_Headshot.html" title="Premium Headshot">v3.0</a><a class="tpl-sw-item" data-tpl="ATS_Executive" href="ATS_Executive.html" title="ATS Executive">v4.0</a><a class="tpl-sw-item" data-tpl="Photo_Header" href="Photo_Header.html" title="Photo Header">v5.0</a><a class="tpl-sw-item" data-tpl="Clean_Professional" href="Clean_Professional.html" title="Clean Professional">v6.0</a><a class="tpl-sw-item" data-tpl="Elegant_TwoColumn" href="Elegant_TwoColumn.html" title="Elegant TwoColumn">v7.0</a><a class="tpl-sw-item" data-tpl="Bold_Engineer" href="Bold_Engineer.html" title="Bold Engineer">v8.0</a><a class="tpl-sw-item" data-tpl="Academic" href="Academic.html" title="Academic">v9.0</a>
+<a class="tpl-sw-item tpl-sw-idx" href="index.html" title="Index">☰</a>
+</div></body>
 </html>

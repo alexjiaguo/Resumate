@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Resume Builder v6.0 (Clean Professional)</title>
+<title>Clean Professional v6.0</title>
 <style>
       @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Merriweather:wght@300;400;700&display=swap");
 
@@ -39,7 +39,7 @@
       .controls {
           position: fixed; top: 0; left: 0; bottom: 0;
           width: 300px; background: #111827; padding: 16px;
-          overflow-y: auto; z-index: 1000;
+          overflow-y: auto; overflow-x: hidden; z-index: 1000;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
           font-size: 12px; color: #9ca3af;
       }
@@ -49,9 +49,9 @@
       .control-group label { display: block; margin-bottom: 3px; color: #6b7280; font-size: 10px; }
       .control-group input, .control-group select { width: 100%; padding: 6px; background: #1f2937; color: #f3f4f6; border: 1px solid #374151; border-radius: 4px; font-size: 11px; }
 
-      .stepper { display: flex; border: 1px solid #374151; border-radius: 4px; overflow: hidden; }
-      .stepper button { width: 22px; height: 26px; border: none; background: #374151; color: #fff; cursor: pointer; }
-      .stepper input { flex: 1; border: none; background: #1f2937; color: #fff; text-align: center; font-size: 11px; }
+      .stepper { display: flex; border: 1px solid #374151; border-radius: 4px; overflow: hidden; min-width: 0; }
+      .stepper button { width: 22px; height: 24px; border: none; background: #374151; color: #fff; cursor: pointer; flex-shrink: 0; }
+      .stepper input { flex: 1; min-width: 0; border: none; background: #1f2937; color: #fff; text-align: center; font-size: 11px; }
 
       .btn { display: block; width: 100%; padding: 7px; border: none; color: #fff; background: #3b82f6; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 11px; margin-top: 4px; }
       .btn-sec { background: #4b5563; }
@@ -62,6 +62,7 @@
       .btn-print:hover { background: #059669; }
       .control-row { display: flex; gap: 4px; align-items: flex-end; }
       .control-row .btn { flex: 1; margin-top: 0; min-width: 0; }
+      .control-row .control-group { min-width: 0; }
 
       .fmt-bar { display: flex; gap: 3px; margin-bottom: 10px; padding: 6px; background: #1f2937; border-radius: 5px; border: 1px solid #374151; flex-wrap: wrap; }
       .fmt-btn { width: 26px; height: 26px; border: 1px solid #374151; background: #111827; border-radius: 3px; cursor: pointer; font-weight: bold; color: #9ca3af; display: flex; align-items: center; justify-content: center; font-size: 11px; }
@@ -107,7 +108,7 @@
       .skill-tag .sk-del { cursor: pointer; color: #ef4444; font-size: 12px; visibility: hidden; }
       .skill-tag:hover .sk-del { visibility: visible; }
 
-      .reorder-btns { position: absolute; right: -30px; top: 0; display: none; flex-direction: column; gap: 2px; }
+      .reorder-btns { position: absolute; right: 2px; top: 2px; display: none; flex-direction: column; gap: 2px; z-index: 10; background: rgba(255,255,255,0.95); padding: 2px; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
       .section:hover .reorder-btns { display: flex; }
       .reorder-btn { background: #f3f4f6; border: 1px solid #d1d5db; padding: 2px 4px; font-size: 10px; cursor: pointer; border-radius: 3px; }
 
@@ -135,17 +136,50 @@
       .skills-category { margin-bottom: 3px; font-size: 1em; }
       .skills-category strong { color: var(--header-color); }
       .skills-wrap { display: flex; flex-wrap: wrap; gap: 5px; }
-      .sk { padding: 2px 8px; border-radius: 3px; background: #f0f3f6; color: #2c3e50; position: relative; cursor: pointer; transition: opacity 0.15s; }
+      .sk { padding: 2px 8px; border-radius: 3px; background: #f0f3f6; color: #2c3e50; font-size: 11px; position: relative; cursor: pointer; transition: opacity 0.15s; }
       .sk.hl { background: var(--header-color); color: #fff; font-weight: 600; }
       .sk .sk-del { display: none; position: absolute; top: -6px; right: -6px; width: 14px; height: 14px; background: #dc2626; color: #fff; border: none; border-radius: 50%; font-size: 9px; line-height: 1; cursor: pointer; align-items: center; justify-content: center; padding: 0; }
       .sk:hover .sk-del { display: flex; }
-      .cert-item { margin-bottom: 3px; font-size: 1em; }
-      .lang-item { font-size: 1em; }
+      .cert-item { margin-bottom: 3px; font-size: 11px; }
+      .lang-item { font-size: 11px; }
+</style>
+
+<style id="tpl-sw-styles">
+@media print { .tpl-sw-bar, .no-print { display: none !important; } }
+.tpl-sw-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 99999;
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  background: #1a1a2e; padding: 0 8px;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.2);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  height: 36px;
+  opacity: 0.45; transition: opacity 0.25s ease;
+}
+.tpl-sw-bar:hover { opacity: 1; }
+.tpl-sw-label {
+  color: #8892a4; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.5px; text-transform: uppercase;
+  margin-right: 8px; white-space: nowrap;
+}
+.tpl-sw-item {
+  color: #a0aec0; text-decoration: none;
+  font-size: 11px; font-weight: 600;
+  padding: 6px 10px; border-radius: 4px;
+  transition: all 0.15s ease; white-space: nowrap;
+}
+.tpl-sw-item:hover { color: #fff; background: #2d2d44; }
+.tpl-sw-item.active {
+  color: #60a5fa; background: #2d2d44;
+  box-shadow: inset 0 -2px 0 #60a5fa;
+}
+.tpl-sw-idx { color: #fbbf24; font-size: 14px; margin-left: 4px; }
+.tpl-sw-idx:hover { color: #f59e0b; background: #2d2d44; }
 </style>
 </head>
 <body>
 <aside class="controls">
-<h2>Clean Prof v6.0</h2>
+<h2>Clean Professional v6.0</h2>
 <div class="control-row" style="margin-bottom:10px;">
 <button class="btn" onclick="resumeCustomizer.saveSettings()">💾 Save</button>
 <button class="btn btn-sec" onclick="resumeCustomizer.loadSettings()">📂 Load</button>
@@ -237,8 +271,8 @@
 <div class="control-group" style="flex:1"><label>Section Gap</label><div class="stepper"><button onclick="stepper(this, -1)">-</button><input id="inp-section-spacing" type="number" value="25"/><button onclick="stepper(this, 1)">+</button></div></div>
 </div>
 <div class="control-group">
-<label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
-<input id="chk-page-break" onchange="togglePageBreak(this)" type="checkbox"/>
+<label style="display:flex; align-items:center; gap:6px; cursor:pointer; justify-content:flex-start; width:100%;">
+<input id="chk-page-break" onchange="togglePageBreak(this)" style="width:auto;" type="checkbox"/>
           Show Page Break Marker
         </label>
 </div>
@@ -262,30 +296,32 @@
           <a href="mailto:alexjia.guo@gmail.com">alexjia.guo@gmail.com</a> ·
           <a href="https://www.linkedin.com/in/alex-jiajia">linkedin.com/in/alex-jiajia</a>
 </div>
-</div><div class="section">
+</div>
+<div class="section">
+<div class="summary" style="font-size: 11px; color: #3a3a5c; line-height: 1.5; margin-bottom: 12px; padding: 7px 10px; background: #f5f6fa; border-left: 2.5px solid var(--header-color);">Results-driven Senior Product Manager with 8+ years of experience spanning AI/ML product development, ad-tech, SaaS, and enterprise systems. Proven track record in deploying LLM-powered solutions, driving $20M+ revenue impact, and leading cross-functional teams across global organizations including TikTok, Hulu (Disney), and JD.com. Passionate about leveraging Generative AI, RAG architectures, and data-driven strategies to build products that scale.</div>
+</div>
+<div class="section">
 <div class="section-title">Education</div>
 <div class="edu-entry">
 <div class="edu-header">
 <span class="school">Xi'an Jiaotong University (XJTU), Xi'an, China</span>
 <span class="dates">Sep 2014 – Jul 2017</span>
 </div>
-<div class="edu-degree">Master of Science in Electrical Engineering | GPA: 3.20 / 4.0</div>
-<div class="edu-coursework">Relevant Coursework: Computational Methods, Electromagnetic Fields Theory, Numerical Calculation &amp; Optimization</div>
+<div class="edu-degree">Master of Science in Electrical Engineering</div>
 </div>
 <div class="edu-entry">
 <div class="edu-header">
 <span class="school">Xi'an Jiaotong University (XJTU), Xi'an, China</span>
 <span class="dates">Sep 2009 – Jul 2013</span>
 </div>
-<div class="edu-degree">Bachelor of Science in Applied Physics (Honors Science Program) | GPA: 3.19 / 4.0</div>
-<div class="edu-coursework">Relevant Coursework: Probability &amp; Statistics, Computational Physics, Advanced Algebra, Quantum Mechanics, Digital Electronics</div>
+<div class="edu-degree">Bachelor of Science in Applied Physics (Honors Science Program)</div>
 </div>
 <div class="edu-entry">
 <div class="edu-header">
 <span class="school">Michigan State University (MSU), East Lansing, MI, USA</span>
 <span class="dates">Aug 2012 – Dec 2012</span>
 </div>
-<div class="edu-degree">Exchange Student — Physics | GPA: 3.46 / 4.0</div>
+<div class="edu-degree">Exchange Student — Physics</div>
 </div>
 </div><div class="section">
 <div class="section-title">Professional Experience</div>
@@ -536,6 +572,15 @@
         }
 
         attachReorderButtons() {
+          // Ensure summary divs are wrapped in .section (fixes localStorage restoring old HTML)
+          document.querySelectorAll('#resume > .summary, #resume > .summary-text').forEach(sum => {
+            if (!sum.closest('.section')) {
+              const wrapper = document.createElement('div');
+              wrapper.className = 'section';
+              sum.parentNode.insertBefore(wrapper, sum);
+              wrapper.appendChild(sum);
+            }
+          });
           document.querySelectorAll('.section').forEach(sec => {
             const existing = sec.querySelector('.reorder-btns');
             if (existing) existing.remove();
@@ -619,6 +664,7 @@
           const clone = document.getElementById('resume').cloneNode(true);
           clone.querySelectorAll('.reorder-btns').forEach(el => el.remove());
           s.content = clone.innerHTML;
+          s._version = "2026-02-27e";
           localStorage.setItem(this.STORAGE_KEY, JSON.stringify(s));
         }
 
@@ -627,6 +673,7 @@
           if (!raw) { this.attachReorderButtons(); return; }
           try {
             const s = JSON.parse(raw);
+            if (s._version !== "2026-02-27e") { localStorage.removeItem(this.STORAGE_KEY); return; }
             const root = document.documentElement;
             Object.keys(this.settingsMap).forEach(id => {
               if (s[id] !== undefined) {
@@ -686,5 +733,9 @@
         if (e.target.isContentEditable) { e.preventDefault(); const text = e.clipboardData.getData('text/plain'); document.execCommand('insertText', false, text); }
       });
     </script>
-</body>
+<div class="tpl-sw-bar no-print" id="tpl-switcher">
+<span class="tpl-sw-label">Templates</span>
+<a class="tpl-sw-item" data-tpl="Classic_Minimal" href="Classic_Minimal.html" title="Classic Minimal">v1.0</a><a class="tpl-sw-item" data-tpl="Clean_Layout" href="Clean_Layout.html" title="Clean Layout">v2.0</a><a class="tpl-sw-item" data-tpl="Premium_Headshot" href="Premium_Headshot.html" title="Premium Headshot">v3.0</a><a class="tpl-sw-item" data-tpl="ATS_Executive" href="ATS_Executive.html" title="ATS Executive">v4.0</a><a class="tpl-sw-item" data-tpl="Photo_Header" href="Photo_Header.html" title="Photo Header">v5.0</a><a class="tpl-sw-item active" data-tpl="Clean_Professional" href="Clean_Professional.html" title="Clean Professional">v6.0</a><a class="tpl-sw-item" data-tpl="Elegant_TwoColumn" href="Elegant_TwoColumn.html" title="Elegant TwoColumn">v7.0</a><a class="tpl-sw-item" data-tpl="Bold_Engineer" href="Bold_Engineer.html" title="Bold Engineer">v8.0</a><a class="tpl-sw-item" data-tpl="Academic" href="Academic.html" title="Academic">v9.0</a>
+<a class="tpl-sw-item tpl-sw-idx" href="index.html" title="Index">☰</a>
+</div></body>
 </html>

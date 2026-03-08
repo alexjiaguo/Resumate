@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Resume Builder v1.0 (Professional Layout)</title>
+<title>Classic Minimal v1.0</title>
 <style>
       @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;600;700&family=Merriweather:wght@300;400;700&display=swap");
 
@@ -39,7 +39,7 @@
       .controls {
         position: fixed; left: 0; top: 0; width: 300px; height: 100vh;
         padding: 15px; background: #2c3e50; color: #ecf0f1;
-        overflow-y: auto; z-index: 1000; font-size: 12px;
+        overflow-y: auto; overflow-x: hidden; z-index: 1000; font-size: 12px;
       }
       .controls h2 { margin-bottom: 12px; font-size: 14px; text-align: center; color: #ecf0f1; }
       .controls h3 { margin: 15px 0 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #95a5a6; border-bottom: 1px solid #34495e; padding-bottom: 5px; }
@@ -49,10 +49,10 @@
       .control-group input[type="color"] { width: 100%; height: 30px; border: 1px solid #4a6278; padding: 2px; border-radius: 4px; cursor: pointer; background: #34495e; }
 
       /* STEPPER */
-      .stepper { display: flex; align-items: center; border: 1px solid #4a6278; border-radius: 4px; overflow: hidden; background: #34495e; }
-      .stepper button { width: 28px; height: 28px; border: none; background: #4a6278; color: #ecf0f1; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+      .stepper { display: flex; align-items: center; border: 1px solid #4a6278; border-radius: 4px; overflow: hidden; background: #34495e; min-width: 0; }
+      .stepper button { width: 24px; height: 24px; border: none; background: #4a6278; color: #ecf0f1; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
       .stepper button:hover { background: #5a7a96; }
-      .stepper input { flex: 1; text-align: center; border: none; background: #34495e; color: #ecf0f1; font-size: 12px; padding: 4px 0; -moz-appearance: textfield; }
+      .stepper input { flex: 1; text-align: center; border: none; background: #34495e; color: #ecf0f1; font-size: 12px; padding: 4px 0; -moz-appearance: textfield; min-width: 0; }
       .stepper input::-webkit-outer-spin-button,
       .stepper input::-webkit-inner-spin-button { appearance: none; -webkit-appearance: none; margin: 0; }
 
@@ -66,6 +66,7 @@
       .btn-print:hover { background: #219653; }
       .control-row { display: flex; gap: 6px; align-items: flex-end; }
       .control-row .btn { flex: 1; margin-top: 0; }
+      .control-row .control-group { min-width: 0; }
 
       /* FORMAT TOOLBAR */
       .fmt-bar { display: flex; gap: 4px; margin-bottom: 15px; padding: 8px; background: #34495e; border-radius: 6px; border: 1px solid #444; flex-wrap: wrap; }
@@ -100,17 +101,25 @@
       .job li { margin-bottom: 2px; font-size: 11px; line-height: var(--line-height); }
 
       .skills-wrap { display: flex; flex-wrap: wrap; gap: 5px; }
-      .sk { padding: 2px 8px; border-radius: 3px; background: #f0f3f6; color: #2c3e50; }
+      .sk { padding: 2px 8px; border-radius: 3px; background: #f0f3f6; color: #2c3e50; font-size: 11px; position: relative; cursor: pointer; transition: opacity 0.15s; }
       .sk.hl { background: var(--header-color); color: #fff; font-weight: 600; }
+      .sk .sk-del { display: none; position: absolute; top: -6px; right: -6px; width: 14px; height: 14px; background: #dc2626; color: #fff; border: none; border-radius: 50%; font-size: 9px; line-height: 1; cursor: pointer; align-items: center; justify-content: center; padding: 0; }
+      .sk:hover .sk-del { display: flex; }
 
-      .edu-item { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 11px; }
+      .edu-item { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3px; font-size: 11px; }
       .edu-item strong { color: var(--header-color); }
+      .edu-left { display: flex; gap: 6px; align-items: baseline; }
+      .edu-school { font-weight: 600; font-size: 12px; color: var(--header-color); }
+      .edu-degree { color: var(--text-color); font-style: italic; }
+      .edu-dates { color: var(--accent-color); font-weight: 400; white-space: nowrap; }
+      .lang-item { font-size: 11px; }
+      .cert-item { margin-bottom: 3px; font-size: 11px; } { color: var(--accent-color); font-weight: 400; white-space: nowrap; }
 
       .tag { font-size: var(--tag-size); font-weight: 700; color: #fff; padding: 1px 5px; border-radius: 2px; margin-left: 4px; vertical-align: middle; text-transform: uppercase; }
       .tag.c { background: var(--accent-color); }
 
       /* REORDER CONTROLS */
-      .reorder-btns { position: absolute; right: -30px; top: 0; display: none; flex-direction: column; gap: 2px; }
+      .reorder-btns { position: absolute; right: 2px; top: 2px; display: none; flex-direction: column; gap: 2px; z-index: 10; background: rgba(255,255,255,0.95); padding: 2px; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
       .section:hover .reorder-btns { display: flex; }
       .reorder-btn { background: #eee; border: 1px solid #ddd; padding: 2px 4px; font-size: 10px; cursor: pointer; border-radius: 3px; }
       .reorder-btn:hover { background: #ddd; }
@@ -124,14 +133,53 @@
         @page { margin: 0; }
       }
     </style>
+
+<style id="tpl-sw-styles">
+@media print { .tpl-sw-bar, .no-print { display: none !important; } }
+.tpl-sw-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 99999;
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  background: #1a1a2e; padding: 0 8px;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.2);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  height: 36px;
+  opacity: 0.45; transition: opacity 0.25s ease;
+}
+.tpl-sw-bar:hover { opacity: 1; }
+.tpl-sw-label {
+  color: #8892a4; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.5px; text-transform: uppercase;
+  margin-right: 8px; white-space: nowrap;
+}
+.tpl-sw-item {
+  color: #a0aec0; text-decoration: none;
+  font-size: 11px; font-weight: 600;
+  padding: 6px 10px; border-radius: 4px;
+  transition: all 0.15s ease; white-space: nowrap;
+}
+.tpl-sw-item:hover { color: #fff; background: #2d2d44; }
+.tpl-sw-item.active {
+  color: #60a5fa; background: #2d2d44;
+  box-shadow: inset 0 -2px 0 #60a5fa;
+}
+.tpl-sw-idx { color: #fbbf24; font-size: 14px; margin-left: 4px; }
+.tpl-sw-idx:hover { color: #f59e0b; background: #2d2d44; }
+</style>
 </head>
 <body>
 <aside class="controls">
-<h2>Professional v1.0</h2>
+<h2>Classic Minimal v1.0</h2>
 <div class="control-row">
-<button class="btn" onclick="resumeCustomizer.saveSettings()">💾 Save</button>
-<button class="btn btn-sec" onclick="resumeCustomizer.loadSettings()">📂 Load</button>
-<button class="btn btn-danger" onclick="resumeCustomizer.resetSettings()">↺ Reset</button>
+<button class="btn" onclick="resumeCustomizer.saveSettings()">
+          💾 Save
+        </button>
+<button class="btn btn-sec" onclick="resumeCustomizer.loadSettings()">
+          📂 Load
+        </button>
+<button class="btn btn-danger" onclick="resumeCustomizer.resetSettings()">
+          ↺ Reset
+        </button>
 </div>
 <h3>Color Schemes</h3>
 <div class="control-group">
@@ -169,18 +217,48 @@
 </div>
 <h3>Colors</h3>
 <div class="control-row">
-<div class="control-group" style="flex:1"><label>Header Col</label><input id="inp-header-color" type="color" value="#2c3e50"/></div>
-<div class="control-group" style="flex:1"><label>Accent Col</label><input id="inp-accent-color" type="color" value="#2980b9"/></div>
+<div class="control-group" style="flex: 1">
+<label>Header Col</label><input id="inp-header-color" type="color" value="#2c3e50"/>
 </div>
-<div class="control-group"><label>Background</label><input id="inp-bg-color" type="color" value="#ffffff"/></div>
+<div class="control-group" style="flex: 1">
+<label>Accent Col</label><input id="inp-accent-color" type="color" value="#2980b9"/>
+</div>
+</div>
+<div class="control-group">
+<label>Background</label><input id="inp-bg-color" type="color" value="#ffffff"/>
+</div>
 <h3>Text Formatting</h3>
 <div class="fmt-bar">
-<button class="fmt-btn" onmousedown="event.preventDefault(); fmt('bold')">B</button>
-<button class="fmt-btn" onmousedown="event.preventDefault(); fmt('italic')">I</button>
-<button class="fmt-btn" onmousedown="event.preventDefault(); fmt('underline')">U</button>
-<button class="fmt-btn" onmousedown="event.preventDefault(); fmt('removeFormat')">✕</button>
-<div class="fmt-color-wrap"><input onchange="restoreAndFmt('foreColor', this.value)" type="color"/></div>
-<div class="fmt-color-wrap"><input onchange="restoreAndFmt('hiliteColor', this.value)" type="color"/></div>
+<button class="fmt-btn" onmousedown="
+            event.preventDefault();
+            fmt('bold');
+          ">
+          B
+        </button>
+<button class="fmt-btn" onmousedown="
+            event.preventDefault();
+            fmt('italic');
+          ">
+          I
+        </button>
+<button class="fmt-btn" onmousedown="
+            event.preventDefault();
+            fmt('underline');
+          ">
+          U
+        </button>
+<button class="fmt-btn" onmousedown="
+            event.preventDefault();
+            fmt('removeFormat');
+          ">
+          ✕
+        </button>
+<div class="fmt-color-wrap">
+<input onchange="restoreAndFmt('foreColor', this.value)" type="color"/>
+</div>
+<div class="fmt-color-wrap">
+<input onchange="restoreAndFmt('hiliteColor', this.value)" type="color"/>
+</div>
 </div>
 <div class="control-group">
 <label>Selected Text Size</label>
@@ -192,13 +270,17 @@
 </div>
 <h3>Layout &amp; Sizes</h3>
 <div class="control-row">
-<div class="control-group" style="flex:1">
+<div class="control-group" style="flex: 1">
 <label>Page Padding</label>
-<div class="stepper"><button onclick="stepper(this, -2)">-</button><input id="inp-page-padding" type="number" value="40"/><button onclick="stepper(this, 2)">+</button></div>
+<div class="stepper">
+<button onclick="stepper(this, -2)">-</button><input id="inp-page-padding" type="number" value="40"/><button onclick="stepper(this, 2)">
+              +
+            </button>
 </div>
-<div class="control-group" style="flex:1">
+</div>
+<div class="control-group" style="flex: 1">
 <label>Font Family</label>
-<select id="inp-font-family" style="padding: 6.5px;">
+<select id="inp-font-family" style="padding: 6.5px">
 <option value="'Inter', sans-serif">Inter</option>
 <option value="'Roboto', sans-serif">Roboto</option>
 <option value="'Open Sans', sans-serif">Open Sans</option>
@@ -207,113 +289,261 @@
 </div>
 </div>
 <div class="control-group">
-<label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-<input id="chk-page-break" onchange="togglePageBreak(this)" type="checkbox"/>
+<label style="display: flex; align-items: center; gap: 8px; cursor: pointer; justify-content: flex-start; width: 100%">
+<input id="chk-page-break" onchange="togglePageBreak(this)" style="width:auto;" type="checkbox"/>
           Show Page Break Marker
         </label>
 </div>
 <h3>Typography Sizes</h3>
 <div class="control-row">
-<div class="control-group" style="flex:1"><label>Base Font</label><div class="stepper"><button onclick="stepper(this, -0.5)">-</button><input id="inp-font" step="0.5" type="number" value="11"/><button onclick="stepper(this, 0.5)">+</button></div></div>
-<div class="control-group" style="flex:1"><label>Name Size</label><div class="stepper"><button onclick="stepper(this, -1)">-</button><input id="inp-hsize" type="number" value="24"/><button onclick="stepper(this, 1)">+</button></div></div>
+<div class="control-group" style="flex: 1">
+<label>Base Font</label>
+<div class="stepper">
+<button onclick="stepper(this, -0.5)">-</button><input id="inp-font" step="0.5" type="number" value="11"/><button onclick="stepper(this, 0.5)">
+              +
+            </button>
+</div>
+</div>
+<div class="control-group" style="flex: 1">
+<label>Name Size</label>
+<div class="stepper">
+<button onclick="stepper(this, -1)">-</button><input id="inp-hsize" type="number" value="24"/><button onclick="stepper(this, 1)">
+              +
+            </button>
+</div>
+</div>
 </div>
 <div class="control-row">
-<div class="control-group" style="flex:1"><label>Section Title</label><div class="stepper"><button onclick="stepper(this, -0.5)">-</button><input id="inp-section-title-size" step="0.5" type="number" value="12"/><button onclick="stepper(this, 0.5)">+</button></div></div>
-<div class="control-group" style="flex:1"><label>Company/Edu</label><div class="stepper"><button onclick="stepper(this, -0.5)">-</button><input id="inp-company-size" step="0.5" type="number" value="11"/><button onclick="stepper(this, 0.5)">+</button></div></div>
+<div class="control-group" style="flex: 1">
+<label>Section Title</label>
+<div class="stepper">
+<button onclick="stepper(this, -0.5)">-</button><input id="inp-section-title-size" step="0.5" type="number" value="12"/><button onclick="stepper(this, 0.5)">+</button>
+</div>
+</div>
+<div class="control-group" style="flex: 1">
+<label>Company/Edu</label>
+<div class="stepper">
+<button onclick="stepper(this, -0.5)">-</button><input id="inp-company-size" step="0.5" type="number" value="11"/><button onclick="stepper(this, 0.5)">+</button>
+</div>
+</div>
 </div>
 <h3>Spacing</h3>
 <div class="control-row">
-<div class="control-group" style="flex:1"><label>Line Height</label><div class="stepper"><button onclick="stepper(this, -0.1)">-</button><input id="inp-line-height" max="2.5" min="1.0" step="0.1" type="number" value="1.4"/><button onclick="stepper(this, 0.1)">+</button></div></div>
-<div class="control-group" style="flex:1"><label>Section Gap</label><div class="stepper"><button onclick="stepper(this, -1)">-</button><input id="inp-section-spacing" type="number" value="15"/><button onclick="stepper(this, 1)">+</button></div></div>
+<div class="control-group" style="flex: 1">
+<label>Line Height</label>
+<div class="stepper">
+<button onclick="stepper(this, -0.1)">-</button><input id="inp-line-height" max="2.5" min="1.0" step="0.1" type="number" value="1.4"/><button onclick="stepper(this, 0.1)">+</button>
+</div>
+</div>
+<div class="control-group" style="flex: 1">
+<label>Section Gap</label>
+<div class="stepper">
+<button onclick="stepper(this, -1)">-</button><input id="inp-section-spacing" type="number" value="15"/><button onclick="stepper(this, 1)">
+              +
+            </button>
+</div>
+</div>
 </div>
 <h3>Add Content</h3>
-<div class="control-group"><input id="new-sec-title" placeholder="Section Name" type="text"/></div>
+<div class="control-group">
+<input id="new-sec-title" placeholder="Section Name" type="text"/>
+</div>
 <div class="control-row">
 <button class="btn" onclick="addSection()">+ Section</button>
-<button class="btn btn-sec" onclick="resumeCustomizer.addTag()">+ Add Tag</button>
+<button class="btn btn-sec" onclick="resumeCustomizer.addTag()">
+          + Add Tag
+        </button>
 </div>
 <button class="btn btn-print" onclick="window.print()">Print PDF</button>
 </aside>
 <div class="resume" contenteditable="true" id="resume">
-<div class="page-break-marker" id="page-break-line" style="top: 1122px; display:none;"></div>
+<div class="page-break-marker" id="page-break-line" style="top: 1122px; display: none"></div>
 <div class="header">
 <h1>Alex (Jiajia) Guo</h1>
 <div class="info">
-      +86 131-2038-1760 ·
-      <a href="mailto:alexjia.guo@gmail.com">alexjia.guo@gmail.com</a> ·
-      <a href="#">linkedin.com/in/alex-jiajia</a>
+          +86 131-2038-1760 ·
+          <a href="mailto:alexjia.guo@gmail.com">alexjia.guo@gmail.com</a> ·
+          <a href="#">linkedin.com/in/alex-jiajia</a>
 </div>
+</div>
+<div class="section">
+<div class="summary" style="
+            font-size: 11px;
+            color: #3a3a5c;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            padding: 7px 10px;
+            background: #f5f6fa;
+            border-left: 2.5px solid var(--header-color);
+          ">
+          Results-driven Senior Product Manager with 8+ years of experience
+          spanning AI/ML product development, ad-tech, SaaS, and enterprise
+          systems. Proven track record in deploying LLM-powered solutions,
+          driving $20M+ revenue impact, and leading cross-functional teams
+          across global organizations including TikTok, Hulu (Disney), and
+          JD.com. Passionate about leveraging Generative AI, RAG architectures,
+          and data-driven strategies to build products that scale.
+        </div>
 </div>
 <div class="section">
 <div class="section-title">Professional Experience</div>
 <div class="job">
-<div class="job-header"><span>TikTok (ByteDance), Beijing</span> <span class="dates">Apr 2024 – Present</span></div>
-<div class="job-title">Senior Product Manager, GenAI &amp; Operations</div>
+<div class="job-header">
+<span>TikTok (ByteDance), Beijing</span>
+<span class="dates">Apr 2024 – Present</span>
+</div>
+<div class="job-title">
+            Senior Product Manager, GenAI &amp; Operations
+          </div>
 <ul>
-<li>Led end-to-end development of "Arena Copilot," an LLM-powered chatbot with RAG architecture for internal operations, reducing support tickets by 50% and cutting average resolution time from 3.5 hours to under 1 hour; increased self-solve rate from 8% to 65%.</li>
-<li>Spearheaded AIGC-driven banner ads transformation integrating AI auto-fitting across 20+ placements and multi-language support, reducing campaign setup time by 80%.</li>
-<li>Deployed ML-based CTR prediction model and intelligent frequency capping for banner ad ranking, increasing click-through rate from &lt;1% to 3%.</li>
-<li>Designed automated milestone notification system using creator behavior analysis and ML-based targeting, boosting CTR by 10% and unique viewers by 3%.</li>
+<li>
+              Led end-to-end development of "Arena Copilot," an LLM-powered
+              chatbot with RAG architecture for internal operations, reducing
+              support tickets by 50% and cutting average resolution time from
+              3.5 hours to under 1 hour; increased self-solve rate from 8% to
+              65%.
+            </li>
+<li>
+              Spearheaded AIGC-driven banner ads transformation integrating AI
+              auto-fitting across 20+ placements and multi-language support,
+              reducing campaign setup time by 80%.
+            </li>
+<li>
+              Deployed ML-based CTR prediction model and intelligent frequency
+              capping for banner ad ranking, increasing click-through rate from
+              &lt;1% to 3%.
+            </li>
+<li>
+              Designed automated milestone notification system using creator
+              behavior analysis and ML-based targeting, boosting CTR by 10% and
+              unique viewers by 3%.
+            </li>
 </ul>
 </div>
 <div class="job">
-<div class="job-header"><span>Tripalink, Beijing</span> <span class="dates">Aug 2023 – Apr 2024</span></div>
+<div class="job-header">
+<span>Tripalink, Beijing</span>
+<span class="dates">Aug 2023 – Apr 2024</span>
+</div>
 <div class="job-title">AI Product Manager</div>
 <ul>
-<li>Reduced property onboarding time from 2 weeks to 2 days (85% improvement) by implementing automated data scraping and AI-powered description generation with SEO optimization.</li>
-<li>Redesigned promotion management system, cutting configuration time from 4+ hours to 30 minutes and reducing data error rate from 10% to 2%.</li>
+<li>
+              Reduced property onboarding time from 2 weeks to 2 days (85%
+              improvement) by implementing automated data scraping and
+              AI-powered description generation with SEO optimization.
+            </li>
+<li>
+              Redesigned promotion management system, cutting configuration time
+              from 4+ hours to 30 minutes and reducing data error rate from 10%
+              to 2%.
+            </li>
 </ul>
 </div>
 <div class="job">
-<div class="job-header"><span>Hulu (The Walt Disney Company), Beijing</span> <span class="dates">May 2021 – Aug 2023</span></div>
+<div class="job-header">
+<span>Hulu (The Walt Disney Company), Beijing</span>
+<span class="dates">May 2021 – Aug 2023</span>
+</div>
 <div class="job-title">Ad Product Manager</div>
 <ul>
-<li>Drove integration of Hulu's ad inventory with third-party DSPs via real-time bidding and yield optimization, generating over $20M annual revenue lift.</li>
-<li>Designed and implemented a server-side A/B testing framework with SDK-level traffic splitting, accelerating algorithm and ad strategy optimization velocity by 40%.</li>
-<li>Built an offline ad server simulator enabling 20× accelerated testing; supported the launch of new pacing algorithms and unified selection logic for $3B+ ad revenue platform.</li>
-<li>Optimized ad asset lifecycle via AI-powered quality rating system, reducing manual review by 50% and asset ingestion time by 90%.</li>
+<li>
+              Drove integration of Hulu's ad inventory with third-party DSPs via
+              real-time bidding and yield optimization, generating over $20M
+              annual revenue lift.
+            </li>
+<li>
+              Designed and implemented a server-side A/B testing framework with
+              SDK-level traffic splitting, accelerating algorithm and ad
+              strategy optimization velocity by 40%.
+            </li>
+<li>
+              Built an offline ad server simulator enabling 20× accelerated
+              testing; supported the launch of new pacing algorithms and unified
+              selection logic for $3B+ ad revenue platform.
+            </li>
+<li>
+              Optimized ad asset lifecycle via AI-powered quality rating system,
+              reducing manual review by 50% and asset ingestion time by 90%.
+            </li>
 </ul>
 </div>
 <div class="job">
-<div class="job-header"><span>JD.com, Beijing</span> <span class="dates">Oct 2018 – Nov 2020</span></div>
+<div class="job-header">
+<span>JD.com, Beijing</span>
+<span class="dates">Oct 2018 – Nov 2020</span>
+</div>
 <div class="job-title">SaaS Product Manager</div>
 <ul>
-<li>Built ML-driven automatic replenishment system achieving 90% automation rate, reducing stock shortage rate to &lt;2% and optimizing inventory turnover to under 40 days.</li>
-<li>Developed intelligent pricing system integrating ML-based sales simulation and NLP-powered competitive price crawling, driving data-driven pricing strategies for major promotions.</li>
+<li>
+              Built ML-driven automatic replenishment system achieving 90%
+              automation rate, reducing stock shortage rate to &lt;2% and
+              optimizing inventory turnover to under 40 days.
+            </li>
+<li>
+              Developed intelligent pricing system integrating ML-based sales
+              simulation and NLP-powered competitive price crawling, driving
+              data-driven pricing strategies for major promotions.
+            </li>
 </ul>
 </div>
 <div class="job">
-<div class="job-header"><span>ABB, Beijing</span> <span class="dates">Jul 2017 – Oct 2018</span></div>
+<div class="job-header">
+<span>ABB, Beijing</span>
+<span class="dates">Jul 2017 – Oct 2018</span>
+</div>
 <div class="job-title">Project Manager</div>
 <ul>
-<li>Managed supplier quality initiative validating a local vendor with 80% cost reduction; identified testing methodology flaw through data analysis, saving millions in procurement costs.</li>
-<li>Led competitive benchmarking initiative creating price-to-performance matrices across product lines, providing strategic insights for product development roadmap.</li>
+<li>
+              Managed supplier quality initiative validating a local vendor with
+              80% cost reduction; identified testing methodology flaw through
+              data analysis, saving millions in procurement costs.
+            </li>
+<li>
+              Led competitive benchmarking initiative creating
+              price-to-performance matrices across product lines, providing
+              strategic insights for product development roadmap.
+            </li>
 </ul>
 </div>
 </div>
 <div class="section">
 <div class="section-title">Education</div>
-<div class="edu-item" style="margin-bottom:6px;">
-<div style="display:flex; justify-content:space-between; font-weight:600; font-size:12px;"><span>Xi'an Jiaotong University (XJTU), Xi'an, China</span><span>Sep 2014 – Jul 2017</span></div>
-<div style="font-size:11px;">Master of Science in Electrical Engineering | GPA: 3.20 / 4.0</div>
-<div style="font-size:11px;color:#666;font-style:italic;">Relevant Coursework: Computational Methods, Electromagnetic Fields Theory, Numerical Calculation &amp; Optimization</div>
+<div class="edu-item">
+<div class="edu-left">
+<span class="edu-school">Xi'an Jiaotong University (XJTU)</span><span class="edu-degree">— M.S. Electrical Engineering</span>
 </div>
-<div class="edu-item" style="margin-bottom:6px;">
-<div style="display:flex; justify-content:space-between; font-weight:600; font-size:12px;"><span>Xi'an Jiaotong University (XJTU), Xi'an, China</span><span>Sep 2009 – Jul 2013</span></div>
-<div style="font-size:11px;">Bachelor of Science in Applied Physics (Honors Science Program) | GPA: 3.19 / 4.0</div>
-<div style="font-size:11px;color:#666;font-style:italic;">Relevant Coursework: Probability &amp; Statistics, Computational Physics, Advanced Algebra, Quantum Mechanics, Digital Electronics</div>
+<span class="edu-dates">Sep 2014 – Jul 2017</span>
 </div>
-<div class="edu-item" style="margin-bottom:6px;">
-<div style="display:flex; justify-content:space-between; font-weight:600; font-size:12px;"><span>Michigan State University (MSU), East Lansing, MI, USA</span><span>Aug 2012 – Dec 2012</span></div>
-<div style="font-size:11px;">Exchange Student — Physics | GPA: 3.46 / 4.0</div>
+<div class="edu-item">
+<div class="edu-left">
+<span class="edu-school">Xi'an Jiaotong University (XJTU)</span><span class="edu-degree">— B.S. Applied Physics (Honors)</span>
+</div>
+<span class="edu-dates">Sep 2009 – Jul 2013</span>
+</div>
+<div class="edu-item">
+<div class="edu-left">
+<span class="edu-school">Michigan State University (MSU)</span><span class="edu-degree">— Exchange Student, Physics</span>
+</div>
+<span class="edu-dates">Aug 2012 – Dec 2012</span>
 </div>
 </div>
 <div class="section">
-<div class="section-title">Technical Skills</div>
-<div><p style="font-size:11px; margin-bottom:2px;">AI &amp; ML: LLM, Agentic AI, AIGC, NLP, RAG Architecture, CTR Prediction, ML Algorithms, Prompt Engineering</p></div>
-<div><p style="font-size:11px; margin-bottom:2px;">Data &amp; Analytics: A/B Testing, Data Analysis, SQL, Python, Statistical Modeling, Funnel Analysis</p></div>
-<div><p style="font-size:11px; margin-bottom:2px;">Tools &amp; Platforms: Cursor, Claude, ChatGPT, Gemini, MCP (Model Context Protocol), Jira, Confluence</p></div>
-<div><p style="font-size:11px; margin-bottom:2px;">Methodologies: Agile / Scrum, Product Lifecycle Management, Cross-functional Leadership, RICE Prioritization</p></div>
+<div class="section-title">Languages &amp; Test Scores</div>
+<div class="lang-item">
+<strong>Chinese:</strong> Native | <strong>English:</strong> Fluent —
+          IELTS 7.5 (L:8.5 R:8.5 W:7.0 S:6.5) | TOEFL iBT 103 | GRE 321
+        </div>
+</div>
+<div class="section">
+<div class="section-title">Training &amp; Certifications</div>
+<div class="cert-item">
+<strong>Digital Product Management</strong> — University of Virginia
+          (Coursera), 2022
+        </div>
+<div class="cert-item">
+<strong>Python for Data Analysis and Machine Learning</strong> —
+          Udemy, 2018
+        </div>
 </div>
 <div class="section">
 <div class="section-title">Key Skills</div>
@@ -331,20 +561,20 @@
 </div>
 <script>
       function stepper(btn, amount) {
-        const input = btn.parentNode.querySelector('input');
+        const input = btn.parentNode.querySelector("input");
         const min = parseFloat(input.min) || 0;
         const max = parseFloat(input.max) || 1000;
         const step = parseFloat(input.step) || 1;
         let val = (parseFloat(input.value) || 0) + amount;
         const precision = Math.max(
-          (amount.toString().split('.')[1] || '').length,
-          (step.toString().split('.')[1] || '').length
+          (amount.toString().split(".")[1] || "").length,
+          (step.toString().split(".")[1] || "").length,
         );
         val = parseFloat(val.toFixed(precision));
         if (val < min) val = min;
         if (val > max) val = max;
         input.value = val;
-        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event("input", { bubbles: true }));
       }
 
       class Customizer {
@@ -364,39 +594,58 @@
             "inp-section-spacing": null,
             "inp-selection-size": null,
           };
-          this.pxFields = ["inp-font", "inp-hsize", "inp-section-title-size", "inp-company-size", "inp-page-padding"];
+          this.pxFields = [
+            "inp-font",
+            "inp-hsize",
+            "inp-section-title-size",
+            "inp-company-size",
+            "inp-page-padding",
+          ];
           this.init();
         }
 
         init() {
           this.currentSelectionRange = null;
           if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", () => { this.loadSettings(); this.initTextSizing(); });
-          } else { this.loadSettings(); this.initTextSizing(); }
+            document.addEventListener("DOMContentLoaded", () => {
+              this.loadSettings();
+              this.initTextSizing();
+            });
+          } else {
+            this.loadSettings();
+            this.initTextSizing();
+          }
           this.initListeners();
           this.attachReorderButtons();
         }
 
         initListeners() {
           const root = document.documentElement;
-          Object.keys(this.settingsMap).forEach(id => {
+          Object.keys(this.settingsMap).forEach((id) => {
             const el = document.getElementById(id);
-            if (el) el.addEventListener('input', (e) => {
-              const varName = this.settingsMap[id];
-              const val = e.target.value;
-              if (varName) {
-                if (this.pxFields.includes(id)) root.style.setProperty(varName, val + "px");
-                else root.style.setProperty(varName, val);
-              }
-              if (id === "inp-section-spacing") {
-                document.querySelectorAll('#resume .section').forEach(s => { s.style.marginBottom = val + "px"; });
-              }
-              this.saveSettings();
-            });
+            if (el)
+              el.addEventListener("input", (e) => {
+                const varName = this.settingsMap[id];
+                const val = e.target.value;
+                if (varName) {
+                  if (this.pxFields.includes(id))
+                    root.style.setProperty(varName, val + "px");
+                  else root.style.setProperty(varName, val);
+                }
+                if (id === "inp-section-spacing") {
+                  document.querySelectorAll("#resume .section").forEach((s) => {
+                    s.style.marginBottom = val + "px";
+                  });
+                }
+                this.saveSettings();
+              });
           });
-          document.getElementById('resume').addEventListener('input', () => this.saveSettings());
-          const pbChk = document.getElementById('chk-page-break');
-          if (pbChk) pbChk.addEventListener('change', () => this.saveSettings());
+          document
+            .getElementById("resume")
+            .addEventListener("input", () => this.saveSettings());
+          const pbChk = document.getElementById("chk-page-break");
+          if (pbChk)
+            pbChk.addEventListener("change", () => this.saveSettings());
         }
 
         initTextSizing() {
@@ -419,8 +668,14 @@
             }
           });
 
-          slider.addEventListener("mousedown", () => { this.isAdjustingSize = true; });
-          slider.addEventListener("mouseup", () => { setTimeout(() => { this.isAdjustingSize = false; }, 50); });
+          slider.addEventListener("mousedown", () => {
+            this.isAdjustingSize = true;
+          });
+          slider.addEventListener("mouseup", () => {
+            setTimeout(() => {
+              this.isAdjustingSize = false;
+            }, 50);
+          });
 
           slider.addEventListener("input", (e) => {
             const size = e.target.value + "px";
@@ -446,19 +701,25 @@
             const magicColor = helper.style.backgroundColor;
             document.execCommand("hiliteColor", false, magicHex);
 
-            resumeEl.querySelectorAll('span[style*="background-color"]').forEach(span => {
-              if (span.style.backgroundColor === magicColor) {
-                span.style.backgroundColor = "";
-                span.style.fontSize = value;
-                if (!span.getAttribute("style") || span.style.length === 0) {
-                  const parent = span.parentNode;
-                  while (span.firstChild) parent.insertBefore(span.firstChild, span);
-                  parent.removeChild(span);
+            resumeEl
+              .querySelectorAll('span[style*="background-color"]')
+              .forEach((span) => {
+                if (span.style.backgroundColor === magicColor) {
+                  span.style.backgroundColor = "";
+                  span.style.fontSize = value;
+                  if (!span.getAttribute("style") || span.style.length === 0) {
+                    const parent = span.parentNode;
+                    while (span.firstChild)
+                      parent.insertBefore(span.firstChild, span);
+                    parent.removeChild(span);
+                  }
                 }
-              }
-            });
+              });
             this.flattenSpans(resumeEl);
-            if (this.currentSelectionRange) { sel.removeAllRanges(); sel.addRange(this.currentSelectionRange); }
+            if (this.currentSelectionRange) {
+              sel.removeAllRanges();
+              sel.addRange(this.currentSelectionRange);
+            }
           } else {
             document.execCommand(property, false, value);
           }
@@ -466,11 +727,12 @@
         }
 
         flattenSpans(root) {
-          root.querySelectorAll("span span").forEach(inner => {
+          root.querySelectorAll("span span").forEach((inner) => {
             const outer = inner.parentElement;
             if (outer.tagName === "SPAN" && inner.style.fontSize) {
               outer.style.fontSize = inner.style.fontSize;
-              while (inner.firstChild) outer.insertBefore(inner.firstChild, inner);
+              while (inner.firstChild)
+                outer.insertBefore(inner.firstChild, inner);
               outer.removeChild(inner);
             }
           });
@@ -478,7 +740,7 @@
 
         addTag() {
           const sel = window.getSelection();
-          const resume = document.getElementById('resume');
+          const resume = document.getElementById("resume");
           if (sel.rangeCount > 0) {
             const range = sel.getRangeAt(0);
             let node = range.commonAncestorContainer;
@@ -506,43 +768,154 @@
         applyScheme(name) {
           const root = document.documentElement;
           const schemes = {
-            california: { "inp-header-color": "#7D99AA", "inp-accent-color": "#FFC067", "inp-bg-color": "#ffffff" },
-            cobalt: { "inp-header-color": "#000080", "inp-accent-color": "#6D8196", "inp-bg-color": "#ffffff" },
-            salt: { "inp-header-color": "#2B2B2B", "inp-accent-color": "#B3B3B3", "inp-bg-color": "#ffffff" },
-            gothic: { "inp-header-color": "#000000", "inp-accent-color": "#988686", "inp-bg-color": "#ffffff" },
-            harbor: { "inp-header-color": "#5C8DC5", "inp-accent-color": "#AD9E90", "inp-bg-color": "#ffffff" },
-            winter: { "inp-header-color": "#0B2E33", "inp-accent-color": "#4F7C82", "inp-bg-color": "#ffffff" },
-            slate: { "inp-header-color": "#4A4A4A", "inp-accent-color": "#6D8196", "inp-bg-color": "#FFFFE3" },
-            noir: { "inp-header-color": "#000000", "inp-accent-color": "#5C4E4E", "inp-bg-color": "#ffffff" },
-            elegant: { "inp-header-color": "#245F73", "inp-accent-color": "#733E24", "inp-bg-color": "#F2F0EF" },
-            sand: { "inp-header-color": "#AD9C8E", "inp-accent-color": "#E8D59E", "inp-bg-color": "#ffffff" },
-            industrial: { "inp-header-color": "#736F60", "inp-accent-color": "#5C8DC5", "inp-bg-color": "#ffffff" },
-            stone: { "inp-header-color": "#968F83", "inp-accent-color": "#A49A87", "inp-bg-color": "#E8E5DF" },
-            urban: { "inp-header-color": "#464646", "inp-accent-color": "#A35E47", "inp-bg-color": "#ffffff" },
-            calm: { "inp-header-color": "#517891", "inp-accent-color": "#57B9FF", "inp-bg-color": "#ffffff" },
-            moonlight: { "inp-header-color": "#292966", "inp-accent-color": "#5C5C99", "inp-bg-color": "#ffffff" },
-            emerald: { "inp-header-color": "#00674F", "inp-accent-color": "#3EBB9E", "inp-bg-color": "#ffffff" },
-            ocean: { "inp-header-color": "#4052D6", "inp-accent-color": "#005C5C", "inp-bg-color": "#ffffff" },
-            peach: { "inp-header-color": "#496580", "inp-accent-color": "#BADDFF", "inp-bg-color": "#ffffff" },
-            rainforest: { "inp-header-color": "#4F7942", "inp-accent-color": "#71AA34", "inp-bg-color": "#ffffff" },
-            meadow: { "inp-header-color": "#82C8E5", "inp-accent-color": "#7CFC00", "inp-bg-color": "#ffffff" },
-            breeze: { "inp-header-color": "#82C8E5", "inp-accent-color": "#E6D8C4", "inp-bg-color": "#ffffff" },
+            california: {
+              "inp-header-color": "#7D99AA",
+              "inp-accent-color": "#FFC067",
+              "inp-bg-color": "#ffffff",
+            },
+            cobalt: {
+              "inp-header-color": "#000080",
+              "inp-accent-color": "#6D8196",
+              "inp-bg-color": "#ffffff",
+            },
+            salt: {
+              "inp-header-color": "#2B2B2B",
+              "inp-accent-color": "#B3B3B3",
+              "inp-bg-color": "#ffffff",
+            },
+            gothic: {
+              "inp-header-color": "#000000",
+              "inp-accent-color": "#988686",
+              "inp-bg-color": "#ffffff",
+            },
+            harbor: {
+              "inp-header-color": "#5C8DC5",
+              "inp-accent-color": "#AD9E90",
+              "inp-bg-color": "#ffffff",
+            },
+            winter: {
+              "inp-header-color": "#0B2E33",
+              "inp-accent-color": "#4F7C82",
+              "inp-bg-color": "#ffffff",
+            },
+            slate: {
+              "inp-header-color": "#4A4A4A",
+              "inp-accent-color": "#6D8196",
+              "inp-bg-color": "#FFFFE3",
+            },
+            noir: {
+              "inp-header-color": "#000000",
+              "inp-accent-color": "#5C4E4E",
+              "inp-bg-color": "#ffffff",
+            },
+            elegant: {
+              "inp-header-color": "#245F73",
+              "inp-accent-color": "#733E24",
+              "inp-bg-color": "#F2F0EF",
+            },
+            sand: {
+              "inp-header-color": "#AD9C8E",
+              "inp-accent-color": "#E8D59E",
+              "inp-bg-color": "#ffffff",
+            },
+            industrial: {
+              "inp-header-color": "#736F60",
+              "inp-accent-color": "#5C8DC5",
+              "inp-bg-color": "#ffffff",
+            },
+            stone: {
+              "inp-header-color": "#968F83",
+              "inp-accent-color": "#A49A87",
+              "inp-bg-color": "#E8E5DF",
+            },
+            urban: {
+              "inp-header-color": "#464646",
+              "inp-accent-color": "#A35E47",
+              "inp-bg-color": "#ffffff",
+            },
+            calm: {
+              "inp-header-color": "#517891",
+              "inp-accent-color": "#57B9FF",
+              "inp-bg-color": "#ffffff",
+            },
+            moonlight: {
+              "inp-header-color": "#292966",
+              "inp-accent-color": "#5C5C99",
+              "inp-bg-color": "#ffffff",
+            },
+            emerald: {
+              "inp-header-color": "#00674F",
+              "inp-accent-color": "#3EBB9E",
+              "inp-bg-color": "#ffffff",
+            },
+            ocean: {
+              "inp-header-color": "#4052D6",
+              "inp-accent-color": "#005C5C",
+              "inp-bg-color": "#ffffff",
+            },
+            peach: {
+              "inp-header-color": "#496580",
+              "inp-accent-color": "#BADDFF",
+              "inp-bg-color": "#ffffff",
+            },
+            rainforest: {
+              "inp-header-color": "#4F7942",
+              "inp-accent-color": "#71AA34",
+              "inp-bg-color": "#ffffff",
+            },
+            meadow: {
+              "inp-header-color": "#82C8E5",
+              "inp-accent-color": "#7CFC00",
+              "inp-bg-color": "#ffffff",
+            },
+            breeze: {
+              "inp-header-color": "#82C8E5",
+              "inp-accent-color": "#E6D8C4",
+              "inp-bg-color": "#ffffff",
+            },
           };
           const s = schemes[name];
           if (!s) return;
-          Object.keys(s).forEach(id => {
+          Object.keys(s).forEach((id) => {
             const el = document.getElementById(id);
-            if (el) { el.value = s[id]; const v = this.settingsMap[id]; if (v) root.style.setProperty(v, s[id]); }
+            if (el) {
+              el.value = s[id];
+              const v = this.settingsMap[id];
+              if (v) root.style.setProperty(v, s[id]);
+            }
           });
           this.saveSettings();
         }
 
         attachReorderButtons() {
+          // Fix localStorage restoring old HTML structures:
+          // Case 1: A .section contains both .summary and .section-title (merged sections)
           document.querySelectorAll('.section').forEach(sec => {
-            const existing = sec.querySelector('.reorder-btns');
+            const summary = sec.querySelector('.summary, .summary-text');
+            const title = sec.querySelector('.section-title');
+            if (summary && title) {
+              // Split: extract summary into its own .section before this one
+              const wrapper = document.createElement('div');
+              wrapper.className = 'section';
+              sec.parentNode.insertBefore(wrapper, sec);
+              wrapper.appendChild(summary);
+            }
+          });
+          // Case 2: Orphaned .summary directly under #resume (not in any .section)
+          document.querySelectorAll('#resume > .summary, #resume > .summary-text').forEach(sum => {
+            if (!sum.closest('.section')) {
+              const wrapper = document.createElement('div');
+              wrapper.className = 'section';
+              sum.parentNode.insertBefore(wrapper, sum);
+              wrapper.appendChild(sum);
+            }
+          });
+          document.querySelectorAll(".section").forEach((sec) => {
+            const existing = sec.querySelector(".reorder-btns");
             if (existing) existing.remove();
-            const cnt = document.createElement('div');
-            cnt.className = 'reorder-btns'; cnt.contentEditable = "false";
+            const cnt = document.createElement("div");
+            cnt.className = "reorder-btns";
+            cnt.contentEditable = "false";
             cnt.innerHTML = `<button class="reorder-btn" title="Add Item" onclick="resumeCustomizer.addItem(this.closest('.section'))">+</button>
                              <button class="reorder-btn" onclick="resumeCustomizer.move(this.closest('.section'),-1)">▲</button>
                              <button class="reorder-btn" onclick="resumeCustomizer.move(this.closest('.section'),1)">▼</button>
@@ -552,17 +925,27 @@
         }
 
         addItem(section) {
-          if (section.querySelector('.job') || section.querySelector('.job-header')) {
-            const job = document.createElement('div'); job.className = 'job';
+          if (
+            section.querySelector(".job") ||
+            section.querySelector(".job-header")
+          ) {
+            const job = document.createElement("div");
+            job.className = "job";
             job.innerHTML = `<div class="job-header"><span contenteditable="true">Company Name</span> <span class="dates" contenteditable="true">Date - Present</span></div>
                              <div class="job-title" contenteditable="true">Job Title · Location</div>
                              <ul><li contenteditable="true">Key achievement or responsibility</li></ul>`;
             section.appendChild(job);
-          } else if (section.querySelector('ul')) {
-            const li = document.createElement('li'); li.contentEditable = "true"; li.textContent = "New list item...";
-            section.querySelector('ul').appendChild(li);
+          } else if (section.querySelector("ul")) {
+            const li = document.createElement("li");
+            li.contentEditable = "true";
+            li.textContent = "New list item...";
+            section.querySelector("ul").appendChild(li);
           } else {
-            const p = document.createElement('p'); p.contentEditable = "true"; p.style.fontSize = "11px"; p.style.marginTop = "4px"; p.textContent = "New content block...";
+            const p = document.createElement("p");
+            p.contentEditable = "true";
+            p.style.fontSize = "11px";
+            p.style.marginTop = "4px";
+            p.textContent = "New content block...";
             section.appendChild(p);
           }
           this.attachReorderButtons();
@@ -570,48 +953,76 @@
         }
 
         move(el, dir) {
-          if (dir === -1 && el.previousElementSibling) el.parentNode.insertBefore(el, el.previousElementSibling);
-          else if (dir === 1 && el.nextElementSibling) el.parentNode.insertBefore(el.nextElementSibling, el);
+          if (dir === -1 && el.previousElementSibling)
+            el.parentNode.insertBefore(el, el.previousElementSibling);
+          else if (dir === 1 && el.nextElementSibling)
+            el.parentNode.insertBefore(el.nextElementSibling, el);
           this.saveSettings();
         }
 
-        resetSettings() { localStorage.removeItem(this.STORAGE_KEY); location.reload(); }
+        resetSettings() {
+          localStorage.removeItem(this.STORAGE_KEY);
+          location.reload();
+        }
 
         saveSettings() {
           const s = {};
-          Object.keys(this.settingsMap).forEach(id => { const el = document.getElementById(id); if (el) s[id] = el.value; });
-          const pbChk = document.getElementById('chk-page-break');
+          Object.keys(this.settingsMap).forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) s[id] = el.value;
+          });
+          const pbChk = document.getElementById("chk-page-break");
           if (pbChk) s["chk-page-break"] = pbChk.checked;
-          const clone = document.getElementById('resume').cloneNode(true);
-          clone.querySelectorAll('.reorder-btns').forEach(el => el.remove());
+          const clone = document.getElementById("resume").cloneNode(true);
+          clone.querySelectorAll(".reorder-btns").forEach((el) => el.remove());
           s.content = clone.innerHTML;
+          s._version = "2026-02-27e";
           localStorage.setItem(this.STORAGE_KEY, JSON.stringify(s));
         }
 
         loadSettings() {
           const raw = localStorage.getItem(this.STORAGE_KEY);
-          if (!raw) { this.attachReorderButtons(); return; }
+          if (!raw) {
+            this.attachReorderButtons();
+            return;
+          }
           try {
             const s = JSON.parse(raw);
+            if (s._version !== "2026-02-27e") {
+              localStorage.removeItem(this.STORAGE_KEY);
+              return;
+            }
             const root = document.documentElement;
-            Object.keys(this.settingsMap).forEach(id => {
+            Object.keys(this.settingsMap).forEach((id) => {
               if (s[id] !== undefined) {
-                const el = document.getElementById(id); if (el) el.value = s[id];
+                const el = document.getElementById(id);
+                if (el) el.value = s[id];
                 const varName = this.settingsMap[id];
                 if (varName) {
-                  if (this.pxFields.includes(id)) root.style.setProperty(varName, s[id] + "px");
+                  if (this.pxFields.includes(id))
+                    root.style.setProperty(varName, s[id] + "px");
                   else root.style.setProperty(varName, s[id]);
                 }
                 if (id === "inp-section-spacing" && s[id]) {
-                  document.querySelectorAll('#resume .section').forEach(sec => { sec.style.marginBottom = s[id] + "px"; });
+                  document
+                    .querySelectorAll("#resume .section")
+                    .forEach((sec) => {
+                      sec.style.marginBottom = s[id] + "px";
+                    });
                 }
               }
             });
-            const pbChk = document.getElementById('chk-page-break');
-            if (pbChk && s["chk-page-break"] !== undefined) { pbChk.checked = s["chk-page-break"]; togglePageBreak(pbChk); }
-            if (s.content) document.getElementById('resume').innerHTML = s.content;
+            const pbChk = document.getElementById("chk-page-break");
+            if (pbChk && s["chk-page-break"] !== undefined) {
+              pbChk.checked = s["chk-page-break"];
+              togglePageBreak(pbChk);
+            }
+            if (s.content)
+              document.getElementById("resume").innerHTML = s.content;
             this.attachReorderButtons();
-          } catch (e) { console.error(e); }
+          } catch (e) {
+            console.error(e);
+          }
         }
       }
 
@@ -629,27 +1040,40 @@
           sel.removeAllRanges();
           sel.addRange(resumeCustomizer.currentSelectionRange);
           fmt(command, value);
-          if (sel.rangeCount > 0) resumeCustomizer.currentSelectionRange = sel.getRangeAt(0).cloneRange();
+          if (sel.rangeCount > 0)
+            resumeCustomizer.currentSelectionRange = sel
+              .getRangeAt(0)
+              .cloneRange();
         }
       }
 
       function togglePageBreak(chk) {
-        const marker = document.getElementById('page-break-line');
-        if (marker) marker.style.display = chk.checked ? 'block' : 'none';
+        const marker = document.getElementById("page-break-line");
+        if (marker) marker.style.display = chk.checked ? "block" : "none";
       }
 
       function addSection() {
-        const t = document.getElementById('new-sec-title').value || "New Section";
-        const div = document.createElement('div'); div.className = "section";
+        const t =
+          document.getElementById("new-sec-title").value || "New Section";
+        const div = document.createElement("div");
+        div.className = "section";
         div.innerHTML = `<div class="section-title">${t}</div><p>Content...</p>`;
-        document.getElementById('resume').appendChild(div);
+        document.getElementById("resume").appendChild(div);
         resumeCustomizer.attachReorderButtons();
         resumeCustomizer.saveSettings();
       }
 
-      document.addEventListener('paste', (e) => {
-        if (e.target.isContentEditable) { e.preventDefault(); const text = e.clipboardData.getData('text/plain'); document.execCommand('insertText', false, text); }
+      document.addEventListener("paste", (e) => {
+        if (e.target.isContentEditable) {
+          e.preventDefault();
+          const text = e.clipboardData.getData("text/plain");
+          document.execCommand("insertText", false, text);
+        }
       });
     </script>
-</body>
+<div class="tpl-sw-bar no-print" id="tpl-switcher">
+<span class="tpl-sw-label">Templates</span>
+<a class="tpl-sw-item active" data-tpl="Classic_Minimal" href="Classic_Minimal.html" title="Classic Minimal">v1.0</a><a class="tpl-sw-item" data-tpl="Clean_Layout" href="Clean_Layout.html" title="Clean Layout">v2.0</a><a class="tpl-sw-item" data-tpl="Premium_Headshot" href="Premium_Headshot.html" title="Premium Headshot">v3.0</a><a class="tpl-sw-item" data-tpl="ATS_Executive" href="ATS_Executive.html" title="ATS Executive">v4.0</a><a class="tpl-sw-item" data-tpl="Photo_Header" href="Photo_Header.html" title="Photo Header">v5.0</a><a class="tpl-sw-item" data-tpl="Clean_Professional" href="Clean_Professional.html" title="Clean Professional">v6.0</a><a class="tpl-sw-item" data-tpl="Elegant_TwoColumn" href="Elegant_TwoColumn.html" title="Elegant TwoColumn">v7.0</a><a class="tpl-sw-item" data-tpl="Bold_Engineer" href="Bold_Engineer.html" title="Bold Engineer">v8.0</a><a class="tpl-sw-item" data-tpl="Academic" href="Academic.html" title="Academic">v9.0</a>
+<a class="tpl-sw-item tpl-sw-idx" href="index.html" title="Index">☰</a>
+</div></body>
 </html>
