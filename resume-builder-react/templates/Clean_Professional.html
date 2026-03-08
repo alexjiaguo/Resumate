@@ -143,39 +143,6 @@
       .cert-item { margin-bottom: 3px; font-size: 11px; }
       .lang-item { font-size: 11px; }
 </style>
-
-<style id="tpl-sw-styles">
-@media print { .tpl-sw-bar, .no-print { display: none !important; } }
-.tpl-sw-bar {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  z-index: 99999;
-  display: flex; align-items: center; justify-content: center; gap: 0;
-  background: #1a1a2e; padding: 0 8px;
-  box-shadow: 0 -2px 12px rgba(0,0,0,0.2);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  height: 36px;
-  opacity: 0.45; transition: opacity 0.25s ease;
-}
-.tpl-sw-bar:hover { opacity: 1; }
-.tpl-sw-label {
-  color: #8892a4; font-size: 11px; font-weight: 600;
-  letter-spacing: 0.5px; text-transform: uppercase;
-  margin-right: 8px; white-space: nowrap;
-}
-.tpl-sw-item {
-  color: #a0aec0; text-decoration: none;
-  font-size: 11px; font-weight: 600;
-  padding: 6px 10px; border-radius: 4px;
-  transition: all 0.15s ease; white-space: nowrap;
-}
-.tpl-sw-item:hover { color: #fff; background: #2d2d44; }
-.tpl-sw-item.active {
-  color: #60a5fa; background: #2d2d44;
-  box-shadow: inset 0 -2px 0 #60a5fa;
-}
-.tpl-sw-idx { color: #fbbf24; font-size: 14px; margin-left: 4px; }
-.tpl-sw-idx:hover { color: #f59e0b; background: #2d2d44; }
-</style>
 </head>
 <body>
 <aside class="controls">
@@ -271,8 +238,8 @@
 <div class="control-group" style="flex:1"><label>Section Gap</label><div class="stepper"><button onclick="stepper(this, -1)">-</button><input id="inp-section-spacing" type="number" value="25"/><button onclick="stepper(this, 1)">+</button></div></div>
 </div>
 <div class="control-group">
-<label style="display:flex; align-items:center; gap:6px; cursor:pointer; justify-content:flex-start; width:100%;">
-<input id="chk-page-break" onchange="togglePageBreak(this)" style="width:auto;" type="checkbox"/>
+<label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+<input id="chk-page-break" onchange="togglePageBreak(this)" type="checkbox"/>
           Show Page Break Marker
         </label>
 </div>
@@ -308,6 +275,7 @@
 <span class="dates">Sep 2014 – Jul 2017</span>
 </div>
 <div class="edu-degree">Master of Science in Electrical Engineering</div>
+
 </div>
 <div class="edu-entry">
 <div class="edu-header">
@@ -315,6 +283,7 @@
 <span class="dates">Sep 2009 – Jul 2013</span>
 </div>
 <div class="edu-degree">Bachelor of Science in Applied Physics (Honors Science Program)</div>
+
 </div>
 <div class="edu-entry">
 <div class="edu-header">
@@ -733,9 +702,5 @@
         if (e.target.isContentEditable) { e.preventDefault(); const text = e.clipboardData.getData('text/plain'); document.execCommand('insertText', false, text); }
       });
     </script>
-<div class="tpl-sw-bar no-print" id="tpl-switcher">
-<span class="tpl-sw-label">Templates</span>
-<a class="tpl-sw-item" data-tpl="Classic_Minimal" href="Classic_Minimal.html" title="Classic Minimal">v1.0</a><a class="tpl-sw-item" data-tpl="Clean_Layout" href="Clean_Layout.html" title="Clean Layout">v2.0</a><a class="tpl-sw-item" data-tpl="Premium_Headshot" href="Premium_Headshot.html" title="Premium Headshot">v3.0</a><a class="tpl-sw-item" data-tpl="ATS_Executive" href="ATS_Executive.html" title="ATS Executive">v4.0</a><a class="tpl-sw-item" data-tpl="Photo_Header" href="Photo_Header.html" title="Photo Header">v5.0</a><a class="tpl-sw-item active" data-tpl="Clean_Professional" href="Clean_Professional.html" title="Clean Professional">v6.0</a><a class="tpl-sw-item" data-tpl="Elegant_TwoColumn" href="Elegant_TwoColumn.html" title="Elegant TwoColumn">v7.0</a><a class="tpl-sw-item" data-tpl="Bold_Engineer" href="Bold_Engineer.html" title="Bold Engineer">v8.0</a><a class="tpl-sw-item" data-tpl="Academic" href="Academic.html" title="Academic">v9.0</a>
-<a class="tpl-sw-item tpl-sw-idx" href="index.html" title="Index">☰</a>
-</div></body>
+</body>
 </html>
