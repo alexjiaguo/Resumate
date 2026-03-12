@@ -54,17 +54,17 @@ export interface TechnicalSkillCategory {
 }
 
 // Section keys that can be toggled per-template
-export type SectionKey = 
-  | 'summary' 
-  | 'experience' 
-  | 'education' 
-  | 'skills' 
-  | 'technicalSkills' 
-  | 'languages' 
-  | 'certifications'
-  | 'photo'
-  | 'portfolio'
-  | 'visaStatus';
+export type SectionKey =
+  | "summary"
+  | "experience"
+  | "education"
+  | "skills"
+  | "technicalSkills"
+  | "languages"
+  | "certifications"
+  | "photo"
+  | "portfolio"
+  | "visaStatus";
 
 // Per-template section visibility
 export type TemplateVisibility = Record<string, Record<SectionKey, boolean>>;
@@ -84,16 +84,16 @@ export const DEFAULT_SECTION_VISIBILITY: Record<SectionKey, boolean> = {
 };
 
 export const SECTION_LABELS: Record<SectionKey, string> = {
-  summary: 'Summary',
-  experience: 'Experience',
-  education: 'Education',
-  skills: 'Skills',
-  technicalSkills: 'Technical Skills',
-  languages: 'Languages',
-  certifications: 'Certifications',
-  photo: 'Headshot Photo',
-  portfolio: 'Portfolio / Blog',
-  visaStatus: 'Visa Status',
+  summary: "Summary",
+  experience: "Experience",
+  education: "Education",
+  skills: "Skills",
+  technicalSkills: "Technical Skills",
+  languages: "Languages",
+  certifications: "Certifications",
+  photo: "Headshot Photo",
+  portfolio: "Portfolio / Blog",
+  visaStatus: "Visa Status",
 };
 
 export interface ThemeSettings {
@@ -137,7 +137,7 @@ export interface ApiSettings {
   customBaseUrl: string;
   openaiBaseUrl: string;
   geminiBaseUrl: string;
-  selectedProvider: 'openai' | 'gemini' | 'custom';
+  selectedProvider: "openai" | "gemini" | "custom";
   model: string;
 }
 
@@ -150,4 +150,43 @@ export interface DraftState {
   isGenerating: boolean;
   draftResume: ResumeData | null;
   error: string | null;
+}
+
+// ── Phase 2: Resume Versioning ──────────────────────────────
+
+export interface ResumeVersion {
+  id: string;
+  resumeId: string;
+  title: string;
+  data: ResumeData;
+  template: string;
+  theme: Record<string, any>;
+  createdAt: string;
+}
+
+// ── Phase 3: ATS Score Checker ──────────────────────────────
+
+export interface ATSResult {
+  score: number; // 0-100
+  matchedKeywords: string[];
+  missingKeywords: string[];
+  feedback: ATSFeedbackItem[];
+}
+
+export interface ATSFeedbackItem {
+  category: "keyword" | "format" | "content" | "length";
+  severity: "high" | "medium" | "low";
+  message: string;
+}
+
+// ── Phase 3: Cover Letter ───────────────────────────────────
+
+export interface CoverLetter {
+  id: string;
+  resumeId: string | null;
+  jobTitle: string;
+  company: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
 }

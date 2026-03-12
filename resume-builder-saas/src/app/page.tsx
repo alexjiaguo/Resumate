@@ -29,7 +29,7 @@ export default function HomePage() {
         <div className="container">
           <Link href="/" className="navbar-brand">
             <img src="/logo.png" alt="ResuMate" className="navbar-brand-icon" />
-            <span>ResuMate</span>
+            <span>resumate</span>
           </Link>
           <ul className="navbar-links">
             <li><a href="#features">Features</a></li>
@@ -68,12 +68,12 @@ export default function HomePage() {
           <p className="hero-note">No credit card required · Free forever for basic features</p>
           <div className="hero-preview">
             <div className="hero-preview-img">
-              <div className="hero-preview-placeholder">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
-                </svg>
-                <span>Editor Preview</span>
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/editor-preview.png"
+                alt="ResuMate editor — build your resume with real-time preview, AI tailoring, and 9 premium templates"
+                style={{ display: 'block', width: '100%', height: '540px', objectFit: 'cover', objectPosition: 'top left' }}
+              />
             </div>
           </div>
         </div>
@@ -199,7 +199,7 @@ export default function HomePage() {
             <div className="footer-brand">
               <Link href="/" className="navbar-brand">
                 <img src="/logo.png" alt="ResuMate" className="navbar-brand-icon" />
-                <span>ResuMate</span>
+                <span>resumate</span>
               </Link>
               <p>Build professional resumes that get you hired. AI-powered, beautifully designed, completely free to start.</p>
             </div>
@@ -214,22 +214,22 @@ export default function HomePage() {
             <div>
               <h4>Resources</h4>
               <ul>
-                <li><a href="#">Resume Tips</a></li>
-                <li><a href="#">Templates Guide</a></li>
-                <li><a href="#">AI Tailoring</a></li>
+                <li><Link href="/resume-tips">Resume Tips</Link></li>
+                <li><Link href="/templates-guide">Templates Guide</Link></li>
+                <li><Link href="/ai-tailoring">AI Tailoring</Link></li>
               </ul>
             </div>
             <div>
               <h4>Legal</h4>
               <ul>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Service</a></li>
-                <li><a href="#">Contact</a></li>
+                <li><Link href="/privacy">Privacy Policy</Link></li>
+                <li><Link href="/terms">Terms of Service</Link></li>
+                <li><Link href="/contact">Contact</Link></li>
               </ul>
             </div>
           </div>
           <div className="footer-bottom">
-            <span>© 2025 ResuMate. All rights reserved.</span>
+            <span>© 2026 resumate. All rights reserved.</span>
             <span>Built with ❤️ for job seekers everywhere</span>
           </div>
         </div>

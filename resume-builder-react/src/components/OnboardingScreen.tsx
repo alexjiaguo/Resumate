@@ -8,7 +8,7 @@ const OnboardingScreen: React.FC = () => {
   const { updateData, setOnboardingComplete, setUploadedResumeText } = useResumeStore();
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [uploadResult, setUploadResult] = useState<{ success: boolean; message: string; fileName?: string } | null>(null);
+  const [uploadResult, setUploadResult] = useState<{ success: boolean; message: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const processFile = useCallback(async (file: File) => {
@@ -17,29 +17,24 @@ const OnboardingScreen: React.FC = () => {
 
     try {
       const ext = file.name.split('.').pop()?.toLowerCase() || '';
-      
+
       // Extract raw text using FileParserService (handles PDF, DOCX, MD, TXT)
       const rawText = await FileParserService.parseFile(file);
-      
+
       // Parse into structured ResumeData
       const resumeData = ResumeParserService.parse(rawText, ext);
-      
+
       // Store the raw text for AI tailoring later
       setUploadedResumeText(rawText);
-      
+
       // Populate the resume fields
       updateData(resumeData);
-      
+
       setUploadResult({
         success: true,
         message: `Successfully parsed "${file.name}". Your resume data has been loaded!`,
-        fileName: file.name,
       });
-
-      // Auto-dismiss after a brief pause to show success
-      setTimeout(() => {
-        setOnboardingComplete();
-      }, 1500);
+      setIsProcessing(false);
 
     } catch (err) {
       setUploadResult({
@@ -48,7 +43,7 @@ const OnboardingScreen: React.FC = () => {
       });
       setIsProcessing(false);
     }
-  }, [updateData, setOnboardingComplete, setUploadedResumeText]);
+  }, [updateData, setUploadedResumeText]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -75,6 +70,11 @@ const OnboardingScreen: React.FC = () => {
     setOnboardingComplete();
   };
 
+  const handleChooseDifferentFile = () => {
+    setUploadResult(null);
+    fileInputRef.current?.click();
+  };
+
   return (
     <div style={overlayStyle}>
       <div style={containerStyle}>
@@ -85,8 +85,29 @@ const OnboardingScreen: React.FC = () => {
           </div>
           <h1 style={titleStyle}>Resume Builder Pro</h1>
           <p style={subtitleStyle}>
-            Build a professional resume in minutes. Upload an existing one or start from scratch.
+            Choose your best starting path, then tailor with AI later once your draft is ready.
           </p>
+        </div>
+
+        <div style={pathListStyle}>
+          <div style={pathCardStyle}>
+            <strong style={pathTitleStyle}>Choose your starting path</strong>
+            <span style={pathDescriptionStyle}>Import a resume or start blank to get your base draft ready first.</span>
+          </div>
+          <div style={pathHighlightsStyle}>
+            <div style={pathHighlightItemStyle}>
+              <strong style={pathHighlightTitleStyle}>Import existing resume</strong>
+              <span style={pathHighlightDescriptionStyle}>Bring in your current resume to prefill the editor fast.</span>
+            </div>
+            <div style={pathHighlightItemStyle}>
+              <strong style={pathHighlightTitleStyle}>Start blank</strong>
+              <span style={pathHighlightDescriptionStyle}>Open an empty resume and build section by section.</span>
+            </div>
+            <div style={pathHighlightItemStyle}>
+              <strong style={pathHighlightTitleStyle}>Tailor with AI later</strong>
+              <span style={pathHighlightDescriptionStyle}>Finish your base draft first, then use AI tailoring when you're ready.</span>
+            </div>
+          </div>
         </div>
 
         {/* Upload Area */}
@@ -112,6 +133,17 @@ const OnboardingScreen: React.FC = () => {
                   <>
                     <CheckCircle size={32} color="#10b981" />
                     <p style={{ ...statusTextStyle, color: '#065f46' }}>{uploadResult.message}</p>
+                    <p style={successHintStyle}>
+                      Your import is ready. Continue when you want to review and refine it in the editor.
+                    </p>
+                    <div style={successActionsStyle}>
+                      <button onClick={handleStartFresh} style={continueButtonStyle}>
+                        Continue to editor
+                      </button>
+                      <button onClick={handleChooseDifferentFile} style={secondaryActionButtonStyle}>
+                        Choose a different file
+                      </button>
+                    </div>
                   </>
                 ) : (
                   <>
@@ -229,6 +261,59 @@ const subtitleStyle: React.CSSProperties = {
   maxWidth: '360px',
 };
 
+const pathListStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: '12px',
+};
+
+const pathCardStyle: React.CSSProperties = {
+  background: 'rgba(255, 255, 255, 0.08)',
+  border: '1px solid rgba(148, 163, 184, 0.2)',
+  borderRadius: '12px',
+  padding: '14px 16px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '6px',
+};
+
+const pathTitleStyle: React.CSSProperties = {
+  color: '#f8fafc',
+  fontSize: '14px',
+  fontWeight: 700,
+};
+
+const pathDescriptionStyle: React.CSSProperties = {
+  color: '#cbd5e1',
+  fontSize: '13px',
+  lineHeight: 1.5,
+};
+
+const pathHighlightsStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: '10px',
+};
+
+const pathHighlightItemStyle: React.CSSProperties = {
+  display: 'grid',
+  gap: '4px',
+  padding: '12px 14px',
+  borderRadius: '10px',
+  background: 'rgba(15, 23, 42, 0.32)',
+  border: '1px solid rgba(148, 163, 184, 0.16)',
+};
+
+const pathHighlightTitleStyle: React.CSSProperties = {
+  color: '#f8fafc',
+  fontSize: '13px',
+  fontWeight: 700,
+};
+
+const pathHighlightDescriptionStyle: React.CSSProperties = {
+  color: '#cbd5e1',
+  fontSize: '12px',
+  lineHeight: 1.5,
+};
+
 const contentAreaStyle: React.CSSProperties = {
   background: '#ffffff',
   borderRadius: '16px',
@@ -290,6 +375,45 @@ const statusTextStyle: React.CSSProperties = {
   color: '#374151',
   textAlign: 'center',
   lineHeight: 1.5,
+};
+
+const successHintStyle: React.CSSProperties = {
+  margin: 0,
+  fontSize: '13px',
+  color: '#065f46',
+  textAlign: 'center',
+  lineHeight: 1.5,
+};
+
+const successActionsStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '10px',
+  width: '100%',
+  maxWidth: '240px',
+};
+
+const continueButtonStyle: React.CSSProperties = {
+  marginTop: '4px',
+  padding: '10px 18px',
+  borderRadius: '8px',
+  border: 'none',
+  background: '#10b981',
+  color: '#ffffff',
+  fontWeight: 700,
+  fontSize: '13px',
+  cursor: 'pointer',
+};
+
+const secondaryActionButtonStyle: React.CSSProperties = {
+  padding: '10px 18px',
+  borderRadius: '8px',
+  border: '1px solid #10b981',
+  background: '#ffffff',
+  color: '#065f46',
+  fontWeight: 600,
+  fontSize: '13px',
+  cursor: 'pointer',
 };
 
 const dividerStyle: React.CSSProperties = {

@@ -131,4 +131,124 @@ ${jobDescription}`;
     // Strip markdown code fences if the LLM wrapped the JSON
     return content.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
   }
+
+  // ── ATS Score Checker ──────────────────────────────────────
+
+  static async evaluateATS(
+    provider: LLMProvider,
+    resumeJson: string,
+    jobDescription: string
+  ): Promise<string> {
+    const systemPrompt = `You are an expert ATS (Applicant Tracking System) scanner. You evaluate resumes against job descriptions.
+
+Output ONLY valid raw JSON — never markdown, never code fences, never explanation text.
+
+Scoring rubric (0-100):
+- Keyword match density: 40 points
+- Section completeness (summary, experience, skills, education): 20 points
+- Quantified achievements: 15 points
+- Job-title alignment: 15 points
+- Formatting/length appropriateness: 10 points`;
+
+    const userPrompt = `Evaluate this resume against the job description below.
+
+Return ONLY this JSON (no markdown, no explanation):
+{
+  "score": <number 0-100>,
+  "matchedKeywords": ["keyword1", "keyword2"],
+  "missingKeywords": ["keyword1", "keyword2"],
+  "feedback": [
+    {"category": "keyword|format|content|length", "severity": "high|medium|low", "message": "actionable suggestion"}
+  ]
+}
+
+Rules:
+- matchedKeywords: JD requirements the resume clearly demonstrates
+- missingKeywords: JD requirements NOT found in the resume
+- feedback: 3-6 specific, actionable suggestions ranked by impact
+- Be honest — don't inflate the score
+
+## RESUME:
+${resumeJson}
+
+## JOB DESCRIPTION:
+${jobDescription}`;
+
+    const response = await fetch(`${provider.baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${provider.apiKey}`
+      },
+      body: JSON.stringify({
+        model: provider.model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.3,
+        ...(provider.name === 'openai' ? { response_format: { type: 'json_object' } } : {})
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error?.message || 'ATS evaluation failed');
+    }
+
+    const data = await response.json();
+    const content = data.choices[0].message.content;
+    return content.replace(/^```(?:json)?\s*\n?/i, '').replace(/\n?```\s*$/i, '').trim();
+  }
+
+  // ── Cover Letter Generator ─────────────────────────────────
+
+  static async generateCoverLetter(
+    provider: LLMProvider,
+    resumeJson: string,
+    jobDescription: string,
+    companyName: string
+  ): Promise<string> {
+    const systemPrompt = `You are a professional cover letter writer. Write concise, genuine cover letters that:
+- Open with a specific hook (not "I am excited to apply")
+- Connect 2-3 specific experiences to JD requirements
+- Show knowledge of the company
+- Close with a clear call-to-action
+- Are 3-4 paragraphs, under 350 words
+- Sound human, not AI-generated — no buzzwords
+
+Output ONLY the cover letter text. No JSON, no markdown fences, no labels.`;
+
+    const userPrompt = `Write a cover letter for ${companyName} based on my resume and the job description below.
+
+## MY RESUME:
+${resumeJson}
+
+## JOB DESCRIPTION:
+${jobDescription}`;
+
+    const response = await fetch(`${provider.baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${provider.apiKey}`
+      },
+      body: JSON.stringify({
+        model: provider.model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.7,
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error?.message || 'Cover letter generation failed');
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content.trim();
+  }
 }

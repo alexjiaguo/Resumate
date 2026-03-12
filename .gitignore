@@ -1,8 +1,33 @@
+# Dependencies
+node_modules/
+node_modules_old/
+
+# Build artifacts
+dist/
+.next/
+*.tsbuildinfo
+
+# Archive & backups
+_archive/
+backups/
+.git_old/
 .worktrees/
 .claude/
 .git_old/
-# Personal Data
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Personal data
 headshot.png
 *_backup.html
-.DS_Store
-backups/
+
+# Env files
+.env
+.env.local
+.env*.local
+
+# Editor & AI
+.claude/
+MEMORY/

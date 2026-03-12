@@ -21,6 +21,15 @@ export default defineConfig({
       brotliSize: true,
     }),
   ],
+  resolve: {
+    alias: {
+      './runtimeConfig': './runtimeConfig.browser',
+    },
+  },
+  define: {
+    'process.env': {},
+    global: 'globalThis',
+  },
   build: {
     rollupOptions: {
       output: {
@@ -64,10 +73,21 @@ export default defineConfig({
   optimizeDeps: {
     include: ['react', 'react-dom', 'zustand'],
     exclude: ['pdfjs-dist', 'mammoth', 'docx'],
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+    },
   },
   server: {
     hmr: {
       overlay: true,
     },
+  },
+  test: {
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.ts',
+    css: true,
+    globals: true,
   },
 })

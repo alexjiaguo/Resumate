@@ -68,7 +68,7 @@ export default function PricingPage() {
       }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#202124' }}>
           <img src="/logo.png" alt="ResuMate" style={{ width: 32, height: 32, borderRadius: 6, objectFit: 'contain' }} />
-          <span style={{ fontSize: '16px', fontWeight: 700 }}>ResuMate</span>
+          <span style={{ fontSize: '16px', fontWeight: 700 }}>resumate</span>
         </Link>
         <div style={{ display: 'flex', gap: '12px' }}>
           {profile ? (
@@ -85,8 +85,8 @@ export default function PricingPage() {
       <main style={{ maxWidth: '900px', margin: '0 auto', padding: '60px 24px', textAlign: 'center' }}>
         <span style={{
           display: 'inline-block', padding: '6px 16px', borderRadius: '100px',
-          background: 'rgba(232,150,12,0.08)', border: '1px solid rgba(232,150,12,0.2)',
-          color: '#C67D0A', fontSize: '13px', fontWeight: 500, marginBottom: '20px',
+          background: 'rgba(61,77,183,0.06)', border: '1px solid rgba(61,77,183,0.15)',
+          color: '#3D4DB7', fontSize: '13px', fontWeight: 500, marginBottom: '20px',
         }}>Pricing</span>
 
         <h1 style={{ fontSize: '40px', fontWeight: 700, marginBottom: '12px', lineHeight: 1.1, color: '#202124', letterSpacing: '-0.02em' }}>
@@ -121,13 +121,13 @@ export default function PricingPage() {
 
           {/* Pro */}
           <div style={{
-            background: '#fff', border: '2px solid #E8960C', borderRadius: '16px', padding: '32px 28px', textAlign: 'left',
-            position: 'relative', boxShadow: '0 2px 16px rgba(232,150,12,0.08)',
+            background: '#fff', border: '2px solid #3D4DB7', borderRadius: '16px', padding: '32px 28px', textAlign: 'left',
+            position: 'relative', boxShadow: '0 2px 16px rgba(61,77,183,0.08)',
           }}>
             <span style={{
               position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)',
               padding: '4px 16px', borderRadius: '100px', fontSize: '12px', fontWeight: 600,
-              background: '#E8960C', color: 'white',
+              background: 'linear-gradient(135deg, #3D4DB7, #2ECDB0)', color: 'white',
             }}>Most Popular</span>
             <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '4px', color: '#202124' }}>Pro</h3>
             <div style={{ marginBottom: '20px' }}>
@@ -151,7 +151,7 @@ export default function PricingPage() {
                 <div key={f} style={{
                   display: 'flex', gap: '8px', fontSize: '13px',
                   color: i === 0 ? '#202124' : '#5f6368', fontWeight: i === 0 ? 600 : 400,
-                }}>{i > 0 && <span style={{ color: '#E8960C', flexShrink: 0 }}>✓</span>} {f}</div>
+                }}>{i > 0 && <span style={{ color: '#2ECDB0', flexShrink: 0 }}>✓</span>} {f}</div>
               ))}
             </div>
           </div>

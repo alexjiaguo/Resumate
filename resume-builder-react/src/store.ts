@@ -154,7 +154,7 @@ export const useResumeStore = create<ResumeStore>()(
 
         set((state) => ({
           history: {
-            past: [...state.history.past, snapshot].slice(-50), // Keep last 50
+            past: [...(state.history?.past || []), snapshot].slice(-50), // Keep last 50
             future: [], // Clear future on new action
           },
         }));
@@ -251,7 +251,7 @@ export const useResumeStore = create<ResumeStore>()(
       // History actions
       undo: () => {
         const state = get();
-        if (state.history.past.length === 0) return;
+        if (!state.history || state.history.past.length === 0) return;
 
         const previous = state.history.past[state.history.past.length - 1];
         const newPast = state.history.past.slice(0, -1);
@@ -268,14 +268,14 @@ export const useResumeStore = create<ResumeStore>()(
           selectedTemplate: previous.selectedTemplate,
           history: {
             past: newPast,
-            future: [currentSnapshot, ...state.history.future],
+            future: [currentSnapshot, ...(state.history.future || [])],
           },
         });
       },
 
       redo: () => {
         const state = get();
-        if (state.history.future.length === 0) return;
+        if (!state.history || state.history.future.length === 0) return;
 
         const next = state.history.future[0];
         const newFuture = state.history.future.slice(1);
@@ -291,14 +291,20 @@ export const useResumeStore = create<ResumeStore>()(
           theme: next.theme,
           selectedTemplate: next.selectedTemplate,
           history: {
-            past: [...state.history.past, currentSnapshot],
+            past: [...(state.history.past || []), currentSnapshot],
             future: newFuture,
           },
         });
       },
 
-      canUndo: () => get().history.past.length > 0,
-      canRedo: () => get().history.future.length > 0,
+      canUndo: () => {
+        const state = get();
+        return state.history?.past?.length > 0;
+      },
+      canRedo: () => {
+        const state = get();
+        return state.history?.future?.length > 0;
+      },
 
       reset: () => set({
         data: initialData,
@@ -327,6 +333,11 @@ export const useResumeStore = create<ResumeStore>()(
         uploadedResumeText: state.uploadedResumeText,
         sidebarWidth: state.sidebarWidth,
         sectionOrder: state.sectionOrder,
+      }),
+      merge: (persistedState: any, currentState) => ({
+        ...currentState,
+        ...persistedState,
+        history: { past: [], future: [] }, // Always start with empty history
       }),
     }
   )

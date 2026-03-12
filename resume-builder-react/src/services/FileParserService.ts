@@ -1,5 +1,4 @@
 import * as pdfjs from 'pdfjs-dist';
-import mammoth from 'mammoth';
 
 // Set up worker for pdfjs - using a CDN link that matches the package version
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
@@ -49,6 +48,8 @@ export class FileParserService {
 
   private static async parseDocx(file: File): Promise<string> {
     try {
+      // Dynamically import mammoth only when needed
+      const mammoth = await import('mammoth');
       const arrayBuffer = await file.arrayBuffer();
       const result = await mammoth.extractRawText({ arrayBuffer });
       return result.value;

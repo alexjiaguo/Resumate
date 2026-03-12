@@ -12,6 +12,73 @@ const TEMPLATE_LABELS: Record<string, string> = {
   academic: 'Academic', photo: 'Photo Header', premium: 'Premium Headshot',
 };
 
+/* ── Delete Confirmation Modal ── */
+function DeleteModal({ resumeTitle, onConfirm, onCancel }: {
+  resumeTitle: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div
+      onClick={onCancel}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        animation: 'fadeIn 0.15s ease',
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: '#fff', borderRadius: '16px', padding: '28px 32px',
+          maxWidth: '420px', width: '90%', boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          animation: 'scaleIn 0.2s ease',
+        }}
+      >
+        <div style={{ fontSize: '32px', textAlign: 'center', marginBottom: '12px' }}>🗑️</div>
+        <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#202124', textAlign: 'center', marginBottom: '8px' }}>
+          Delete Resume?
+        </h3>
+        <p style={{ fontSize: '14px', color: '#5f6368', textAlign: 'center', marginBottom: '24px', lineHeight: 1.5 }}>
+          <strong>&ldquo;{resumeTitle}&rdquo;</strong> will be permanently deleted.<br />This action cannot be undone.
+        </p>
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+          <button
+            onClick={onCancel}
+            style={{
+              padding: '10px 24px', borderRadius: '100px', fontSize: '14px', fontWeight: 500,
+              background: 'transparent', border: '1px solid #dadce0', color: '#5f6368',
+              cursor: 'pointer', transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#f1f3f4')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            autoFocus
+            style={{
+              padding: '10px 24px', borderRadius: '100px', fontSize: '14px', fontWeight: 600,
+              background: '#d93025', border: 'none', color: 'white',
+              cursor: 'pointer', transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#c5221f')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#d93025')}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+      `}</style>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const { profile, signOut, loading: authLoading, isMockMode } = useAuth();
   const router = useRouter();
@@ -19,6 +86,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [renameId, setRenameId] = useState<string | null>(null);
   const [renameTitle, setRenameTitle] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; title: string } | null>(null);
 
   const userId = profile?.id || 'local';
 
@@ -33,10 +101,11 @@ export default function DashboardPage() {
   useEffect(() => { if (!authLoading) loadResumes(); }, [authLoading, loadResumes]);
 
   const handleCreate = () => router.push('/editor');
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete this resume? This cannot be undone.')) return;
-    await ResumeService.deleteResume(userId, id);
-    setResumes(prev => prev.filter(r => r.id !== id));
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    await ResumeService.deleteResume(userId, deleteTarget.id);
+    setResumes(prev => prev.filter(r => r.id !== deleteTarget.id));
+    setDeleteTarget(null);
   };
   const handleDuplicate = async (id: string) => {
     await ResumeService.duplicateResume(userId, id);
@@ -53,6 +122,15 @@ export default function DashboardPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8f9fa', fontFamily: 'Inter, sans-serif' }}>
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <DeleteModal
+          resumeTitle={deleteTarget.title}
+          onConfirm={confirmDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
+
       {/* Top bar */}
       <header style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -61,12 +139,12 @@ export default function DashboardPage() {
       }}>
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#202124' }}>
           <img src="/logo.png" alt="ResuMate" style={{ width: 32, height: 32, borderRadius: 6, objectFit: 'contain' }} />
-          <span style={{ fontSize: '16px', fontWeight: 700 }}>ResuMate</span>
+          <span style={{ fontSize: '16px', fontWeight: 700 }}>resumate</span>
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <span style={{
             padding: '4px 14px', borderRadius: '100px', fontSize: '12px', fontWeight: 600,
-            background: profile?.tier === 'pro' ? '#E8960C' : '#f1f3f4',
+            background: profile?.tier === 'pro' ? '#3D4DB7' : '#f1f3f4',
             color: profile?.tier === 'pro' ? 'white' : '#5f6368',
             border: profile?.tier === 'pro' ? 'none' : '1px solid #dadce0',
           }}>{profile?.tier === 'pro' ? '⭐ Pro' : 'Free'}</span>
@@ -94,7 +172,7 @@ export default function DashboardPage() {
 
         {profile?.tier === 'free' && (
           <div style={{
-            background: 'rgba(232,150,12,0.05)', border: '1px solid rgba(232,150,12,0.15)',
+            background: 'rgba(61,77,183,0.04)', border: '1px solid rgba(61,77,183,0.12)',
             borderRadius: '16px', padding: '20px 24px', marginBottom: '28px',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
@@ -125,14 +203,14 @@ export default function DashboardPage() {
                 background: '#fff', border: '1px solid #dadce0', borderRadius: '16px', padding: '20px',
                 transition: 'border-color 0.2s, box-shadow 0.2s', cursor: 'pointer',
               }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#E8960C'; (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 12px rgba(232,150,12,0.1)'; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#3D4DB7'; (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 12px rgba(61,77,183,0.1)'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = '#dadce0'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
               >
                 {renameId === resume.id ? (
                   <form onSubmit={e => { e.preventDefault(); handleRename(resume.id); }} style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
                     <input autoFocus value={renameTitle} onChange={e => setRenameTitle(e.target.value)}
                       style={{ flex: 1, padding: '6px 10px', borderRadius: '6px', background: '#fff', border: '1px solid #dadce0', color: '#202124', fontSize: '14px', outline: 'none' }} />
-                    <button type="submit" style={{ padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', background: '#E8960C', border: 'none', color: 'white', fontSize: '12px' }}>Save</button>
+                    <button type="submit" style={{ padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', background: '#3D4DB7', border: 'none', color: 'white', fontSize: '12px' }}>Save</button>
                     <button type="button" onClick={() => setRenameId(null)} style={{ padding: '6px 8px', borderRadius: '6px', cursor: 'pointer', background: 'transparent', border: '1px solid #dadce0', color: '#5f6368', fontSize: '12px' }}>✕</button>
                   </form>
                 ) : (
@@ -150,10 +228,10 @@ export default function DashboardPage() {
                   {(resume.data as any)?.personalInfo?.fullName || 'No name set'}
                 </p>
                 <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid #f1f3f4', paddingTop: '12px' }}>
-                  <Link href={`/editor?id=${resume.id}`} style={{ padding: '6px 14px', borderRadius: '100px', fontSize: '12px', fontWeight: 500, background: '#E8960C', color: 'white', textDecoration: 'none', border: 'none', cursor: 'pointer' }}>Edit</Link>
+                  <Link href={`/editor?id=${resume.id}`} style={{ padding: '6px 14px', borderRadius: '100px', fontSize: '12px', fontWeight: 500, background: '#3D4DB7', color: 'white', textDecoration: 'none', border: 'none', cursor: 'pointer' }}>Edit</Link>
                   <button onClick={() => handleDuplicate(resume.id)} style={{ padding: '6px 12px', borderRadius: '100px', fontSize: '12px', background: 'transparent', border: '1px solid #dadce0', color: '#5f6368', cursor: 'pointer' }}>Duplicate</button>
                   <button onClick={() => { setRenameId(resume.id); setRenameTitle(resume.title); }} style={{ padding: '6px 12px', borderRadius: '100px', fontSize: '12px', background: 'transparent', border: '1px solid #dadce0', color: '#5f6368', cursor: 'pointer' }}>Rename</button>
-                  <button onClick={() => handleDelete(resume.id)} style={{ padding: '6px 12px', borderRadius: '100px', fontSize: '12px', background: 'transparent', border: '1px solid rgba(239,68,68,0.2)', color: '#d93025', cursor: 'pointer', marginLeft: 'auto' }}>Delete</button>
+                  <button onClick={() => setDeleteTarget({ id: resume.id, title: resume.title })} style={{ padding: '6px 12px', borderRadius: '100px', fontSize: '12px', background: 'transparent', border: '1px solid rgba(239,68,68,0.2)', color: '#d93025', cursor: 'pointer', marginLeft: 'auto' }}>Delete</button>
                 </div>
               </div>
             ))}

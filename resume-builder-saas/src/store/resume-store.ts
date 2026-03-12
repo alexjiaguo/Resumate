@@ -2,6 +2,12 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { ResumeData, ThemeSettings, ApiSettings, SourceMaterials, DraftState, SectionKey, DEFAULT_SECTION_VISIBILITY } from '@/types';
 
+interface HistorySnapshot {
+  data: ResumeData;
+  theme: ThemeSettings;
+  selectedTemplate: string;
+}
+
 interface ResumeStore {
   data: ResumeData;
   theme: ThemeSettings;
@@ -13,6 +19,11 @@ interface ResumeStore {
   uploadedResumeText: string;
   sidebarWidth: number;
   sectionOrder: SectionKey[];
+  // History
+  history: {
+    past: HistorySnapshot[];
+    future: HistorySnapshot[];
+  };
   updateData: (newData: Partial<ResumeData>) => void;
   updateTheme: (newTheme: Partial<ThemeSettings>) => void;
   setTemplate: (template: string) => void;
@@ -26,7 +37,14 @@ interface ResumeStore {
   moveSectionOrder: (key: SectionKey, direction: 'up' | 'down') => void;
   toggleSectionVisibility: (template: string, section: SectionKey) => void;
   isSectionVisible: (template: string, section: SectionKey) => boolean;
+  // History actions
+  undo: () => void;
+  redo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
   reset: () => void;
+  /** Load a saved resume into the store without pushing to undo history */
+  hydrateFromSaved: (data: ResumeData, template: string, theme: ThemeSettings) => void;
 }
 
 const initialData: ResumeData = {
@@ -103,7 +121,7 @@ const initialTheme: ThemeSettings = {
 };
 
 const initialApiSettings: ApiSettings = {
-  openaiKey: 'sk-Gmz2fYOszQNMVmz8WXeHIzSb7We69ZfA',
+  openaiKey: '',
   geminiKey: '',
   deepseekKey: '',
   customBaseUrl: '',
@@ -126,7 +144,25 @@ const initialDraftState: DraftState = {
 
 export const useResumeStore = create<ResumeStore>()(
   persist(
-    (set, get) => ({
+    (set, get) => {
+      // Helper to save current state to history
+      const saveToHistory = () => {
+        const state = get();
+        const snapshot: HistorySnapshot = {
+          data: state.data,
+          theme: state.theme,
+          selectedTemplate: state.selectedTemplate,
+        };
+
+        set((state) => ({
+          history: {
+            past: [...(state.history?.past || []), snapshot].slice(-50), // Keep last 50
+            future: [], // Clear future on new action
+          },
+        }));
+      };
+
+      return {
       data: initialData,
       theme: initialTheme,
       selectedTemplate: 'classic',
@@ -137,27 +173,46 @@ export const useResumeStore = create<ResumeStore>()(
       uploadedResumeText: '',
       sidebarWidth: 420,
       sectionOrder: ['summary', 'experience', 'education', 'skills', 'technicalSkills', 'languages', 'certifications', 'photo', 'portfolio', 'visaStatus'] as SectionKey[],
-      updateData: (newData) => set((state) => ({ data: { ...state.data, ...newData } })),
-      updateTheme: (newTheme) => set((state) => ({ theme: { ...state.theme, ...newTheme } })),
-      setTemplate: (template) => set({ selectedTemplate: template }),
+      history: { past: [], future: [] },
+
+      updateData: (newData) => {
+        saveToHistory();
+        set((state) => ({ data: { ...state.data, ...newData } }));
+      },
+
+      updateTheme: (newTheme) => {
+        saveToHistory();
+        set((state) => ({ theme: { ...state.theme, ...newTheme } }));
+      },
+
+      setTemplate: (template) => {
+        saveToHistory();
+        set({ selectedTemplate: template });
+      },
+
       updateApiSettings: (settings) => set((state) => ({ apiSettings: { ...state.apiSettings, ...settings } })),
       setSourceMaterial: (material) => set((state) => ({ sourceMaterials: { ...state.sourceMaterials, ...material } })),
       setDraft: (draft) => set((state) => ({ draftState: { ...state.draftState, ...draft } })),
-      commitDraft: () => set((state) => {
-        if (!state.draftState.draftResume) return state;
-        return {
-          data: { 
-            ...state.draftState.draftResume,
-            // Preserve fields that the LLM doesn't generate
-            technicalSkills: state.draftState.draftResume.technicalSkills || state.data.technicalSkills,
-            sectionVisibility: state.data.sectionVisibility,
-          },
-          draftState: { ...state.draftState, draftResume: null }
-        };
-      }),
+
+      commitDraft: () => {
+        saveToHistory();
+        set((state) => {
+          if (!state.draftState.draftResume) return state;
+          return {
+            data: {
+              ...state.draftState.draftResume,
+              technicalSkills: state.draftState.draftResume.technicalSkills || state.data.technicalSkills,
+              sectionVisibility: state.data.sectionVisibility,
+            },
+            draftState: { ...state.draftState, draftResume: null }
+          };
+        });
+      },
+
       setOnboardingComplete: () => set({ hasCompletedOnboarding: true }),
       setUploadedResumeText: (text: string) => set({ uploadedResumeText: text }),
       setSidebarWidth: (width: number) => set({ sidebarWidth: Math.max(320, Math.min(600, width)) }),
+
       moveSectionOrder: (key: SectionKey, direction: 'up' | 'down') => set((state) => {
         const order = [...state.sectionOrder];
         const idx = order.indexOf(key);
@@ -167,31 +222,95 @@ export const useResumeStore = create<ResumeStore>()(
         [order[idx], order[swapIdx]] = [order[swapIdx], order[idx]];
         return { sectionOrder: order };
       }),
-      toggleSectionVisibility: (template: string, section: SectionKey) => set((state) => {
-        const currentVis = state.data.sectionVisibility || {};
-        const templateVis = currentVis[template] || { ...DEFAULT_SECTION_VISIBILITY };
-        return {
-          data: {
-            ...state.data,
-            sectionVisibility: {
-              ...currentVis,
-              [template]: {
-                ...templateVis,
-                [section]: !templateVis[section],
+
+      toggleSectionVisibility: (template: string, section: SectionKey) => {
+        saveToHistory();
+        set((state) => {
+          const currentVis = state.data.sectionVisibility || {};
+          const templateVis = currentVis[template] || { ...DEFAULT_SECTION_VISIBILITY };
+          return {
+            data: {
+              ...state.data,
+              sectionVisibility: {
+                ...currentVis,
+                [template]: {
+                  ...templateVis,
+                  [section]: !templateVis[section],
+                }
               }
             }
-          }
-        };
-      }),
+          };
+        });
+      },
+
       isSectionVisible: (template: string, section: SectionKey) => {
         const state = get();
         const templateVis = state.data.sectionVisibility?.[template];
         if (!templateVis) return DEFAULT_SECTION_VISIBILITY[section];
         return templateVis[section] ?? DEFAULT_SECTION_VISIBILITY[section];
       },
-      reset: () => set({ 
-        data: initialData, 
-        theme: initialTheme, 
+
+      // History actions
+      undo: () => {
+        const state = get();
+        if (!state.history || state.history.past.length === 0) return;
+
+        const previous = state.history.past[state.history.past.length - 1];
+        const newPast = state.history.past.slice(0, -1);
+
+        const currentSnapshot: HistorySnapshot = {
+          data: state.data,
+          theme: state.theme,
+          selectedTemplate: state.selectedTemplate,
+        };
+
+        set({
+          data: previous.data,
+          theme: previous.theme,
+          selectedTemplate: previous.selectedTemplate,
+          history: {
+            past: newPast,
+            future: [currentSnapshot, ...(state.history.future || [])],
+          },
+        });
+      },
+
+      redo: () => {
+        const state = get();
+        if (!state.history || state.history.future.length === 0) return;
+
+        const next = state.history.future[0];
+        const newFuture = state.history.future.slice(1);
+
+        const currentSnapshot: HistorySnapshot = {
+          data: state.data,
+          theme: state.theme,
+          selectedTemplate: state.selectedTemplate,
+        };
+
+        set({
+          data: next.data,
+          theme: next.theme,
+          selectedTemplate: next.selectedTemplate,
+          history: {
+            past: [...(state.history.past || []), currentSnapshot],
+            future: newFuture,
+          },
+        });
+      },
+
+      canUndo: () => {
+        const state = get();
+        return state.history?.past?.length > 0;
+      },
+      canRedo: () => {
+        const state = get();
+        return state.history?.future?.length > 0;
+      },
+
+      reset: () => set({
+        data: initialData,
+        theme: initialTheme,
         selectedTemplate: 'classic',
         apiSettings: initialApiSettings,
         sourceMaterials: initialSourceMaterials,
@@ -200,8 +319,20 @@ export const useResumeStore = create<ResumeStore>()(
         uploadedResumeText: '',
         sidebarWidth: 420,
         sectionOrder: ['summary', 'experience', 'education', 'skills', 'technicalSkills', 'languages', 'certifications', 'photo', 'portfolio', 'visaStatus'] as SectionKey[],
+        history: { past: [], future: [] },
       }),
-    }),
+
+      hydrateFromSaved: (savedData, template, savedTheme) => {
+        set({
+          data: { ...initialData, ...savedData },
+          selectedTemplate: template,
+          theme: { ...initialTheme, ...savedTheme },
+          hasCompletedOnboarding: true,
+          history: { past: [], future: [] },
+        });
+      },
+    };
+  },
     {
       name: 'resume-builder-pro-storage',
       partialize: (state) => ({
@@ -214,6 +345,11 @@ export const useResumeStore = create<ResumeStore>()(
         uploadedResumeText: state.uploadedResumeText,
         sidebarWidth: state.sidebarWidth,
         sectionOrder: state.sectionOrder,
+      }),
+      merge: (persistedState: any, currentState) => ({
+        ...currentState,
+        ...persistedState,
+        history: { past: [], future: [] }, // Always start with empty history
       }),
     }
   )

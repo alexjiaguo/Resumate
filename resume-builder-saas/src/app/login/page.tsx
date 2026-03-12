@@ -47,15 +47,15 @@ export default function LoginPage() {
         {/* Logo */}
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', justifyContent: 'center', marginBottom: '40px', color: '#202124' }}>
           <img src="/logo.png" alt="ResuMate" style={{ width: 40, height: 40, borderRadius: 8, objectFit: 'contain' }} />
-          <span style={{ fontSize: '20px', fontWeight: 700 }}>ResuMate</span>
+          <span style={{ fontSize: '20px', fontWeight: 700 }}>resumate</span>
         </Link>
 
         {/* Mock mode badge */}
         {isMockMode && (
           <div style={{
-            background: 'rgba(232,150,12,0.08)', border: '1px solid rgba(232,150,12,0.25)',
+            background: 'rgba(61,77,183,0.06)', border: '1px solid rgba(61,77,183,0.15)',
             borderRadius: '8px', padding: '8px 12px', marginBottom: '16px',
-            fontSize: '12px', color: '#C67D0A', textAlign: 'center',
+            fontSize: '12px', color: '#3D4DB7', textAlign: 'center',
           }}>
             🧪 Demo Mode — No Supabase configured. Login simulated.
           </div>
@@ -133,7 +133,7 @@ export default function LoginPage() {
           <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: '#5f6368' }}>
             {isRegister ? 'Already have an account? ' : "Don't have an account? "}
             <button onClick={() => { setIsRegister(!isRegister); setError(null); }}
-              style={{ color: '#E8960C', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}>
+              style={{ color: '#3D4DB7', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}>
               {isRegister ? 'Log In' : 'Sign Up'}
             </button>
           </p>

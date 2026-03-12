@@ -29,7 +29,7 @@ import {
   PanelLeftClose, PanelLeft, ZoomIn, ZoomOut, Maximize,
   User, Palette, Download, ChevronDown, Sun, Moon, Sparkles,
   Camera, ImageOff, ArrowUp, ArrowDown, Bold, Italic, Underline as UnderlineIcon, RemoveFormatting, RotateCcw, RotateCw,
-  Eye, EyeOff, Upload, Loader2, Link, Globe, Grid3x3
+  Eye, EyeOff, Upload, Loader2, Link, Globe
 } from 'lucide-react';
 
 /* ===== Color contrast utility ===== */
@@ -69,16 +69,18 @@ const CollapsibleSection: React.FC<{
   const [isOpen, setIsOpen] = useState(defaultOpen);
   return (
     <div className="section-collapsible">
-      <button 
-        className={`section-collapsible-header ${isOpen ? 'open' : ''}`}
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <span>{title}</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {action && <span onClick={(e) => e.stopPropagation()}>{action}</span>}
+      <div className={`section-collapsible-header ${isOpen ? 'open' : ''}`}>
+        <button
+          type="button"
+          className={`section-collapsible-toggle ${isOpen ? 'open' : ''}`}
+          onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
+        >
+          <span>{title}</span>
           <ChevronDown size={14} />
-        </div>
-      </button>
+        </button>
+        {action && <div className="section-collapsible-action">{action}</div>}
+      </div>
       {isOpen && <div className="section-collapsible-body">{children}</div>}
     </div>
   );
@@ -327,10 +329,10 @@ const App: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(100);
   const [activeTab, setActiveTab] = useState<SidebarTab>('ai');
-  const [templateDropdownOpen, setTemplateDropdownOpen] = useState(false);
   const [activeColorScheme, setActiveColorScheme] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const resumeFileInputRef = useRef<HTMLInputElement>(null);
+  const templateGalleryTriggerRef = useRef<HTMLButtonElement>(null);
   const [isResumeUploading, setIsResumeUploading] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('resume-builder-dark-mode');
@@ -365,6 +367,46 @@ const App: React.FC = () => {
     document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
     localStorage.setItem('resume-builder-dark-mode', String(darkMode));
   }, [darkMode]);
+
+  const guidanceMessage = (() => {
+    if (!hasCompletedOnboarding) {
+      return {
+        label: 'Recommended next step',
+        title: 'Import a resume or start blank',
+        detail: 'Choose the fastest path into the editor so you can begin refining your content.',
+      };
+    }
+
+    if (activeTab === 'content') {
+      return {
+        label: 'Edit your content',
+        title: 'Refine your resume details',
+        detail: 'Update your experience, summary, and supporting sections before polishing the layout.',
+      };
+    }
+
+    if (activeTab === 'design') {
+      return {
+        label: 'Choose a template',
+        title: 'Adjust the look after content feels solid',
+        detail: 'Pick a template and styling that support the story your resume already tells.',
+      };
+    }
+
+    if (activeTab === 'export') {
+      return {
+        label: 'Export when ready',
+        title: 'Download after a final review',
+        detail: 'Give the preview one last scan, then export in the format you need.',
+      };
+    }
+
+    return {
+      label: 'Recommended next step',
+      title: 'Tailor once your base resume is ready',
+      detail: 'Use AI guidance after your core content is in place and your target role is clear.',
+    };
+  })();
 
   const handlePersonalChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -1211,23 +1253,23 @@ const App: React.FC = () => {
   const renderExportTab = () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       <CollapsibleSection title="Export & Download" defaultOpen={true}>
-        <div className="export-section">
-          <div className="export-row">
-            <button onClick={() => window.print()} className="btn-primary"><Printer size={16} /> Print PDF</button>
+        <div className="export-section" data-testid="export-actions">
+          <div className="export-row export-row--single">
+            <button onClick={() => window.print()} className="btn-primary export-action-button"><Printer size={16} /> <span>Print PDF</span></button>
           </div>
-          <div className="export-row">
+          <div className="export-actions-grid">
             <button onClick={async () => {
               const { downloadDocx } = await import('./utils/ExportUtils');
               downloadDocx(data);
-            }} className="btn-muted"><FileText size={16} /> Word</button>
+            }} className="btn-muted export-action-button"><FileText size={16} /> <span>Word</span></button>
             <button onClick={async () => {
               const { downloadMarkdown } = await import('./utils/ExportUtils');
               downloadMarkdown(data);
-            }} className="btn-muted"><FileText size={16} /> Markdown</button>
+            }} className="btn-muted export-action-button"><FileText size={16} /> <span>Markdown</span></button>
             <button onClick={async () => {
               const { downloadHtml } = await import('./utils/ExportUtils');
               downloadHtml('resume-preview', data.personalInfo.fullName);
-            }} className="btn-muted"><Code size={16} /> HTML</button>
+            }} className="btn-muted export-action-button"><Code size={16} /> <span>HTML</span></button>
           </div>
         </div>
       </CollapsibleSection>
@@ -1247,15 +1289,15 @@ const App: React.FC = () => {
     <div className="app-layout">
       {/* Sidebar Editor */}
       <aside className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`} style={{ width: sidebarCollapsed ? undefined : `${sidebarWidth}px` }}>
-        <div className="sidebar-brand">
+        <div className={`sidebar-brand ${sidebarWidth <= 340 ? 'sidebar-brand--compact' : ''}`}>
           <div className="sidebar-brand-info">
             <h1>
               <FileText size={18} />
-              Resume Builder Pro
+              <span>Resume Builder Pro</span>
             </h1>
             <p>Build · Tailor · Export</p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="sidebar-brand-actions">
             <AutoSaveIndicator status="saved" />
             <button
               className="icon-button"
@@ -1279,6 +1321,7 @@ const App: React.FC = () => {
               className="theme-toggle"
               onClick={() => setDarkMode(!darkMode)}
               title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {darkMode ? <Sun size={16} /> : <Moon size={16} />}
             </button>
@@ -1360,113 +1403,73 @@ const App: React.FC = () => {
           );
           return (
             <div style={{ padding: '8px 12px', margin: '4px 0', position: 'relative' }}>
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-                <button
-                  onClick={() => setTemplateDropdownOpen(!templateDropdownOpen)}
-                  style={{
-                    flex: 1, display: 'flex', alignItems: 'center', gap: '10px',
-                    padding: '8px 10px', borderRadius: '8px', cursor: 'pointer',
-                    border: '1px solid var(--border-color, #d1d5db)',
-                    background: 'var(--bg-secondary, #f9fafb)',
-                    color: 'var(--text-primary, #1f2937)',
-                    transition: 'border-color 0.15s',
-                  }}
-                >
-                  <LayoutIcon type={current?.layout || 'single'} />
-                  <div style={{ flex: 1, textAlign: 'left' }}>
-                    <div style={{ fontWeight: 600, fontSize: '12px' }}>{current?.name}</div>
-                    <div style={{ fontSize: '10px', opacity: 0.6 }}>{current?.desc}</div>
-                  </div>
-                  <ChevronDown size={14} style={{ opacity: 0.5, transform: templateDropdownOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
-                </button>
-                <button
-                  onClick={() => setShowTemplateGallery(true)}
-                  title="Browse all templates"
-                  style={{
-                    padding: '8px 12px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    border: '1px solid var(--border-color, #d1d5db)',
-                    background: 'var(--bg-secondary, #f9fafb)',
-                    color: 'var(--text-primary, #1f2937)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Grid3x3 size={16} />
-                </button>
-              </div>
-              {templateDropdownOpen && (
-                <>
-                  <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={() => setTemplateDropdownOpen(false)} />
-                  <div style={{
-                    position: 'absolute', top: '100%', left: '12px', right: '12px', zIndex: 100,
-                    background: 'var(--panel-bg, #fff)', border: '1px solid var(--border-color, #d1d5db)',
-                    borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-                    maxHeight: '320px', overflowY: 'auto',
-                    padding: '4px',
-                  }}>
-                    {templates.map(tpl => (
-                      <button
-                        key={tpl.id}
-                        onClick={() => { setTemplate(tpl.id); setTemplateDropdownOpen(false); }}
-                        style={{
-                          width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
-                          padding: '8px 8px', borderRadius: '6px', cursor: 'pointer',
-                          border: 'none', textAlign: 'left',
-                          background: selectedTemplate === tpl.id ? 'var(--accent-color, #6366f1)11' : 'transparent',
-                          color: 'var(--text-primary, #1f2937)',
-                          transition: 'background 0.1s',
-                        }}
-                        onMouseEnter={e => { if (selectedTemplate !== tpl.id) (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-secondary, #f3f4f6)'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = selectedTemplate === tpl.id ? 'var(--accent-color, #6366f1)11' : 'transparent'; }}
-                      >
-                        <LayoutIcon type={tpl.layout} />
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontWeight: selectedTemplate === tpl.id ? 700 : 500, fontSize: '12px' }}>{tpl.name}</div>
-                          <div style={{ fontSize: '10px', opacity: 0.5 }}>{tpl.desc}</div>
-                        </div>
-                        {selectedTemplate === tpl.id && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent-color, #6366f1)' }} />}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
+              <button
+                ref={templateGalleryTriggerRef}
+                onClick={() => setShowTemplateGallery(true)}
+                aria-label="Choose a resume template"
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
+                  padding: '8px 10px', borderRadius: '8px', cursor: 'pointer',
+                  border: '1px solid var(--border-color, #d1d5db)',
+                  background: 'var(--bg-secondary, #f9fafb)',
+                  color: 'var(--text-primary, #1f2937)',
+                  transition: 'border-color 0.15s',
+                }}
+              >
+                <LayoutIcon type={current?.layout || 'single'} />
+                <div style={{ flex: 1, textAlign: 'left' }}>
+                  <div style={{ fontWeight: 600, fontSize: '12px' }}>{current?.name}</div>
+                  <div style={{ fontSize: '10px', opacity: 0.6 }}>{current?.desc}</div>
+                </div>
+                <ChevronDown size={14} style={{ opacity: 0.5, transform: showTemplateGallery ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
+              </button>
             </div>
           );
         })()}
 
         {/* Tab Navigation — 4 tabs */}
         <div className="sidebar-tabs">
-          <button 
+          <button
             className={`sidebar-tab-btn ${activeTab === 'ai' ? 'active' : ''}`}
             onClick={() => setActiveTab('ai')}
+            title="AI Resume Tailoring"
           >
-            <Sparkles size={14} /> AI
+            <Sparkles size={16} />
+            <span>AI</span>
           </button>
-          <button 
+          <button
             className={`sidebar-tab-btn ${activeTab === 'content' ? 'active' : ''}`}
             onClick={() => setActiveTab('content')}
+            title="Edit Resume Content"
           >
-            <User size={14} /> Content
+            <User size={16} />
+            <span>Content</span>
           </button>
-          <button 
+          <button
             className={`sidebar-tab-btn ${activeTab === 'design' ? 'active' : ''}`}
             onClick={() => setActiveTab('design')}
+            title="Customize Design"
           >
-            <Palette size={14} /> Design
+            <Palette size={16} />
+            <span>Design</span>
           </button>
-          <button 
+          <button
             className={`sidebar-tab-btn ${activeTab === 'export' ? 'active' : ''}`}
             onClick={() => setActiveTab('export')}
+            title="Export Resume"
           >
-            <Download size={14} /> Export
+            <Download size={16} />
+            <span>Export</span>
           </button>
         </div>
 
         {/* Tab Content — Scrollable */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }} className="editor-controls">
+          <div className="next-step-banner" role="status" aria-live="polite">
+            <div className="next-step-banner__label">{guidanceMessage.label}</div>
+            <div className="next-step-banner__title">{guidanceMessage.title}</div>
+            <div className="next-step-banner__detail">{guidanceMessage.detail}</div>
+          </div>
           {activeTab === 'ai' && renderAITab()}
           {activeTab === 'content' && renderContentTab()}
           {activeTab === 'design' && renderDesignTab()}
@@ -1483,9 +1486,13 @@ const App: React.FC = () => {
             e.preventDefault();
             const startX = e.clientX;
             const startW = sidebarWidth;
+            const minWidth = 320;
+            const maxWidth = Math.min(800, window.innerWidth * 0.5); // Max 50% of screen or 800px
+
             const onMove = (me: MouseEvent) => {
               const delta = me.clientX - startX;
-              setSidebarWidth(startW + delta);
+              const newWidth = Math.max(minWidth, Math.min(maxWidth, startW + delta));
+              setSidebarWidth(newWidth);
             };
             const onUp = () => {
               document.removeEventListener('mousemove', onMove);
@@ -1506,6 +1513,7 @@ const App: React.FC = () => {
         className="sidebar-toggle"
         onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
         title={sidebarCollapsed ? 'Open sidebar' : 'Close sidebar'}
+        aria-label={sidebarCollapsed ? 'Open sidebar' : 'Close sidebar'}
         style={{ left: sidebarCollapsed ? '0px' : `${sidebarWidth}px` }}
       >
         {sidebarCollapsed ? <PanelLeft size={16} /> : <PanelLeftClose size={16} />}
@@ -1514,11 +1522,11 @@ const App: React.FC = () => {
       {/* Preview Area */}
       <main className="preview-canvas" style={{ padding: '40px' }}>
         <div className="zoom-controls">
-          <button onClick={zoomOut} title="Zoom out"><ZoomOut size={16} /></button>
+          <button onClick={zoomOut} title="Zoom out" aria-label="Zoom out"><ZoomOut size={16} /></button>
           <span>{zoomLevel}%</span>
-          <button onClick={zoomIn} title="Zoom in"><ZoomIn size={16} /></button>
+          <button onClick={zoomIn} title="Zoom in" aria-label="Zoom in"><ZoomIn size={16} /></button>
           <div style={{ width: '1px', height: '16px', background: 'var(--color-border)' }} />
-          <button onClick={zoomFit} title="Fit to 100%"><Maximize size={14} /></button>
+          <button onClick={zoomFit} title="Fit to 100%" aria-label="Fit preview to 100% zoom"><Maximize size={14} /></button>
         </div>
 
         <div id="resume-preview" style={{ margin: 'auto', transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center', transition: 'transform 0.2s ease' }}>
@@ -1533,11 +1541,9 @@ const App: React.FC = () => {
       {showTemplateGallery && (
         <TemplateGallery
           selectedTemplate={selectedTemplate}
-          onSelectTemplate={(templateId) => {
-            setTemplate(templateId);
-            setShowTemplateGallery(false);
-          }}
+          onSelectTemplate={setTemplate}
           onClose={() => setShowTemplateGallery(false)}
+          returnFocusTo={templateGalleryTriggerRef.current}
         />
       )}
 

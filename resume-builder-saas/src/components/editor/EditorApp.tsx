@@ -17,18 +17,27 @@ import BoldEngineer from './templates/BoldEngineer';
 import Academic from './templates/Academic';
 import TailoringHub from './components/TailoringHub';
 import OnboardingScreen from './components/OnboardingScreen';
+import AutoSaveIndicator from './components/AutoSaveIndicator';
+import TemplateGallery from './components/TemplateGallery';
+import VersionHistoryPanel from './components/VersionHistoryPanel';
+import ATSCheckerPanel from './components/ATSCheckerPanel';
+import CoverLetterPanel from './components/CoverLetterPanel';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useAutoSave, SaveStatus } from '@/hooks/useAutoSave';
+import { useAuth } from '@/lib/auth-context';
 import { FileParserService } from '@/services/FileParserService';
 import { ResumeParserService } from '@/services/ResumeParserService';
 import { downloadMarkdown, downloadHtml, downloadDocx } from '@/utils/ExportUtils';
 import { COLOR_SCHEMES } from '@/data/ColorSchemes';
 import { SECTION_LABELS } from '@/types';
+import type { LLMProvider } from '@/services/LLMService';
 import './editor.css';
 import { 
   Printer, RefreshCcw, Plus, Trash2, FileText, Code, X, 
   PanelLeftClose, PanelLeft, ZoomIn, ZoomOut, Maximize,
   User, Palette, Download, ChevronDown, Sun, Moon, Sparkles,
-  Camera, ImageOff, ArrowUp, ArrowDown, Bold, Italic, Underline as UnderlineIcon, RemoveFormatting, RotateCcw,
-  Eye, EyeOff, Upload, Loader2, Link, Globe
+  Camera, ImageOff, ArrowUp, ArrowDown, Bold, Italic, Underline as UnderlineIcon, RemoveFormatting, RotateCcw, RotateCw,
+  Eye, EyeOff, Upload, Loader2, Link, Globe, LayoutGrid, FilePlus, Pencil
 } from 'lucide-react';
 
 /* ===== Color contrast utility ===== */
@@ -297,15 +306,15 @@ const AchievementEditor: React.FC<{
 };
 
 const App: React.FC = () => {
-  const { 
-    data, 
-    theme, 
-    selectedTemplate, 
+  const {
+    data,
+    theme,
+    selectedTemplate,
     apiSettings,
     hasCompletedOnboarding,
-    updateData, 
-    updateTheme, 
-    setTemplate, 
+    updateData,
+    updateTheme,
+    setTemplate,
     updateApiSettings,
     sidebarWidth,
     setSidebarWidth,
@@ -314,17 +323,30 @@ const App: React.FC = () => {
     toggleSectionVisibility,
     isSectionVisible,
     setUploadedResumeText,
-    reset 
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    reset
   } = useResumeStore();
 
+  const { profile } = useAuth();
+  const userId = profile?.id || 'local';
+
+  // Auto-save integration
+  const { saveStatus, resumeId: currentResumeId, resumeTitle, setResumeTitle, isLoading: isAutoSaveLoading } = useAutoSave(userId);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [titleDraft, setTitleDraft] = useState('');
+
   const [showTailoringHub, setShowTailoringHub] = useState(false);
+  const [showTemplateGallery, setShowTemplateGallery] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(100);
   const [activeTab, setActiveTab] = useState<SidebarTab>('content');
-  const [templateDropdownOpen, setTemplateDropdownOpen] = useState(false);
   const [activeColorScheme, setActiveColorScheme] = useState<string | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const resumeFileInputRef = useRef<HTMLInputElement>(null);
+  const templateGalleryTriggerRef = useRef<HTMLButtonElement>(null);
   const [isResumeUploading, setIsResumeUploading] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('resume-builder-dark-mode');
@@ -332,10 +354,99 @@ const App: React.FC = () => {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
+  // Build a provider object for AI panel components
+  const getProvider = (): LLMProvider => {
+    const getBaseUrl = () => {
+      if (apiSettings.selectedProvider === 'openai') return apiSettings.openaiBaseUrl || 'https://api.openai.com/v1';
+      if (apiSettings.selectedProvider === 'gemini') return apiSettings.geminiBaseUrl || 'https://generativelanguage.googleapis.com/v1beta/openai';
+      return apiSettings.customBaseUrl;
+    };
+    const getKey = () => {
+      if (apiSettings.selectedProvider === 'openai') return apiSettings.openaiKey;
+      if (apiSettings.selectedProvider === 'gemini') return apiSettings.geminiKey;
+      return apiSettings.deepseekKey;
+    };
+    return {
+      name: apiSettings.selectedProvider,
+      baseUrl: getBaseUrl(),
+      apiKey: getKey(),
+      model: apiSettings.model,
+    };
+  };
+
+  const handleVersionRestore = (restoredData: any, template: string, restoredTheme: Record<string, any>) => {
+    updateData(restoredData);
+    setTemplate(template);
+    updateTheme(restoredTheme);
+  };
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: 'z',
+      meta: true,
+      callback: () => canUndo() && undo(),
+      description: 'Undo',
+    },
+    {
+      key: 'z',
+      meta: true,
+      shift: true,
+      callback: () => canRedo() && redo(),
+      description: 'Redo',
+    },
+    {
+      key: 'p',
+      meta: true,
+      callback: () => window.print(),
+      description: 'Print',
+    },
+  ]);
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
     localStorage.setItem('resume-builder-dark-mode', String(darkMode));
   }, [darkMode]);
+
+  const guidanceMessage = (() => {
+    if (!hasCompletedOnboarding) {
+      return {
+        label: 'Recommended next step',
+        title: 'Import a resume or start blank',
+        detail: 'Choose the fastest path into the editor so you can begin refining your content.',
+      };
+    }
+
+    if (activeTab === 'content') {
+      return {
+        label: 'Edit your content',
+        title: 'Refine your resume details',
+        detail: 'Update your experience, summary, and supporting sections before polishing the layout.',
+      };
+    }
+
+    if (activeTab === 'design') {
+      return {
+        label: 'Choose a template',
+        title: 'Adjust the look after content feels solid',
+        detail: 'Pick a template and styling that support the story your resume already tells.',
+      };
+    }
+
+    if (activeTab === 'export') {
+      return {
+        label: 'Export when ready',
+        title: 'Download after a final review',
+        detail: 'Give the preview one last scan, then export in the format you need.',
+      };
+    }
+
+    return {
+      label: 'Recommended next step',
+      title: 'Tailor once your base resume is ready',
+      detail: 'Use AI guidance after your core content is in place and your target role is clear.',
+    };
+  })();
 
   const handlePersonalChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -918,6 +1029,18 @@ const App: React.FC = () => {
         </div>
       </CollapsibleSection>
 
+      <CollapsibleSection title="ATS Score Checker" defaultOpen={false}>
+        <ATSCheckerPanel resumeData={data} getProvider={getProvider} />
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Cover Letter Generator" defaultOpen={false}>
+        <CoverLetterPanel resumeData={data} userId={userId} resumeId={currentResumeId} getProvider={getProvider} />
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Version History" defaultOpen={false}>
+        <VersionHistoryPanel userId={userId} resumeId={currentResumeId} currentData={data} onRestore={handleVersionRestore} />
+      </CollapsibleSection>
+
       <CollapsibleSection title="API Settings" defaultOpen={false}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <label className="form-label">Provider
@@ -1171,14 +1294,23 @@ const App: React.FC = () => {
   const renderExportTab = () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
       <CollapsibleSection title="Export & Download" defaultOpen={true}>
-        <div className="export-section">
-          <div className="export-row">
-            <button onClick={() => window.print()} className="btn-primary"><Printer size={16} /> Print PDF</button>
+        <div className="export-section" data-testid="export-actions">
+          <div className="export-row export-row--single">
+            <button onClick={() => window.print()} className="btn-primary export-action-button"><Printer size={16} /> <span>Print PDF</span></button>
           </div>
-          <div className="export-row">
-            <button onClick={() => downloadDocx(data)} className="btn-muted"><FileText size={16} /> Word</button>
-            <button onClick={() => downloadMarkdown(data)} className="btn-muted"><FileText size={16} /> Markdown</button>
-            <button onClick={() => downloadHtml('resume-preview', data.personalInfo.fullName)} className="btn-muted"><Code size={16} /> HTML</button>
+          <div className="export-actions-grid">
+            <button onClick={async () => {
+              const { downloadDocx } = await import('@/utils/ExportUtils');
+              downloadDocx(data);
+            }} className="btn-muted export-action-button"><FileText size={16} /> <span>Word</span></button>
+            <button onClick={async () => {
+              const { downloadMarkdown } = await import('@/utils/ExportUtils');
+              downloadMarkdown(data);
+            }} className="btn-muted export-action-button"><FileText size={16} /> <span>Markdown</span></button>
+            <button onClick={async () => {
+              const { downloadHtml } = await import('@/utils/ExportUtils');
+              downloadHtml('resume-preview', data.personalInfo.fullName);
+            }} className="btn-muted export-action-button"><Code size={16} /> <span>HTML</span></button>
           </div>
         </div>
       </CollapsibleSection>
@@ -1198,21 +1330,97 @@ const App: React.FC = () => {
     <div className="app-layout">
       {/* Sidebar Editor */}
       <aside className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`} style={{ width: sidebarCollapsed ? undefined : `${sidebarWidth}px` }}>
-        <div className="sidebar-brand">
+        <div className={`sidebar-brand ${sidebarWidth <= 340 ? 'sidebar-brand--compact' : ''}`}>
           <div className="sidebar-brand-info">
             <h1>
-              <FileText size={18} />
-              ResuMate
+              <img src="/logo.png" alt="ResuMate" style={{ width: 22, height: 22, objectFit: 'contain' }} />
+              <span>resumate</span>
             </h1>
-            <p>Build · Tailor · Export</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              {isEditingTitle ? (
+                <form
+                  onSubmit={(e) => { e.preventDefault(); setResumeTitle(titleDraft.trim() || 'Untitled Resume'); setIsEditingTitle(false); }}
+                  style={{ display: 'flex', gap: '4px', flex: 1 }}
+                >
+                  <input
+                    autoFocus
+                    value={titleDraft}
+                    onChange={(e) => setTitleDraft(e.target.value)}
+                    onBlur={() => { setResumeTitle(titleDraft.trim() || 'Untitled Resume'); setIsEditingTitle(false); }}
+                    onKeyDown={(e) => { if (e.key === 'Escape') setIsEditingTitle(false); }}
+                    style={{
+                      flex: 1, padding: '2px 6px', borderRadius: '4px', fontSize: '12px',
+                      background: 'var(--bg-secondary, #f3f4f6)', border: '1px solid var(--accent-color, #6366f1)',
+                      color: 'var(--color-text-primary)', outline: 'none', fontWeight: 500, minWidth: 0,
+                    }}
+                  />
+                </form>
+              ) : (
+                <button
+                  onClick={() => { setTitleDraft(resumeTitle); setIsEditingTitle(true); }}
+                  title="Rename resume"
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px',
+                    color: 'var(--color-text-secondary)', fontSize: '12px', fontWeight: 500, padding: '2px 4px',
+                    borderRadius: '4px', transition: 'background 0.15s',
+                    maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-secondary, #f3f4f6)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = 'none')}
+                >
+                  <Pencil size={10} style={{ opacity: 0.5, flexShrink: 0 }} />
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{resumeTitle}</span>
+                </button>
+              )}
+            </div>
           </div>
-          <button
-            className="theme-toggle"
-            onClick={() => setDarkMode(!darkMode)}
-            title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {darkMode ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
+          <div className="sidebar-brand-actions">
+            <button
+              className="icon-button"
+              onClick={() => window.location.href = '/dashboard'}
+              title="My Resumes"
+              aria-label="Go to My Resumes"
+              style={{ opacity: 0.8 }}
+            >
+              <LayoutGrid size={16} />
+            </button>
+            <button
+              className="icon-button"
+              onClick={() => window.location.href = '/editor'}
+              title="New Resume"
+              aria-label="Create new resume"
+              style={{ opacity: 0.8 }}
+            >
+              <FilePlus size={16} />
+            </button>
+            <AutoSaveIndicator status={saveStatus === 'idle' ? 'saved' : saveStatus === 'error' ? 'unsaved' : saveStatus as any} />
+            <button
+              className="icon-button"
+              onClick={undo}
+              disabled={!canUndo()}
+              title="Undo (Cmd+Z)"
+              style={{ opacity: canUndo() ? 1 : 0.4 }}
+            >
+              <RotateCcw size={16} />
+            </button>
+            <button
+              className="icon-button"
+              onClick={redo}
+              disabled={!canRedo()}
+              title="Redo (Cmd+Shift+Z)"
+              style={{ opacity: canRedo() ? 1 : 0.4 }}
+            >
+              <RotateCw size={16} />
+            </button>
+            <button
+              className="theme-toggle"
+              onClick={() => setDarkMode(!darkMode)}
+              title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+          </div>
         </div>
 
         {/* Template Selector — custom dropdown with layout previews */}
@@ -1291,7 +1499,9 @@ const App: React.FC = () => {
           return (
             <div style={{ padding: '8px 12px', margin: '4px 0', position: 'relative' }}>
               <button
-                onClick={() => setTemplateDropdownOpen(!templateDropdownOpen)}
+                ref={templateGalleryTriggerRef}
+                onClick={() => setShowTemplateGallery(true)}
+                aria-label="Choose a resume template"
                 style={{
                   width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
                   padding: '8px 10px', borderRadius: '8px', cursor: 'pointer',
@@ -1306,78 +1516,55 @@ const App: React.FC = () => {
                   <div style={{ fontWeight: 600, fontSize: '12px' }}>{current?.name}</div>
                   <div style={{ fontSize: '10px', opacity: 0.6 }}>{current?.desc}</div>
                 </div>
-                <ChevronDown size={14} style={{ opacity: 0.5, transform: templateDropdownOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
+                <ChevronDown size={14} style={{ opacity: 0.5, transform: showTemplateGallery ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
               </button>
-              {templateDropdownOpen && (
-                <>
-                  <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={() => setTemplateDropdownOpen(false)} />
-                  <div style={{
-                    position: 'absolute', top: '100%', left: '12px', right: '12px', zIndex: 100,
-                    background: 'var(--panel-bg, #fff)', border: '1px solid var(--border-color, #d1d5db)',
-                    borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-                    maxHeight: '320px', overflowY: 'auto',
-                    padding: '4px',
-                  }}>
-                    {templates.map(tpl => (
-                      <button
-                        key={tpl.id}
-                        onClick={() => { setTemplate(tpl.id); setTemplateDropdownOpen(false); }}
-                        style={{
-                          width: '100%', display: 'flex', alignItems: 'center', gap: '10px',
-                          padding: '8px 8px', borderRadius: '6px', cursor: 'pointer',
-                          border: 'none', textAlign: 'left',
-                          background: selectedTemplate === tpl.id ? 'var(--accent-color, #6366f1)11' : 'transparent',
-                          color: 'var(--text-primary, #1f2937)',
-                          transition: 'background 0.1s',
-                        }}
-                        onMouseEnter={e => { if (selectedTemplate !== tpl.id) (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-secondary, #f3f4f6)'; }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = selectedTemplate === tpl.id ? 'var(--accent-color, #6366f1)11' : 'transparent'; }}
-                      >
-                        <LayoutIcon type={tpl.layout} />
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontWeight: selectedTemplate === tpl.id ? 700 : 500, fontSize: '12px' }}>{tpl.name}</div>
-                          <div style={{ fontSize: '10px', opacity: 0.5 }}>{tpl.desc}</div>
-                        </div>
-                        {selectedTemplate === tpl.id && <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent-color, #6366f1)' }} />}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
             </div>
           );
         })()}
 
         {/* Tab Navigation — 4 tabs */}
         <div className="sidebar-tabs">
-          <button 
+          <button
             className={`sidebar-tab-btn ${activeTab === 'content' ? 'active' : ''}`}
             onClick={() => setActiveTab('content')}
+            title="Edit Resume Content"
           >
-            <User size={14} /> Content
+            <User size={16} />
+            <span>Content</span>
           </button>
-          <button 
+          <button
             className={`sidebar-tab-btn ${activeTab === 'ai' ? 'active' : ''}`}
             onClick={() => setActiveTab('ai')}
+            title="AI Resume Tailoring"
           >
-            <Sparkles size={14} /> AI
+            <Sparkles size={16} />
+            <span>AI</span>
           </button>
-          <button 
+          <button
             className={`sidebar-tab-btn ${activeTab === 'design' ? 'active' : ''}`}
             onClick={() => setActiveTab('design')}
+            title="Customize Design"
           >
-            <Palette size={14} /> Design
+            <Palette size={16} />
+            <span>Design</span>
           </button>
-          <button 
+          <button
             className={`sidebar-tab-btn ${activeTab === 'export' ? 'active' : ''}`}
             onClick={() => setActiveTab('export')}
+            title="Export Resume"
           >
-            <Download size={14} /> Export
+            <Download size={16} />
+            <span>Export</span>
           </button>
         </div>
 
         {/* Tab Content — Scrollable */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }} className="editor-controls">
+          <div className="next-step-banner" role="status" aria-live="polite">
+            <div className="next-step-banner__label">{guidanceMessage.label}</div>
+            <div className="next-step-banner__title">{guidanceMessage.title}</div>
+            <div className="next-step-banner__detail">{guidanceMessage.detail}</div>
+          </div>
           {activeTab === 'content' && renderContentTab()}
           {activeTab === 'ai' && renderAITab()}
           {activeTab === 'design' && renderDesignTab()}
@@ -1394,9 +1581,13 @@ const App: React.FC = () => {
             e.preventDefault();
             const startX = e.clientX;
             const startW = sidebarWidth;
+            const minWidth = 320;
+            const maxWidth = Math.min(800, window.innerWidth * 0.5);
+
             const onMove = (me: MouseEvent) => {
               const delta = me.clientX - startX;
-              setSidebarWidth(startW + delta);
+              const newWidth = Math.max(minWidth, Math.min(maxWidth, startW + delta));
+              setSidebarWidth(newWidth);
             };
             const onUp = () => {
               document.removeEventListener('mousemove', onMove);
@@ -1417,6 +1608,7 @@ const App: React.FC = () => {
         className="sidebar-toggle"
         onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
         title={sidebarCollapsed ? 'Open sidebar' : 'Close sidebar'}
+        aria-label={sidebarCollapsed ? 'Open sidebar' : 'Close sidebar'}
         style={{ left: sidebarCollapsed ? '0px' : `${sidebarWidth}px` }}
       >
         {sidebarCollapsed ? <PanelLeft size={16} /> : <PanelLeftClose size={16} />}
@@ -1425,11 +1617,11 @@ const App: React.FC = () => {
       {/* Preview Area */}
       <main className="preview-canvas" style={{ padding: '40px' }}>
         <div className="zoom-controls">
-          <button onClick={zoomOut} title="Zoom out"><ZoomOut size={16} /></button>
+          <button onClick={zoomOut} title="Zoom out" aria-label="Zoom out"><ZoomOut size={16} /></button>
           <span>{zoomLevel}%</span>
-          <button onClick={zoomIn} title="Zoom in"><ZoomIn size={16} /></button>
+          <button onClick={zoomIn} title="Zoom in" aria-label="Zoom in"><ZoomIn size={16} /></button>
           <div style={{ width: '1px', height: '16px', background: 'var(--color-border)' }} />
-          <button onClick={zoomFit} title="Fit to 100%"><Maximize size={14} /></button>
+          <button onClick={zoomFit} title="Fit to 100%" aria-label="Fit preview to 100% zoom"><Maximize size={14} /></button>
         </div>
 
         <div id="resume-preview" style={{ margin: 'auto', transform: `scale(${zoomLevel / 100})`, transformOrigin: 'top center', transition: 'transform 0.2s ease' }}>
@@ -1439,6 +1631,16 @@ const App: React.FC = () => {
 
       {/* Tailoring Hub Modal */}
       {showTailoringHub && <TailoringHub onClose={() => setShowTailoringHub(false)} />}
+
+      {/* Template Gallery Modal */}
+      {showTemplateGallery && (
+        <TemplateGallery
+          selectedTemplate={selectedTemplate}
+          onSelectTemplate={setTemplate}
+          onClose={() => setShowTemplateGallery(false)}
+          returnFocusTo={templateGalleryTriggerRef.current}
+        />
+      )}
 
       {/* Onboarding Screen */}
       {!hasCompletedOnboarding && <OnboardingScreen />}
