@@ -1,6 +1,19 @@
 # Professional Resume Builder Ecosystem 📝
 
-A high-performance, browser-based resume customization suite designed for modern professionals. The ecosystem was successfully rewritten from raw HTML to a **React-based architecture (Vite + TS + Zustand)** while maintaining 100% pixel-perfect visual fidelity with the original HTML templates.
+A high-performance, browser-based resume customization suite designed for modern professionals. The ecosystem was successfully rewritten from raw HTML to a **React-based architecture (Vite + TS + Zustand)** and is currently evolving into a full **Next.js SaaS Platform** (`resume-builder-saas`).
+
+## 📸 System Screenshots
+
+### 🚀 Next.js SaaS Landing Page
+![SaaS Landing Page](./docs/assets/landing-page.png)
+
+### 📊 User Dashboard & Resume Management
+![User Dashboard](./docs/assets/dashboard.png)
+
+### 📝 Live Editor (Elegant Two-Column Template)
+![Live Editor Preview](./docs/assets/editor-preview.png)
+
+---
 
 ## 🚀 Key Features
 
