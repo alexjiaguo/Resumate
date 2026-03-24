@@ -1,71 +1,115 @@
-# Professional Resume Builder Ecosystem 📝
+# 📄 ResuMate — Privacy-First AI Resume Builder
 
-A high-performance, browser-based resume customization suite designed for modern professionals. The ecosystem was successfully rewritten from raw HTML to a **React-based architecture (Vite + TS + Zustand)** and is currently evolving into a full **Next.js SaaS Platform** (`resume-builder-saas`).
+Build, tailor, and export professional resumes with premium templates, local-first editing, and your own AI provider. 
 
-## 📸 System Screenshots
+> **Why people star ResuMate:** It gives job seekers a polished, high-performance resume workflow without locking their data into a black-box SaaS.
 
-### 🚀 Next.js SaaS Landing Page
-![SaaS Landing Page](./docs/assets/landing-page.png)
-
-### 📊 User Dashboard & Resume Management
-![User Dashboard](./docs/assets/dashboard.png)
-
-### 📝 Live Editor (Elegant Two-Column Template)
-![Live Editor Preview](./docs/assets/editor-preview.png)
+![ResuMate editor preview](./docs/assets/editor-preview.png)
 
 ---
 
-## 🚀 Key Features
+## 🌟 Why ResuMate
 
-### 🏢 Multi-Layout Support (9 Templates)
-- **v1.0 Classic Minimal**: Minimalist, clean-slate design for high-impact single-page resumes.
-- **v2.0 Clean Layout**: Classic professional layout focusing on readability and bottom grid structure.
-- **v3.0 Premium Headshot**: Modern sidebar layout with headshot and advanced column management.
-- **v4.0 ATS Executive**: Optimized for Application Tracking Systems with metrics alignment.
-- **v5.0 Photo Header**: Photo in header with two-column body grid.
-- **v6.0 Clean Professional**: Centered header with horizontal dividers.
-- **v7.0 Elegant TwoColumn**: Two-column grid with classic serif aesthetics.
-- **v8.0 Bold Engineer**: Bold black headers + photo optimized for technical roles.
-- **v9.0 Academic**: Serif, education-first design featuring custom GPA & Coursework rendering.
+Most resume builders are some combination of:
+- Generic-looking templates
+- Expensive subscriptions
+- Weak customization
+- Poor export quality
+- Unclear data/privacy practices
 
-### 🎨 Visual Customization
-- **16+ Professional Presets**: Instant color schemes including *California Beaches*, *Cobalt Sky*, *Stone Path*, *Urban Loft*, and *Emerald Odyssey*.
-- **Precision Typography**: Per-element font-sizing and family selection (Inter, Roboto, Open Sans, etc.).
-- **Dynamic Spacing**: Granular control over page padding (Top/Bottom/Left/Right), item spacing, and section line-height (0.1 increments).
+**ResuMate** takes a different approach:
+- 🛡️ **Privacy-first** — Local-first editing and persistence.
+- 🤖 **AI-powered** — Tailor resumes to job descriptions with your preferred model.
+- 🔑 **BYO API key** — Use OpenAI, Gemini, DeepSeek, or a compatible provider.
+- 🎨 **Premium templates** — 9 polished layouts for different use cases.
+- 🖨️ **Flexible exports** — Print to PDF and support multiple output workflows (powered by Next.js & React).
 
-### ✍️ Intelligent Editing
-- **Advanced Text Formatting**: Optimized formatting engine using Tiptap for rich-text inline editing without styling conflicts.
-- **Interactive Reordering**: Instantly move entire sections or individual job/education blocks up or down.
-- **Global State Management**: Powered by Zustand to persist all changes instantly across templates.
+---
 
-### 🤖 AI-Powered Tailoring
-- **LLM Integration**: Support for OpenAI, Google Gemini, DeepSeek, and custom providers
-- **Smart Resume Tailoring**: Upload your resume and job description to generate tailored versions
-- **Multi-Provider Support**: Flexible API configuration with fallback options
+## 📸 System Screenshots
 
-### 💾 Persistence & Output
-- **Local Auto-Save**: All changes, content, and layout settings are automatically persisted to `localStorage`.
-- **Print Optimized**: Clean CSS media queries strictly ensure the output is pixel-perfect for PDF generation and standard A4 printing.
+### 🚀 SaaS Landing Page
+![Landing Page](./docs/assets/landing-page.png)
 
-### 🔒 Security Features
-- **Environment Variables**: API keys protected via `.env` files
-- **Input Validation**: Comprehensive Zod schemas for all user inputs
-- **XSS Prevention**: DOMPurify sanitization and CSP headers
-- **Error Boundaries**: Graceful error handling with user-friendly messages
-- **Rate Limiting**: Client-side protection against API abuse
+### 📊 User Dashboard & Resume Management
+![Dashboard](./docs/assets/dashboard.png)
 
-## 🛠 Setup Instructions
+### 📝 Live Editor
+![Editor Preview](./docs/assets/editor-preview.png)
+
+---
+
+## 🚀 Core Features
+
+### 1️⃣ Multi-Layout Support (9 Templates)
+ResuMate includes **9 resume templates** covering minimalist, ATS-friendly, technical, academic, and photo-forward layouts:
+- **Classic Minimal**: Minimalist, clean-slate design for high-impact single-page resumes.
+- **Clean Layout**: Classic professional layout focusing on readability and bottom grid structure.
+- **Premium Headshot**: Modern sidebar layout with headshot and advanced column management.
+- **ATS Executive**: Optimized for Application Tracking Systems with metrics alignment.
+- **Photo Header**: Photo in header with two-column body grid.
+- **Clean Professional**: Centered header with horizontal dividers.
+- **Elegant TwoColumn**: Two-column grid with classic serif aesthetics.
+- **Bold Engineer**: Bold black headers + photo optimized for technical roles.
+- **Academic**: Serif, education-first design featuring custom GPA & Coursework rendering.
+
+### 2️⃣ AI Resume Tailoring
+- Paste a job description and upload your base resume.
+- Generate a tailored version using your selected LLM provider (OpenAI, Gemini, DeepSeek).
+- Review and refine before exporting.
+
+### 3️⃣ Local-First Workflow
+- Auto-save in the browser using global state (`Zustand` & `localStorage`).
+- No mandatory account for the core experience.
+- Useful even without a backend.
+
+### 4️⃣ Customization Controls
+- **16+ Professional Presets** (e.g., *California Beaches*, *Cobalt Sky*, *Urban Loft*).
+- Font family and precision typography controls.
+- Interactive reordering for sections and resume blocks.
+- Dynamic spacing adjustments (Top/Bottom/Left/Right).
+
+---
+
+## 🎯 Who it’s for
+
+ResuMate is especially useful for:
+- 🏃‍♂️ **Active job seekers** applying to many roles.
+- 🔄 **Career switchers** who need help reframing their experience.
+- 🎓 **Students and early-career candidates** starting from zero.
+- 👨‍💻 **Technical users** who prefer BYO-API instead of paying AI subscription markups.
+
+---
+
+## 📂 Project Structure
+
+This repository was recently upgraded to a full **Next.js SaaS** foundation.
+
+```text
+Resumate/
+├── src/                  # Main Next.js application & React components
+├── docs/                 # Product, Technical & System documentation
+├── public/               # Static assets & icons
+├── _archive/             # Legacy React app & standalone HTML implementations
+├── .env.local            # Environment variables
+└── package.json          # Project dependencies (Next.js, Tailwind, Zustand)
+```
+
+---
+
+## 🛠️ Quick Start
 
 ### Prerequisites
-- Node.js 18+ and npm/yarn/pnpm
-- API keys for LLM providers (optional, for AI features)
+- Node.js 18+
+- npm / pnpm / yarn
+- Optional: API keys for AI features (OpenAI, Gemini, or DeepSeek)
 
-### Installation
+### Installation & Run
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd Resume_Builder/resume-builder-react
+   git clone https://github.com/alexjiaguo/Resumate.git
+   cd Resumate
    ```
 
 2. **Install dependencies**
@@ -75,85 +119,61 @@ A high-performance, browser-based resume customization suite designed for modern
 
 3. **Configure environment variables**
    ```bash
-   cp .env.example .env
+   # Create a local .env file
+   cp .env.example .env.local
    ```
+   *Edit `.env.local` to add your specific API keys for OpenAI/Gemini/DeepSeek.*
 
-   Edit `.env` and add your API keys:
-   ```env
-   VITE_OPENAI_API_KEY=your_openai_key_here
-   VITE_OPENAI_BASE_URL=https://api.openai.com/v1
-   VITE_OPENAI_MODEL=gpt-4
-
-   # Optional: Other providers
-   VITE_GEMINI_API_KEY=your_gemini_key_here
-   VITE_DEEPSEEK_API_KEY=your_deepseek_key_here
-   ```
-
-4. **Start development server**
+4. **Start the development server**
    ```bash
    npm run dev
    ```
 
-5. **Build for production**
-   ```bash
-   npm run build
-   ```
-
-## 📖 Usage Instructions
-
-1. **Start Dev Server**: Run `npm run dev` to start the React application.
-2. **Select Template**: Switch between the 9 templates in the Design tab to find your preferred layout.
-3. **Edit Content**: Use the **Content** tab to input your work experience, education, and skills. Use the **AI** tab to refine bullet points.
-4. **Format**: Make granular typography and color adjustments in the **Design** tab.
-5. **Export**: Click the **Print PDF** button to generate your final A4 document.
-
-## 📂 Project Structure
-
-```
-Resume_Builder/
-├── resume-builder-react/       # Main React application
-│   ├── src/
-│   │   ├── components/         # React components
-│   │   ├── services/           # LLM, file parsing services
-│   │   ├── utils/              # Security, validation utilities
-│   │   ├── store.ts            # Zustand state management
-│   │   └── types.ts            # TypeScript definitions
-│   ├── .env.example            # Environment variables template
-│   ├── SECURITY.md             # Security documentation
-│   └── package.json
-├── resume-builder-saas/        # Next.js SaaS version (WIP)
-├── templates/                  # Original HTML templates
-└── docs/                       # Technical specifications
-```
-
-## 🔐 Security
-
-**IMPORTANT**: Never commit API keys to git. See [SECURITY.md](./resume-builder-react/SECURITY.md) for detailed security guidelines.
-
-### Quick Security Checklist
-- ✅ Use `.env` files for API keys
-- ✅ Add `.env` to `.gitignore`
-- ✅ Rotate keys if accidentally exposed
-- ✅ Review `SECURITY.md` before deploying
-
-## 🚧 Roadmap
-
-### Current Version (v1.0)
-- ✅ 9 professional templates
-- ✅ AI-powered resume tailoring
-- ✅ Client-side architecture
-- ✅ Security hardening
-
-### Upcoming (v2.0 - SaaS)
-- 🔄 User authentication (Supabase)
-- 🔄 Server-side API key management
-- 🔄 Payment integration (Stripe)
-- 🔄 Resume version history
-- 🔄 Team collaboration features
-
-## ⚖️ License
-Personal use for job hunting and career management.
+Then open `http://localhost:3000` (or the port specified by Next.js) to begin building!
 
 ---
 
-*Built with ❤️ for the 2026 Job Hunt.*
+## 🚧 Roadmap
+
+### Near-term
+- Better onboarding and demo clarity
+- Sharper job-description tailoring UX
+- Cleaner export workflows
+- Better contribution paths and starter issues
+
+### Planned platform work (v2.0)
+- 🔄 User authentication (Supabase)
+- 🔄 Cloud sync & Server-side API key management
+- 🔄 Resume history/versioning
+- 🔄 Payment integration (Stripe)
+- 🔄 Team/collaboration features
+
+---
+
+## 🔐 Security Note
+
+ResuMate currently supports a **BYO-API** client-side workflow for flexibility and cost control. While convenient, client-side key storage has trade-offs. 
+**IMPORTANT:** Never commit API keys to git. Use `.env.local` for all sensitive keys.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome, especially around:
+- Template polish
+- Editor UX & export quality
+- AI prompting/tailoring quality
+- Docs and onboarding
+
+---
+
+## ⚖️ License
+
+Currently listed as:
+> Personal use for job hunting and career management.
+
+If broader open-source adoption is a goal, choosing a standard OSS license will materially improve contribution and star conversion.
+
+---
+
+⭐ **If ResuMate helps you, star the repo — it helps more job seekers discover it!**
